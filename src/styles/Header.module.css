@@ -1,0 +1,7 @@
+.header {
+  height: var(--header-ht);
+  position: absolute;
+  top: 0;
+  padding: 1rem;
+  /* border: 1px solid lime; */
+}

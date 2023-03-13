@@ -2,25 +2,33 @@ import "../../styles/Prompt.css";
 import useModal from "../../hooks/useModal";
 import FieldSet from "../form/FieldSet";
 import Menu from "../form/Menu";
+import { ReactElement } from "react";
+
+type PromptOptionsType = { [key: string]: Function } | Map<string, Function>;
+
+type PromptPropsType = {
+  btnTxt: string;
+  message: string | ReactElement;
+  options: PromptOptionsType;
+  cancelable?: boolean;
+};
 
 export default function Prompt({
   btnTxt,
   message,
   options,
   cancelable = true,
-}) {
-  const { isShowing, toggle, close, modal } = useModal();
+}: PromptPropsType) {
+  const { toggle, close, modal } = useModal();
 
   const createDialogBox = () => {
-    // console.log({ options });
-    options = new Map(Object.entries(options));
+    const optionsMapped = new Map(Object.entries(options));
 
-    if (options.size === 1 && cancelable) options.set("cancel", close);
+    if (optionsMapped.size === 1 && cancelable)
+      optionsMapped.set("cancel", close);
 
-    // console.log({ options });
-
-    const exec = option => {
-      options.get(option)();
+    const exec = (option: keyof PromptOptionsType): void => {
+      optionsMapped.get(option)();
       close();
     };
 
@@ -28,8 +36,8 @@ export default function Prompt({
       <div className="prompt wrapper col">
         <p className="prompt-query">{message}</p>
         <Menu
-          options={[...options.keys()]}
-          handleChange={option => exec(option)}
+          options={[...optionsMapped.keys()]}
+          handleChange={(option: keyof PromptOptionsType) => exec(option)}
           searchable={false}
         />
       </div>

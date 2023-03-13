@@ -25,7 +25,7 @@ export default function Page({
   return (
     <div
       id={`${id}-page ${id ?? ""}`}
-      className={`page flex col ${className ?? ""}`}
+      className={`page flex col middle ${className ?? ""}`}
       data-page-name={name}
       {...props}
     >

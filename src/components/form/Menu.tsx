@@ -2,6 +2,18 @@ import { Fragment, useState } from "react";
 import "../../styles/form/SelectMenu.css";
 import Search from "./Search";
 
+type PropsType = {
+  options: string[];
+  display?: { [key: string]: string };
+  label?: string;
+  id?: string;
+  className?: string;
+  field?: string;
+  value?: any;
+  searchable?: boolean;
+  handleChange: Function;
+};
+
 const Menu = ({
   options,
   display,
@@ -12,13 +24,15 @@ const Menu = ({
   value,
   searchable = true,
   handleChange,
-}) => {
+  ...props
+}: PropsType) => {
   const [filter, setFilter] = useState();
 
   return (
     <fieldset
       id={id}
       className={`select-menu ${className ? className : ""} flex`}
+      {...props}
     >
       {label && <legend>{label}</legend>}
       {searchable && <Search />}

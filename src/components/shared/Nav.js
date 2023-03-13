@@ -1,5 +1,5 @@
 "use client";
-import styles from "../../styles/Nav.module.css";
+import styles from "@/styles/Nav.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useNav from "@/hooks/useNav";
@@ -24,9 +24,5 @@ export default function Nav() {
     });
   };
 
-  return (
-    <nav className={`${styles.nav} flex`}>
-      {[...renderNav(), <a>Sign In</a>]}
-    </nav>
-  );
+  return <nav className={`${styles.nav} flex`}>{renderNav()}</nav>;
 }

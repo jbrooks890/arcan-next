@@ -1,7 +1,27 @@
 .logo-main {
+  /* appearance: none; */
+  margin: 1em 0 2em;
   width: 480px;
 }
 
 .logo-main svg {
   width: 100%;
+}
+
+.book-selector {
+  position: relative;
+  height: 50vh;
+}
+
+.book-selector li {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+  border: 1px solid var(--pop);
+  border-radius: 20px 0 20px 0;
+}
+
+.book-selector li:not(:last-of-type) {
+  margin-right: 1rem;
 }

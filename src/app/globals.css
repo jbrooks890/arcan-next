@@ -4,6 +4,8 @@
 }
 
 :root {
+  --grid: 32;
+  --chunk: calc(1px * (var(--grid) * var(--grid)));
   /* ========== COLORS ========== */
   --green: #00bfa7;
   /* --mint: #8ee3d8; */
@@ -80,12 +82,6 @@ footer {
   font-size: 12px;
 }
 
-/* main {
-  height: 100%;
-  padding-top: var(--header-ht);
-  box-sizing: border-box;
-} */
-
 .flex main {
   flex-grow: 1;
 }
@@ -115,8 +111,21 @@ ul {
 
 /* ::::::::::\ HEADINGS /:::::::::: */
 
-h3 {
+h2 {
+  font-weight: normal;
+  font-variant: small-caps;
+  letter-spacing: 0.1em;
+  /* border-bottom: 2px dotted var(--pop); */
+}
+
+h3,
+h4 {
   font-family: var(--keyFont2);
+}
+
+h4 {
+  /* font-size: 1rem; */
+  font-weight: normal;
 }
 
 /* ::::::::::\ FLEX /:::::::::: */

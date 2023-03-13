@@ -2,16 +2,20 @@ export default function useNav() {
   const nav = {
     Home: "/",
     About: "/about",
-    Read: "/read",
+    Read: {
+      $: "/read",
+      "The Immortal Curse": "/read",
+      "The Missing Nexus": "/read",
+      "The Vengeful Traitor": "/read",
+    },
     Gallery: "/gallery",
     Lore: {
       $: "/lore",
-      World: "/world",
       Characters: "/characters",
-      Creatures: "/creatures",
+      World: "/world",
       Magic: "/magic",
-      Wiki: "/wiki",
     },
+    "Sign In": "/login",
   };
 
   return { nav };

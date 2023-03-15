@@ -1,14 +1,13 @@
-
-button {
+.button {
   outline: none;
 }
 
-input {
+.input {
   appearance: none;
   display: block;
   background-color: transparent;
   color: inherit;
-  padding: .5em;
+  padding: 0.5em;
   font-family: var(--bodyFont);
   font-size: 1rem;
   box-sizing: border-box;
@@ -17,8 +16,8 @@ input {
   border-radius: var(--inside);
 }
 
-input[type="text"],
-input[type="number"]{
+.input[type="text"],
+.input[type="number"] {
   width: 100%;
 }
 
@@ -27,10 +26,10 @@ input[type="number"]{
   align-self: stretch;
 }
 
-::placeholder {
+.input::placeholder {
   color: inherit;
   /* font-family: var(--bodyFont); */
-  opacity: .5;
+  opacity: 0.5;
   /* font-family: initial; */
   font-style: italic;
 }
@@ -39,22 +38,22 @@ input[type="number"]{
   border-radius: 50% !important;
 } */
 
-legend {
+.legend {
   font-size: small;
   text-transform: uppercase;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
 }
 
-label {
+.label {
   position: relative;
   display: block;
 }
 
-textarea {
+.textarea {
   appearance: none;
   display: block;
   width: 100%;
-  padding: .5em;
+  padding: 0.5em;
   resize: vertical;
   background-color: transparent;
   font-family: var(--bodyFont);
@@ -66,20 +65,20 @@ textarea {
   box-sizing: border-box;
 }
 
-textarea::-webkit-resizer {
+.textarea::-webkit-resizer {
   display: none;
 }
 
-::selection {
+.input::selection {
   background-color: var(--green);
   color: black;
 }
 
 .required::after {
-  content:"*";
+  content: "*";
   color: red;
   /* font-size: 1rem; */
-  padding-left: .25em;
+  padding-left: 0.25em;
 }
 
 .fieldset {
@@ -90,13 +89,13 @@ textarea::-webkit-resizer {
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   line-height: 1em;
   background-color: black;
   font-size: small;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  padding: 0 .5em;
+  padding: 0 0.5em;
 }
 
 /* ::::::::::: GROUPS ::::::::::: */
@@ -106,7 +105,7 @@ textarea::-webkit-resizer {
   position: absolute;
   background-color: var(--pop);
   inset: 0;
-  opacity: .05;
+  opacity: 0.05;
 }
 
 .group > label.col {
@@ -115,7 +114,7 @@ textarea::-webkit-resizer {
 
 .group input {
   padding: 0;
-  padding-bottom: .25em;
+  padding-bottom: 0.25em;
   border: none;
   border-bottom: 1px solid var(--pop);
   border-radius: 0;
@@ -128,6 +127,6 @@ textarea::-webkit-resizer {
   border-top: 1px solid var(--pop);
 }
 
-.group>.choice-box legend {
+.group > .choice-box legend {
   text-align: center;
 }

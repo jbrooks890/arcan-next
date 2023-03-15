@@ -2,6 +2,7 @@ import styles from "@/styles/Home.module.css";
 import Page from "@/components/layout/Page";
 import Section from "@/components/layout/Section";
 import ARCAN_LOGO from "../../public/assets/images/arcan-logo.svg";
+import Questionnaire from "@/components/frags/Questionnaire";
 
 export default function Home() {
   return (
@@ -35,13 +36,7 @@ export default function Home() {
       <Section name="Feedback">
         <h3>Feedback</h3>
         <p>Feedback is crucial! Let us know what you think so far.</p>
-      </Section>
-      <Section name="Legacy">
-        <h3>Are you a legacy reader?</h3>
-        <p>
-          Did you read the original <em>Arcan: The Missing Nexus (2016)</em>?
-        </p>
-        <button type="button">Button</button>
+        <Questionnaire />
       </Section>
       <Section name="Connect">
         <h2>Connect</h2>

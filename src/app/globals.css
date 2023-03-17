@@ -30,6 +30,20 @@
   /* ========== BORDERS ========== */
   --inside: 5px;
   --outside: 10px;
+  /* ========== SHAPES ========== */
+  /* STAR CLIP SOURCE: https://www.cssportal.com/css-clip-path-generator/ */
+  --star: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
   /* ========== ELEMENTS ========== */
   --header-ht: 3rem;
   /* ============================= */

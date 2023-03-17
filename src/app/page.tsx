@@ -3,6 +3,7 @@ import Page from "@/components/layout/Page";
 import Section from "@/components/layout/Section";
 import ARCAN_LOGO from "../../public/assets/images/arcan-logo.svg";
 import Questionnaire from "@/components/frags/Questionnaire";
+import StarRating from "@/components/form/StarRating";
 
 export default function Home() {
   return (
@@ -34,8 +35,10 @@ export default function Home() {
         </ul>
       </Section>
       <Section name="Feedback">
-        <h3>Feedback</h3>
+        <h2>Feedback</h2>
         <p>Feedback is crucial! Let us know what you think so far.</p>
+        <StarRating />
+        <br />
         <Questionnaire />
       </Section>
       <Section name="Connect">

@@ -1,5 +1,6 @@
 "use client";
 import useForm from "@/hooks/useForm";
+import StarRating from "../form/StarRating";
 
 export default function Questionnaire() {
   const { form, choice, field } = useForm();
@@ -22,10 +23,14 @@ export default function Questionnaire() {
     choice("Which genre do you prefer?", "Fantasy Science Fiction".split(" ")),
   ];
 
-  return form({
-    name: "Newcomer Questionnaire",
-    fields: questions,
-    handleSubmit: () => console.log("submitted!"),
-    submitTxt: "Send",
-  });
+  return (
+    <>
+      {form({
+        name: "Newcomer Questionnaire",
+        fields: questions,
+        handleSubmit: () => console.log("submitted!"),
+        submitTxt: "Send",
+      })}
+    </>
+  );
 }

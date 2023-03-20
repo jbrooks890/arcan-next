@@ -59,4 +59,5 @@ Backend:
 ---
 
 Website developed by Julian Brooks (as _Crymsica_). _Arcan_ series written and created by Julian Brooks.
+
 &copy;2016&mdash;2023 Julian Brooks. All Rights Reserved.

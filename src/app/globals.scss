@@ -145,35 +145,35 @@ h4 {
 /* ::::::::::\ FLEX /:::::::::: */
 .flex {
   display: flex;
-}
 
-.flex.wrap {
-  flex-wrap: wrap;
-}
+  &.wrap {
+    flex-wrap: wrap;
+  }
 
-.flex.reverse:not(.col) {
-  flex-direction: row-reverse;
-}
+  &.reverse:not(.col) {
+    flex-direction: row-reverse;
+  }
 
-.flex.col {
-  flex-direction: column;
-}
+  &.col {
+    flex-direction: column;
+  }
 
-.flex.col.reverse {
-  flex-direction: column-reverse;
-}
+  &.col.reverse {
+    flex-direction: column-reverse;
+  }
 
-.flex.start {
-  justify-content: flex-start;
-}
+  &.start {
+    justify-content: flex-start;
+  }
 
-.flex.middle {
-  align-items: center;
-}
+  &.middle {
+    align-items: center;
+  }
 
-.flex.center {
-  justify-content: center;
-  align-items: center;
+  &.center {
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 /* ::::::::::\ GRID /:::::::::: */

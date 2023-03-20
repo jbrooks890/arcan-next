@@ -1,0 +1,32 @@
+.outer {
+  position: relative;
+  margin-block: 0.25em;
+  height: 1.5em;
+  border: 2px solid var(--pop);
+  border-radius: 100px;
+
+  &:before {
+    content: attr(data-progress-txt);
+    position: absolute;
+    inset: 0;
+    color: var(--dark);
+    font-size: smaller;
+    font-family: var(--keyFont2);
+    font-weight: 600;
+    // line-height: 1em;
+    z-index: 1;
+  }
+}
+
+.inner {
+  --offset: 3px;
+  // height: 1em;
+  position: absolute;
+  top: var(--offset);
+  bottom: var(--offset);
+  left: var(--offset);
+  right: var(--progress);
+  // width: 100%;
+  background-color: var(--pop);
+  border-radius: 100px;
+}

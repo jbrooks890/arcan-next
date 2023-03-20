@@ -45,11 +45,11 @@ Some content is being developed concurrently with the MVP but may be released at
 
 ---
 
-Made with:
+### Front:
 
-- **Next.js(13)**
+- **Next.js (v13)**
 
-Backend:
+### Back:
 
 - Node.js
 - Express.js

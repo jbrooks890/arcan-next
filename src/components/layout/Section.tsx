@@ -1,4 +1,4 @@
-import styles from "@/styles/Section.module.css";
+import styles from "@/styles/Section.module.scss";
 import { makeHTMLSafe } from "@/lib/utility";
 import { ReactNode } from "react";
 

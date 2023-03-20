@@ -51,6 +51,12 @@ export default function Home() {
         </p>
         <h3>Subscribe</h3>
         <p>Be the first to know when new content lands!</p>
+        <h3>Social Media</h3>
+        <p>
+          Enjoying the website? Be sure to share on your favorite platforms.
+          And, of course, a <em>like</em> and a <em>follow</em> helps too. Thank
+          you!
+        </p>
       </Section>
     </Page>
   );

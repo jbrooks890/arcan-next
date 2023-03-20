@@ -8,6 +8,7 @@ type PropsType = {
   id?: string;
   className?: string;
   type?: string;
+  dir?: string;
   banner?: string;
   theme?: string;
 };
@@ -17,6 +18,7 @@ export default function Page({
   id = makeHTMLSafe(name),
   className,
   type = "regular",
+  dir,
   banner,
   children,
   ...props

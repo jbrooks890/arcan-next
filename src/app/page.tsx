@@ -19,7 +19,7 @@ export default function Home() {
         </ul>
       </Section>
       <Section name="Start Here">
-        <h3>Start Here</h3>
+        <h2>Start Here</h2>
         <p>Welcome, newcomer. Your adventure has only just begun.</p>
         <h4>
           The world of <em>Arcan</em> awaits you.

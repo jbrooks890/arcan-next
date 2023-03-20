@@ -42,3 +42,21 @@ Beyond the Project’s minimum viable product is a suite of other exciting featu
 - Events and challenges
 
 Some content is being developed concurrently with the MVP but may be released at a later time. By becoming a subscriber you’ll receive updates of when new features are released in addition to other Arcan-centric info.
+
+---
+
+Made with:
+
+- **Next.js(13)**
+
+Backend:
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+
+---
+
+Website developed by Julian Brooks (as _Crymsica_). _Arcan_ series written and created by Julian Brooks.
+&copy;2016&mdash;2023 Julian Brooks. All Rights Reserved.

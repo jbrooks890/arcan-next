@@ -1,0 +1,4 @@
+## Me, The Author
+
+I’m Julian, the author of the _Arcan_ series. I am originally from the great and colorful city of Chicago, IL and am now currently residing in Georgia, just outside of Atlanta. I love to draw and write equally, often finding myself alternating between the two. I am also a developer (or software engineer) because I love coding and programming. The culmination of my talents is _The Arcan Project_ that you see here. This story has grown with me since childhood well over two decades ago and has developed to become my pièce de résistance. The main character, _Kyran_, is practically a family member, if he isn’t me entirely in this alternate universe.
+I am a creative soul that loves art and science (especially space), culture, music, food, mythology, fashion and—perhaps, most importantly—coffee. I love to create things. When I’m not drawing, writing or coding, I’m cooling with my two girls playing Minecraft, watching movies and/or snacking on something.

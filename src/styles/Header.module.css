@@ -4,4 +4,5 @@
   top: 0;
   padding: 1rem;
   /* border: 1px solid lime; */
+  z-index: 1000;
 }

@@ -2,6 +2,14 @@
   font-family: phosphate-naked;
   src: url(/assets/fonts/PhosphateNaked.otf);
 }
+@font-face {
+  font-family: jb-webdings;
+  src: url(/assets/fonts/JBWebdings.otf);
+}
+@font-face {
+  font-family: brands;
+  src: url(/assets/fonts/Tech-Brands-2.otf);
+}
 
 :root {
   --grid: 32;
@@ -23,6 +31,8 @@
   --bodyFont: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+  --symbols: jb-webdings;
+  --brands: brands;
   font-size: 18px;
   /* ========== SPECIAL CHARS ========== */
   --plus: "\254B";
@@ -190,4 +200,12 @@ h4 {
   text-transform: lowercase;
   font-variant: small-caps;
   opacity: 0.5;
+}
+
+.symbol-font {
+  font-family: var(--symbols);
+}
+
+.brands-font {
+  font-family: var(--brands);
 }

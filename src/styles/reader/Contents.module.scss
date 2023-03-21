@@ -40,19 +40,29 @@
 
       &.complete {
         color: aqua;
-      }
-    }
 
-    &::after {
-      content: attr(data-chapter-progress) "%";
-      padding-left: 1em;
-      background-color: var(--pop);
-      color: var(--dark);
-      position: absolute;
-      right: 1ch;
-      font-size: small;
-      opacity: 0;
-      // transition: 0.1s ease-out;
+        &::after {
+          content: "B";
+          font-family: var(--symbols);
+          color: inherit;
+        }
+      }
+
+      &.unavailable {
+        opacity: 0.5;
+      }
+
+      &:not(.complete)::after {
+        content: attr(data-chapter-progress) "%";
+        padding-left: 1em;
+        background-color: var(--pop);
+        color: var(--dark);
+        position: absolute;
+        right: 1ch;
+        font-size: small;
+        opacity: 0;
+        // transition: 0.1s ease-out;
+      }
     }
   }
 }

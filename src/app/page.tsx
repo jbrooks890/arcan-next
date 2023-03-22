@@ -2,8 +2,9 @@ import styles from "@/styles/Home.module.css";
 import Page from "@/components/layout/Page";
 import Section from "@/components/layout/Section";
 import ARCAN_LOGO from "../../public/assets/images/arcan-logo.svg";
-import Questionnaire from "@/components/frags/Questionnaire";
+import Questionnaire from "@/components/prompts/Questionnaire";
 import StarRating from "@/components/form/StarRating";
+import UserGate from "@/components/prompts/UserGate";
 
 export default function Home() {
   return (
@@ -40,6 +41,7 @@ export default function Home() {
         <StarRating />
         <br />
         <Questionnaire />
+        <UserGate login={false} />
       </Section>
       <Section name="Connect">
         <h2>Connect</h2>

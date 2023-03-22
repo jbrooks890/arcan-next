@@ -34,9 +34,6 @@ export default function DatabaseDraft({
 
   const initEntry = () => {
     const { paths } = SCHEMA;
-    // const fields = createFormFields(paths);
-    // console.log("\nPATHS:", paths);
-    // setEntryData(fields);
   };
 
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
@@ -65,7 +62,7 @@ export default function DatabaseDraft({
         } = data;
 
         const getNestedValue = root =>
-          root ? ancestors.reduce((obj, path) => obj[path], root) : null;
+          root ? ancestors.reduce((obj, path) => obj?.[path], root) : null;
 
         const recordValue = record ? getNestedValue(record) : null;
 
@@ -97,6 +94,7 @@ export default function DatabaseDraft({
             ["avg", "average"],
             ["dob", "date of birth"],
             ["abbr", "abbreviation"],
+            ["msg", "message"],
           ]);
           const nonPlurals = ["s", "y"];
 
@@ -122,7 +120,7 @@ export default function DatabaseDraft({
             (links, current) => {
               const _parent = links.pop();
               const [path, obj] = _parent;
-              const child = [current, obj[path]];
+              const child = [current, obj?.[path]];
               return [...links, _parent, child];
             },
             // [[parent, entryData ?? record]]
@@ -170,6 +168,14 @@ export default function DatabaseDraft({
           value,
         };
 
+        // ---------| NO ELEMENT: TODO |---------
+        const NO_ELEMENT = (
+          <label key={key} {...props}>
+            <span>{label}</span>
+            <div>?</div>
+          </label>
+        );
+
         // ---------| CREATE DATASET ENTRY |---------
 
         const createDataSetEntry = (paths, options, single = false) => {
@@ -193,12 +199,6 @@ export default function DatabaseDraft({
             ? set?.[refPath] || paths[refPath].enumValues[0]
             : ref;
           const dependency = references[reference];
-
-          // record && console.log({ record });
-          // value = record?.populated(path);
-          // console.log({ path, dependency });
-
-          // console.log(path, { value, field });
 
           return (
             <ChoiceBox
@@ -307,8 +307,6 @@ export default function DatabaseDraft({
                 );
                 break;
               case "Decimal128":
-                // if (record?.[path])
-                //   field = parseFloat(record[path].$numberDecimal);
                 element = (
                   <NumField
                     {...props}
@@ -376,11 +374,19 @@ export default function DatabaseDraft({
                 break;
               case "Map":
                 const $data = paths[path + ".$*"];
-                // console.log($data.options.type.paths);
-                element = createDataSetEntry(
-                  $data.options.type.paths,
-                  options.enum
-                );
+                if ($data?.options?.type?.paths) {
+                  element = createDataSetEntry(
+                    $data.options.type.paths,
+                    options.enum
+                  );
+                } else {
+                  element = NO_ELEMENT;
+                  element = (
+                    <FieldSet {...props}>
+                      <TextField />
+                    </FieldSet>
+                  );
+                }
 
                 break;
               case "ObjectID":
@@ -399,12 +405,7 @@ export default function DatabaseDraft({
                 console.warn(
                   `${path.toUpperCase()}: No handler for ${instance}`
                 );
-                element = (
-                  <label key={key} {...props}>
-                    <span>{label}</span>
-                    <div>?</div>
-                  </label>
-                );
+                element = NO_ELEMENT;
             }
           } else {
             if (options) {

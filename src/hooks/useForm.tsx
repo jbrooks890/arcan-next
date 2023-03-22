@@ -1,82 +1,287 @@
 import { makeHTMLSafe } from "@/lib/utility";
 import Form from "@/components/form/Form";
 import { FormEventHandler, MouseEventHandler } from "react";
+import Label from "@/components/form/Label";
+import TextField from "@/components/form/TextField";
+import NumField from "@/components/form/NumField";
+import Toggle from "@/components/form/Toggle";
+import Password from "@/components/form/Password";
+import DateField from "@/components/form/DateField";
+import EmailField from "@/components/form/EmailField";
+
+export type FieldTypeEnum =
+  | "string"
+  // | "block"
+  | "number"
+  | "float"
+  | "boolean"
+  | "date"
+  | "email"
+  | "password"
+  | "set"
+  | "select"
+  | "multi";
+
+type validatorFn = Function; //TODO: function that returns bool
+
+export type FieldType = {
+  name: string;
+  field: string;
+  type: FieldTypeEnum;
+  value?: any;
+  placeholder?: string;
+  required?: boolean;
+  confirm?: boolean;
+  choices?: (string | object)[];
+  validation?: { validator: validatorFn; criteria: string };
+  labelize?: boolean;
+  options?: {
+    block?: boolean;
+    min?: number;
+    max?: number;
+  };
+};
+
+export type FormType = {
+  name: string;
+  fields: FieldType[];
+  validate?: boolean;
+  handleSubmit: FormEventHandler<HTMLFormElement>;
+  submitTxt?: string;
+  resetTxt?: string;
+  handleReset?: MouseEventHandler<HTMLButtonElement>;
+};
+
+// =====================================
+// %%%%%%%%%%%%\ COMPONENT /%%%%%%%%%%%%
+// =====================================
 
 export default function useForm() {
-  type FieldTypeEnum =
-    | "string"
-    | "block"
-    | "number"
-    | "boolean"
-    | "date"
-    | "select"
-    | "multi";
+  const labelize = (str: string) => {
+    let label = str;
+    if (/[a-z]/.test(label.charAt(0)))
+      label = label.replace(/([A-Z])/g, " $1").toLowerCase();
 
-  type FieldType = {
-    name: string;
-    type: FieldTypeEnum;
-    value?: any;
-    required?: boolean;
-    label?: string;
-    choices?: (string | object)[];
+    if (label.startsWith("_")) label = label.slice(1);
+
+    const shorthands = new Map([
+      ["pref", "preference"],
+      ["ref", "reference"],
+      ["attr", "attribute"],
+      ["org", "organization"],
+      ["diffr", "differential"],
+      ["intro", "introduction"],
+      ["avg", "average"],
+      ["dob", "date of birth"],
+      ["abbr", "abbreviation"],
+      ["msg", "message"],
+    ]);
+    const nonPlurals = ["s", "y"];
+
+    shorthands.forEach((long, short) => {
+      const regex = new RegExp(`\\b${short}\\b`);
+      if (label.match(regex)) label = label.replace(regex, long);
+    });
+    // if (parent && label.includes(parent))
+    //   label = label.replace(parent, "").trim();
+    // if (
+    //   (instance === "Array" || instance === "Map") &&
+    //   !nonPlurals.includes(label.charAt(label.length - 1))
+    // )
+    label += "(s)";
+    if (label.startsWith("is ")) label = label.slice(2) + "?";
+    return label;
   };
 
-  const field = (
-    name: string,
-    type?: "string" | "block" | "number" | "boolean" | "date",
-    value?: any,
-    required = false,
-    label = makeHTMLSafe(name)
-  ): FieldType => ({
+  const field = ({
     name,
+    field,
+    type,
+    value,
+    required = false,
+    confirm = false,
+  }: FieldType): FieldType => ({
+    name,
+    field: field ?? makeHTMLSafe(name),
     type: type ?? "string",
     value,
     required,
-    label,
+    confirm,
   });
-
-  // type ChainType = {
-  //   [key: string]:
-  // }
 
   const choice = (
     name: string,
     choices: (string | object)[],
     multi = false,
-    value?: any,
+    field = makeHTMLSafe(name),
     required = false,
-    label = makeHTMLSafe(name)
+    value?: any,
+    placeholder?: string
   ): FieldType => {
     return {
       name,
       type: multi ? "multi" : "select",
       value,
       required,
-      label,
+      field,
       choices,
     };
   };
 
-  type FormType = {
-    name: string;
-    fields: FieldType[];
-    handleSubmit: FormEventHandler<HTMLFormElement>;
-    submitTxt?: string;
-    resetTxt?: string;
-    handleReset?: MouseEventHandler<HTMLButtonElement>;
+  const text = (
+    field: string,
+    options = {
+      // name: "",
+      value: "",
+      block: false,
+      required: false,
+      placeholder: "",
+    }
+  ): FieldType => ({
+    name: options.name ?? labelize(field),
+    type: "string",
+    value: options.value,
+    required: options.required,
+    field,
+    // options: block ? { block: true } : undefined,
+  });
+
+  const ask = (
+    question: string,
+    type = "string" as FieldTypeEnum,
+    value?: any
+  ) => ({
+    name: question,
+    type,
+    value,
+  });
+
+  const questionList = (questions: any[], name?: string): FieldType[] => {
+    return questions.map((question, i): FieldType => {
+      return {
+        name: question.name,
+        field: (name ? `${makeHTMLSafe(name)}-` : "Q") + (i + 1),
+        type: question.type,
+        value: question.value,
+      };
+    });
   };
+
+  const password = (
+    confirm = false,
+    name = "Password",
+    field = "password"
+  ): FieldType => ({
+    name,
+    type: "password",
+    field,
+    required: true,
+  });
+
+  const renderField = (entry: FieldType) => {
+    const { name, type, value, required, field, placeholder } = entry;
+    const props: InputPropsType = {
+      field,
+      value,
+      placeholder,
+      handleChange: () => {},
+    };
+    let element = () => {
+      switch (type) {
+        case "string":
+          return <TextField {...props} />;
+          break;
+        case "number":
+          return <NumField {...props} />;
+          break;
+        case "float":
+          return <NumField {...props} step={0.1} />;
+          break;
+        case "boolean":
+          return <Toggle {...props} />;
+          break;
+        case "date":
+          return <DateField {...props} />;
+          break;
+        case "email":
+          return <EmailField {...props} />;
+          break;
+        case "password":
+          return <Password {...props} />;
+          break;
+        default:
+          return <div>{`${field}...?`}</div>;
+      }
+    };
+
+    return (
+      <Label name={name!} field={field} required={required}>
+        {element()}
+      </Label>
+    );
+  };
+
+  const email = (
+    required = false,
+    name = "Email",
+    field = "email"
+  ): FieldType => ({
+    name,
+    field,
+    type: "email",
+    required,
+  });
 
   const form = ({
     name,
     fields,
+    validate = false,
     handleSubmit,
     submitTxt,
     resetTxt,
     handleReset,
   }: FormType) => {
+    const test = fields.map(entry =>
+      entry.confirm
+        ? [
+            entry,
+            {
+              ...entry,
+              name: `confirm-${entry.name}`,
+              entry: `Confirm ${entry.field}`,
+              confirm: false,
+            },
+          ].flat()
+        : entry
+    );
+
+    const formData = Object.fromEntries(
+      fields.map(entry => {
+        const { name, value, field, confirm } = entry;
+        const element = confirm ? (
+          <>
+            {renderField(entry)}
+            {renderField({
+              ...entry,
+              name: `confirm-${name}`,
+              field: `Confirm ${field}`,
+              confirm: false,
+            })}
+          </>
+        ) : (
+          renderField(entry)
+        );
+        return [field, { value, field, element, label: name }];
+      })
+    );
+
+    console.log({ test });
     return (
       <Form name={name} handleSubmit={handleSubmit}>
         <h2>{name}</h2>
+        <div className="form-body flex col">
+          {Object.values(formData).map(entry => entry.element)}
+        </div>
         <button type="submit">{submitTxt ?? "Submit"}</button>
         <button type="reset" onClick={handleReset}>
           {resetTxt ?? "Reset"}
@@ -85,5 +290,5 @@ export default function useForm() {
     );
   };
 
-  return { field, choice, form };
+  return { form, field, password, email, text, choice, ask, questionList };
 }

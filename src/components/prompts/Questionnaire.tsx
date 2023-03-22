@@ -1,17 +1,16 @@
 "use client";
 import useForm from "@/hooks/useForm";
-import StarRating from "../form/StarRating";
 
 export default function Questionnaire() {
-  const { form, choice, field } = useForm();
+  const { form, choice, field, ask, questionList } = useForm();
 
   const questions = [
-    field("Name"),
+    // field("Name"),
     choice("Have you read *Arcan: The Missing Nexus (2016)*?", [
       {
         yes: [
-          field("What platform did you read it on?"),
-          field("What was your favorite part?"),
+          ask("What platform did you read it on?"),
+          ask("What was your favorite part?"),
           choice(
             "Are you looking forward to future installments in the series?",
             ["Absolutely!", "Not really..."]
@@ -20,14 +19,19 @@ export default function Questionnaire() {
       },
       "no",
     ]),
-    choice("Which genre do you prefer?", "Fantasy Science Fiction".split(" ")),
+    choice("Which genre do you prefer?", "Fantasy Science-Fiction".split(" ")),
+    choice(
+      "What content are you most interested in?",
+      "Books Lore World Characters Magic Creatures".split(" ").sort(),
+      true
+    ),
   ];
 
   return (
     <>
       {form({
         name: "Newcomer Questionnaire",
-        fields: questions,
+        fields: questionList(questions),
         handleSubmit: () => console.log("submitted!"),
         submitTxt: "Send",
       })}

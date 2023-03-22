@@ -39,12 +39,12 @@
       }
 
       &.complete {
-        color: aqua;
+        filter: brightness(1.5);
 
         &::after {
           content: "B";
-          font-family: var(--symbols);
           color: inherit;
+          font-family: var(--symbols);
         }
       }
 
@@ -68,12 +68,18 @@
 }
 
 @media (hover: hover) {
-  .button:hover {
-    background-color: var(--pop);
-    color: var(--dark);
+  .button {
+    &:global {
+      &:not(.unavailable) {
+        &:hover {
+          background-color: var(--pop);
+          color: var(--dark);
 
-    &::after {
-      opacity: 1;
+          &::after {
+            opacity: 1;
+          }
+        }
+      }
     }
   }
 }

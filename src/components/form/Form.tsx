@@ -9,6 +9,7 @@ type PropsType = {
   className?: string;
   autoComplete?: boolean;
   spellCheck?: boolean;
+  validate?: boolean;
 };
 
 const Form = ({
@@ -19,6 +20,7 @@ const Form = ({
   className,
   autoComplete = false,
   spellCheck = false,
+  validate = false,
 }: PropsType) => {
   return (
     <form

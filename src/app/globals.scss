@@ -119,14 +119,6 @@ a:hover {
   text-decoration: none;
 }
 
-button {
-  appearance: none;
-  cursor: pointer;
-  background-color: inherit;
-  color: inherit;
-  border: none;
-}
-
 ul {
   margin: 0;
   padding-left: 0;
@@ -150,6 +142,56 @@ h2 {
 h4 {
   /* font-size: 1rem; */
   font-weight: normal;
+}
+
+/* ::::::::::\ FORM ELEMENTS /:::::::::: */
+
+button {
+  cursor: pointer;
+  appearance: none;
+  // padding: 0.5em 1em;
+  background-color: inherit;
+  color: inherit;
+  // font-size: inherit;
+  border: none;
+  outline: none;
+
+  &:not(.symbol-font) {
+    text-transform: uppercase;
+    font-family: var(--keyFont2);
+  }
+}
+
+input {
+  appearance: none;
+  display: block;
+  background-color: transparent;
+  color: inherit;
+  padding: 0.5em;
+  font-family: var(--bodyFont);
+  font-size: 1rem;
+  box-sizing: border-box;
+  outline: inherit;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+
+  &::placeholder {
+    color: inherit;
+    /* font-family: var(--bodyFont); */
+    opacity: 0.5;
+    /* font-family: initial; */
+    font-style: italic;
+  }
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+}
+
+.flex input:not([type="radio"]:not([type="checkbox"])) {
+  flex-grow: 1;
+  align-self: stretch;
 }
 
 /* ::::::::::\ FLEX /:::::::::: */

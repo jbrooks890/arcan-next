@@ -9,7 +9,12 @@ export default function Reader() {
   return (
     <Page name={"Reader"} className={`${styles.wrapper}`}>
       <div>
-        <Header title="Turbulent Calm" warning={true} version={0.5} />
+        <Header
+          title="Turbulent Calm"
+          book="Arcan: The Missing Nexus"
+          warning={true}
+          version={0.5}
+        />
         <Contents />
         <Viewport />
       </div>

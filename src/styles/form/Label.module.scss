@@ -1,0 +1,25 @@
+.label {
+  margin-bottom: 1em;
+
+  &:global {
+    &.required {
+      .label-text {
+        color: cyan;
+        &::after {
+          content: "*";
+          color: red;
+        }
+      }
+    }
+  }
+
+  .label-text {
+    margin-bottom: 0.1em;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: small;
+    font-family: var(--keyFont2);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+}

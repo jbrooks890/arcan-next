@@ -1,6 +1,7 @@
 import { useState, ReactElement } from "react";
 import Criteria from "./Criteria";
 import styles from "@/styles/form/Label.module.scss";
+import Markdown from "markdown-to-jsx";
 
 type PropsType = {
   name: string;
@@ -28,11 +29,11 @@ export default function Label({
     <label
       htmlFor={field}
       data-label={name}
-      className={`${styles.label} ${className} ${
+      className={`${styles.label} ${className??""} ${
         required ? "required" : "not-required"
       }`}
     >
-      <div className={styles["label-text"]}>{name}</div>
+      <Markdown className={`${styles["label-text"]} label-text`} >{name}</Markdown>
       {criteria ? (
         <Criteria content={criteria} show={showCriteria} />
       ) : undefined}

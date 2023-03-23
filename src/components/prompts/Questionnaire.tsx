@@ -6,7 +6,7 @@ export default function Questionnaire() {
 
   const questions = [
     // field("Name"),
-    choice("Have you read *Arcan: The Missing Nexus (2016)*?", [
+    choice("Have you read **_Arcan: The Missing Nexus (1<sup>st</sup> Edition, 2016)_**?", [
       {
         yes: [
           ask("What platform did you read it on?"),

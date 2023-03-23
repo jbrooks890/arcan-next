@@ -1,0 +1,51 @@
+.nav {
+  box-sizing: border-box;
+
+  a {
+    -webkit-font-smoothing: antialiased;
+    &:global {
+      &.active {
+        cursor: default;
+        pointer-events: none;
+        color: var(--mint);
+      }
+  
+      &:not(.active) {
+        cursor: pointer;
+      }
+
+      &:not(:last-of-type) {
+        margin-inline-end: 2em;
+      }
+    }
+  }
+
+}
+// .nav a {
+//   text-transform: uppercase;
+//   transition: 0.1s ease-out;
+// }
+
+// .nav a:global.active {
+//   cursor: default;
+//   pointer-events: none;
+//   color: var(--mint);
+// }
+
+// .nav a:global:not(.active) {
+//   cursor: pointer;
+// }
+
+// .nav a:not(:last-of-type) {
+//   margin-inline-end: 2em;
+// }
+
+/* ====================================== **
+|| HOVER
+** ====================================== */
+
+@media (hover: hover) {
+  .nav a:global:not(.active):hover {
+    color: var(--mint);
+  }
+}

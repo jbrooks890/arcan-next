@@ -1,4 +1,5 @@
 import { ChangeEventHandler, useRef, useState } from "react";
+import styles from "@/styles/form/Password.module.scss"
 
 // type PropsType = {
 //   field: string;
@@ -15,13 +16,13 @@ export default function Password({
 
   const ShowPassword = () => (
     <button
-      className="show-password flex center symbol-font"
+      className={`${styles.show} ${showing?"active":"inactive"} show-password flex center symbol-font`}
       type="button"
       onClick={e => {
         e.preventDefault();
         toggleShowing(prev => !prev);
       }}
-      tabIndex={-1}
+      tabIndex={0}
     >
       I
     </button>
@@ -29,8 +30,7 @@ export default function Password({
 
   return (
     <div
-      className="password-wrap flex middle"
-      style={{ position: "relative", boxSizing: "border-box" }}
+      className={`${styles.password} password-wrap flex center`}
     >
       <input
         type={showing ? "text" : "password"}

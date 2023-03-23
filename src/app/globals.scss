@@ -185,8 +185,17 @@ input {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+input[type="email"] {
   width: 100%;
+}
+
+.flex:not(.col) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"] {
+    flex-grow: 1;
+  }
 }
 
 .flex input:not([type="radio"]:not([type="checkbox"])) {

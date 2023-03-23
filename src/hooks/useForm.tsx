@@ -131,14 +131,14 @@ export default function useForm() {
   const text = (
     field: string,
     options = {
-      // name: "",
+      name: "",
       value: "",
       block: false,
       required: false,
       placeholder: "",
     }
   ): FieldType => ({
-    name: options.name ?? labelize(field),
+    name: options.name || labelize(field),
     type: "string",
     value: options.value,
     required: options.required,
@@ -176,6 +176,7 @@ export default function useForm() {
     type: "password",
     field,
     required: true,
+    confirm
   });
 
   const renderField = (entry: FieldType) => {
@@ -258,13 +259,14 @@ export default function useForm() {
     const formData = Object.fromEntries(
       fields.map(entry => {
         const { name, value, field, confirm } = entry;
+        console.log({confirm});
         const element = confirm ? (
           <>
             {renderField(entry)}
             {renderField({
               ...entry,
-              name: `confirm-${name}`,
-              field: `Confirm ${field}`,
+              name: `Confirm ${field}`,
+              field: `confirm-${name}`,
               confirm: false,
             })}
           </>
@@ -275,14 +277,14 @@ export default function useForm() {
       })
     );
 
-    console.log({ test });
+    // console.log({ test });
     return (
       <Form name={name} handleSubmit={handleSubmit}>
         <h2>{name}</h2>
         <div className="form-body flex col">
           {Object.values(formData).map(entry => entry.element)}
         </div>
-        <button type="submit">{submitTxt ?? "Submit"}</button>
+        <button type="submit" onClick={e=>e.preventDefault()}>{submitTxt ?? "Submit"}</button>
         <button type="reset" onClick={handleReset}>
           {resetTxt ?? "Reset"}
         </button>

@@ -42,6 +42,10 @@ export type FieldType = {
   };
 };
 
+export type FormDataType = {
+  [key: string]: any;
+};
+
 export type FormType = {
   name: string;
   fields: FieldType[];
@@ -50,6 +54,7 @@ export type FormType = {
   submitTxt?: string;
   resetTxt?: string;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
+  postMessage?: (v: FormDataType) => string;
 };
 
 // =====================================
@@ -176,7 +181,7 @@ export default function useForm() {
     type: "password",
     field,
     required: true,
-    confirm
+    confirm,
   });
 
   const renderField = (entry: FieldType) => {
@@ -233,6 +238,9 @@ export default function useForm() {
     required,
   });
 
+  const defaultPostMsg = `## Thank you!
+  Form submitted.`;
+
   const form = ({
     name,
     fields,
@@ -241,25 +249,12 @@ export default function useForm() {
     submitTxt,
     resetTxt,
     handleReset,
+    postMessage,
   }: FormType) => {
-    const test = fields.map(entry =>
-      entry.confirm
-        ? [
-            entry,
-            {
-              ...entry,
-              name: `confirm-${entry.name}`,
-              entry: `Confirm ${entry.field}`,
-              confirm: false,
-            },
-          ].flat()
-        : entry
-    );
-
     const formData = Object.fromEntries(
       fields.map(entry => {
         const { name, value, field, confirm } = entry;
-        console.log({confirm});
+        console.log({ confirm });
         const element = confirm ? (
           <>
             {renderField(entry)}
@@ -277,14 +272,15 @@ export default function useForm() {
       })
     );
 
-    // console.log({ test });
     return (
       <Form name={name} handleSubmit={handleSubmit}>
         <h2>{name}</h2>
         <div className="form-body flex col">
           {Object.values(formData).map(entry => entry.element)}
         </div>
-        <button type="submit" onClick={e=>e.preventDefault()}>{submitTxt ?? "Submit"}</button>
+        <button type="submit" onClick={e => e.preventDefault()}>
+          {submitTxt ?? "Submit"}
+        </button>
         <button type="reset" onClick={handleReset}>
           {resetTxt ?? "Reset"}
         </button>

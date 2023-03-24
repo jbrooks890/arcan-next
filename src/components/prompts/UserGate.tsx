@@ -9,9 +9,12 @@ export default function UserGate({ login = true }) {
   ### Almost There.
   The last step is to **verify your email address**. A link has been sent to **_${v.email}_**. The link will expire in 72 hours. If this is not your email address or if the specified email address is incorrect you may change your email address in **Profile > Settings** and resend the verification email.`;
 
-  const NAMESET = [text("firstName"), text("lastName")];
+  const NAMESET = [text("$firstName"), text("$lastName")];
 
-  const USERNAME = text("username");
+  const USERNAME = text("$username", {
+    required: true,
+    placeholder: "fishy_01",
+  });
   const EMAIL = email(true);
   const DOB = field({
     name: "Date of Birth",
@@ -37,6 +40,7 @@ export default function UserGate({ login = true }) {
   return (
     <div style={{ width: "480px", overflow: "hidden" }}>
       {content}
+      <br />
       {login ? (
         <>
           Not a member? <strong>Sign up.</strong>

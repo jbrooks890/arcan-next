@@ -26,7 +26,9 @@ const Form = ({
     <form
       name={name}
       id={id}
-      className={`custom-form ${className ?? ""}`}
+      className={`custom-form ${className ?? ""} ${
+        validate ? "validate" : "no-validate"
+      }`}
       onSubmit={handleSubmit}
       autoComplete={autoComplete ? "on" : "off"}
       spellCheck={spellCheck}

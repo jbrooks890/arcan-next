@@ -1,6 +1,6 @@
 import { makeHTMLSafe } from "@/lib/utility";
 import Form from "@/components/form/Form";
-import { FormEventHandler, MouseEventHandler } from "react";
+import { FormEventHandler, MouseEventHandler, useState } from "react";
 import Label from "@/components/form/Label";
 import TextField from "@/components/form/TextField";
 import NumField from "@/components/form/NumField";
@@ -62,7 +62,9 @@ export type FormType = {
 // =====================================
 
 export default function useForm() {
-  const labelize = (str: string) => {
+  const [formData, setFormData] = useState();
+
+  const labelize = (str: string, isArray = false) => {
     let label = str;
     if (/[a-z]/.test(label.charAt(0)))
       label = label.replace(/([A-Z])/g, " $1").toLowerCase();
@@ -89,11 +91,8 @@ export default function useForm() {
     });
     // if (parent && label.includes(parent))
     //   label = label.replace(parent, "").trim();
-    // if (
-    //   (instance === "Array" || instance === "Map") &&
-    //   !nonPlurals.includes(label.charAt(label.length - 1))
-    // )
-    label += "(s)";
+    if (isArray && !nonPlurals.includes(label.charAt(label.length - 1)))
+      label += "(s)";
     if (label.startsWith("is ")) label = label.slice(2) + "?";
     return label;
   };
@@ -134,22 +133,25 @@ export default function useForm() {
   };
 
   const text = (
-    field: string,
+    content: string,
     options = {
-      name: "",
-      value: "",
       block: false,
       required: false,
-      placeholder: "",
-    }
-  ): FieldType => ({
-    name: options.name || labelize(field),
-    type: "string",
-    value: options.value,
-    required: options.required,
-    field,
-    // options: block ? { block: true } : undefined,
-  });
+    } as Partial<FieldType>
+  ): FieldType => {
+    const [name, field] = content.startsWith("$")
+      ? [options.name || labelize(content.slice(1)), content.slice(1)]
+      : [content, options.field || makeHTMLSafe(content)];
+
+    return {
+      name,
+      field,
+      type: "string",
+      value: options.value,
+      required: options.required,
+      // options: block ? { block: true } : undefined,
+    };
+  };
 
   const ask = (
     question: string,
@@ -190,6 +192,7 @@ export default function useForm() {
       field,
       value,
       placeholder,
+      // handleChange: e => setFormData(prev=>({...prev,[field]:e.value})),
       handleChange: () => {},
     };
     let element = () => {
@@ -221,7 +224,7 @@ export default function useForm() {
     };
 
     return (
-      <Label name={name!} field={field} required={required}>
+      <Label key={field} name={name!} field={field} required={required}>
         {element()}
       </Label>
     );
@@ -238,8 +241,7 @@ export default function useForm() {
     required,
   });
 
-  const defaultPostMsg = `## Thank you!
-  Form submitted.`;
+  const defaultPostMsg = `## Thanks for your feedback!`;
 
   const form = ({
     name,
@@ -251,10 +253,10 @@ export default function useForm() {
     handleReset,
     postMessage,
   }: FormType) => {
-    const formData = Object.fromEntries(
+    const newForm = Object.fromEntries(
       fields.map(entry => {
         const { name, value, field, confirm } = entry;
-        console.log({ confirm });
+        // console.log({ confirm });
         const element = confirm ? (
           <>
             {renderField(entry)}
@@ -272,11 +274,14 @@ export default function useForm() {
       })
     );
 
+    console.log({ newForm });
+    // setFormData(newForm);
+
     return (
       <Form name={name} handleSubmit={handleSubmit}>
         <h2>{name}</h2>
         <div className="form-body flex col">
-          {Object.values(formData).map(entry => entry.element)}
+          {Object.values(newForm).map(entry => entry.element)}
         </div>
         <button type="submit" onClick={e => e.preventDefault()}>
           {submitTxt ?? "Submit"}

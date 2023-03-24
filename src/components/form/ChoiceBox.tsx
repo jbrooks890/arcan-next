@@ -1,5 +1,24 @@
-import { useEffect, useRef, useState } from "react";
-import "../../styles/form/ChoiceBox.css";
+import {
+  DetailedHTMLProps,
+  InputHTMLAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import styles from "@/styles/form/ChoiceBox.module.scss";
+
+type PropsType = {
+  options: string[];
+  display?: { [key: string]: string };
+  field: string;
+  fieldPath: string;
+  required: boolean;
+  single?: boolean;
+  label: string;
+  className: string;
+  value?: any | any[];
+  handleChange: Function;
+};
 
 export default function ChoiceBox({
   options,
@@ -12,23 +31,27 @@ export default function ChoiceBox({
   className,
   value = [],
   handleChange,
-}) {
-  const inputs = useRef([]);
+}: PropsType) {
+  const inputs = useRef<HTMLInputElement[]>([]);
 
   return (
     <fieldset
-      className={`choice-box ${className ? className : ""} ${
-        options.length > 3 ? "scroll" : ""
+      className={`${styles["choice-box"]} choice-box ${className ?? ""} ${
+        options.length > 3 ? "scroll" : "no-scroll"
       } flex col`}
     >
-      <legend className={required ? "required" : ""}>{label}</legend>
+      <legend className={required ? "required" : "not-required"}>
+        {label}
+      </legend>
       {options.length ? (
         options.map((option, i) => {
           const id = `${fieldPath}-${option}`;
           return (
             <label key={i} htmlFor={id} className="flex start middle">
               <input
-                ref={element => (inputs.current[i] = element)}
+                ref={(element: HTMLInputElement) =>
+                  (inputs.current[i] = element)
+                }
                 id={id}
                 name={id}
                 type={single ? "radio" : "checkbox"}

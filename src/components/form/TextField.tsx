@@ -13,7 +13,7 @@ const TextField = ({ field, placeholder, handleChange, value }: PropsType) => {
       name={field}
       type="text"
       placeholder={placeholder ?? ""}
-      value={value ?? ""}
+      // value={value ?? ""}
       onChange={handleChange}
       // onBlur={() => required && validator()}
     />

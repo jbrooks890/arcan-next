@@ -1,0 +1,303 @@
+/* ::::::::\ CHOICE BOX /:::::::: */
+
+.choice-box {
+  border: 2px solid var(--green);
+  border-radius: var(--outside);
+  /* max-height: 240px; */
+  overflow-y: scroll;
+
+  &:global {
+    &.scroll {
+      max-height: 10em;
+      overflow-y: scroll;
+    }
+
+    & & {
+      label {
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: var(--inside);
+          background-color: var(--green);
+          opacity: 0;
+        }
+      }
+    }
+
+    /* ::::::::\ CHOICE BOX (COMPLEX) /:::::::: */
+
+    &.complex {
+      .wrapper {
+        position: relative;
+        margin-bottom: 0.25rem;
+        box-sizing: border-box;
+        /* border: 1px solid red; */
+      }
+
+      .entry-header {
+        cursor: pointer;
+        padding: 0.25rem;
+        background-color: var(--green);
+        color: var(--dark);
+        box-sizing: border-box;
+        border-radius: var(--inside);
+
+        &.flex {
+          justify-content: space-between;
+        }
+
+        & > label {
+          padding: 0;
+        }
+
+        span {
+          flex-grow: 1;
+        }
+
+        .arrow {
+          --size: 0.75em;
+          cursor: pointer;
+          position: relative;
+          margin-right: 0.5em;
+          padding: 0;
+          width: var(--size);
+          height: var(--size);
+          box-sizing: border-box;
+          /* background-color: white; */
+
+          &::after {
+            --border: 2px solid black;
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-top: var(--border);
+            border-right: var(--border);
+            border-top-right-radius: 3px;
+            /* transform: rotate(45deg); */
+            transition: 0.2s ease-out;
+            box-sizing: border-box;
+          }
+        }
+      }
+    }
+
+    label {
+      cursor: pointer;
+      position: relative;
+      padding: 0.25em;
+    }
+
+    input {
+      &:not([type="text"]) {
+        display: none;
+      }
+    }
+
+    .ticker {
+      --size: 1rem;
+      position: relative;
+      flex-grow: 0;
+      margin-right: 0.5em;
+      width: var(--size);
+      height: var(--size);
+      background-color: black;
+      // border: 2px solid var(--green);
+      border: none;
+      /* border-radius: 50%; */
+
+      &::before {
+        content: "";
+        position: absolute;
+        display: block;
+        inset: 3px;
+        background-color: var(--green);
+        /* border-radius: inherit; */
+        transform: scale(0.5);
+        opacity: 0;
+        transition: 0.1s ease-out;
+      }
+
+      &.radio {
+        border-radius: 50%;
+
+        &::before {
+          border-radius: inherit;
+        }
+      }
+
+      &.checkbox {
+        border-radius: var(--inside);
+
+        &::before {
+          border-radius: 2px;
+        }
+      }
+    }
+
+    .drawer {
+      /* padding-bottom: .5em; */
+      overflow: hidden;
+      transition: 0.2s ease-out;
+
+      &.closed {
+        max-height: 0;
+        opacity: 0;
+        z-index: -1;
+      }
+
+      & > :last-child {
+        margin-bottom: 0.5em;
+      }
+    }
+  }
+}
+
+// .choice-box .choice-box label::after {
+//   content: "";
+//   position: absolute;
+//   inset: 0;
+//   border-radius: var(--inside);
+//   background-color: var(--green);
+//   opacity: 0;
+// }
+
+.choice-box label:hover::after {
+  opacity: 0.1;
+}
+
+/* .choice-box label:not(:last-of-type) {
+  margin-bottom: .25em;
+} */
+
+// .custom-form .choice-box input:not([type="text"]) {
+//   display: none;
+// }
+
+// .custom-form .choice-box .ticker {
+//   --size: 1rem;
+//   position: relative;
+//   flex-grow: 0;
+//   margin-right: 0.5em;
+//   width: var(--size);
+//   height: var(--size);
+//   border: 2px solid var(--green);
+//   /* border-radius: 50%; */
+// }
+
+// .custom-form .choice-box .ticker::before {
+//   content: "";
+//   position: absolute;
+//   display: block;
+//   inset: 3px;
+//   background-color: var(--green);
+//   /* border-radius: inherit; */
+//   transform: scale(0.5);
+//   opacity: 0;
+//   transition: 0.1s ease-out;
+// }
+
+.custom-form .choice-box input:checked + .ticker::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+// .custom-form .choice-box .ticker.radio {
+//   border-radius: 50%;
+// }
+
+// .custom-form .choice-box .ticker.radio::before {
+//   border-radius: inherit;
+// }
+
+// .custom-form .choice-box .ticker.checkbox {
+//   border-radius: var(--inside);
+// }
+
+// .custom-form .choice-box .ticker.checkbox::before {
+//   border-radius: 2px;
+// }
+
+/* ::::::::\ CHOICE BOX (COMPLEX) /:::::::: */
+
+// .choice-box.complex .wrapper {
+//   position: relative;
+//   margin-bottom: 0.25rem;
+//   box-sizing: border-box;
+//   /* border: 1px solid red; */
+// }
+
+// .choice-box.complex .entry-header {
+//   cursor: pointer;
+//   padding: 0.25rem;
+//   background-color: var(--green);
+//   color: var(--dark);
+//   box-sizing: border-box;
+//   border-radius: var(--inside);
+// }
+
+// .choice-box.complex .entry-header.flex {
+//   justify-content: space-between;
+// }
+
+// .choice-box.complex .entry-header > label {
+//   padding: 0;
+// }
+
+// .choice-box.complex .entry-header span {
+//   flex-grow: 1;
+// }
+
+// .choice-box.complex .entry-header .arrow {
+//   --size: 0.75em;
+//   cursor: pointer;
+//   position: relative;
+//   padding: 0;
+//   width: var(--size);
+//   height: var(--size);
+//   margin-right: 0.5em;
+//   box-sizing: border-box;
+//   /* background-color: white; */
+// }
+
+// .choice-box.complex .entry-header .arrow::after {
+//   --border: 2px solid black;
+//   content: "";
+//   position: absolute;
+//   inset: 0;
+//   border-top: var(--border);
+//   border-right: var(--border);
+//   border-top-right-radius: 3px;
+//   /* transform: rotate(45deg); */
+//   transition: 0.2s ease-out;
+//   box-sizing: border-box;
+// }
+
+.choice-box.complex .entry-header.open .arrow::after {
+  transform: rotate(135deg);
+}
+
+.choice-box.complex .entry-header.closed .arrow::after {
+  transform: rotate(45deg);
+}
+
+// .choice-box .ticker {
+//   background-color: black;
+//   border: none;
+// }
+
+// .choice-box .drawer {
+//   /* padding-bottom: .5em; */
+//   overflow: hidden;
+//   transition: 0.2s ease-out;
+// }
+
+// .choice-box .drawer.closed {
+//   max-height: 0;
+//   opacity: 0;
+//   z-index: -1;
+// }
+
+// .choice-box .drawer > :last-child {
+//   margin-bottom: 0.5em;
+// }

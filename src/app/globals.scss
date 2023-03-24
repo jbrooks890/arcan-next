@@ -40,6 +40,7 @@
   /* ========== BORDERS ========== */
   --inside: 5px;
   --outside: 10px;
+  --input: 2px solid var(--pop);
   /* ========== SHAPES ========== */
   /* STAR CLIP SOURCE: https://www.cssportal.com/css-clip-path-generator/ */
   --star: polygon(
@@ -155,10 +156,36 @@ button {
   // font-size: inherit;
   border: none;
   outline: none;
+  transition: 0.1s ease-out;
 
   &:not(.symbol-font) {
     text-transform: uppercase;
-    font-family: var(--keyFont2);
+    font: {
+      family: var(--keyFont2);
+      weight: bold;
+    }
+    -webkit-font-smoothing: antialiased;
+  }
+
+  &[type="submit"] {
+    display: block;
+    margin-top: 1em;
+    padding: 0.75em;
+    font-size: 1rem;
+    border: 2px solid transparent;
+    border-radius: var(--inside);
+  }
+
+  &[type="reset"] {
+    opacity: 0.5;
+  }
+
+  .flex & {
+    align-self: center;
+  }
+
+  *:not(.flex) & {
+    margin-inline: auto;
   }
 }
 
@@ -172,7 +199,7 @@ input {
   font-size: 1rem;
   box-sizing: border-box;
   outline: inherit;
-  border: 2px solid var(--green);
+  border: var(--input);
   border-radius: var(--inside);
 
   &::placeholder {
@@ -259,4 +286,19 @@ input[type="email"] {
 
 .brands-font {
   font-family: var(--brands);
+}
+
+// -----------------------------------
+// %%%%%%%%%%%%%\ HOVER /%%%%%%%%%%%%%
+// -----------------------------------
+@media (hover: hover) {
+  button:not(.symbol-font):not(.brands-font):hover {
+    &[type="submit"] {
+      border-color: var(--pop);
+    }
+
+    &[type="reset"] {
+      opacity: 1;
+    }
+  }
 }

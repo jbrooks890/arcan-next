@@ -23,7 +23,6 @@ export default function Page({
   children,
   ...props
 }: PropsType) {
-  console.log({ name, id });
   return (
     <div
       id={`${id}-page ${id ?? ""}`}

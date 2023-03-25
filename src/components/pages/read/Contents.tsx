@@ -7,7 +7,7 @@ export default function Contents({ content }: { content?: string }) {
     );
 
   const _UNAVAILABLE = Math.floor(Math.random() * CHAPTERS.length);
-  console.log({ _UNAVAILABLE });
+  // console.log({ _UNAVAILABLE });
 
   return (
     <div className={`${styles.wrapper} contents flex col`}>

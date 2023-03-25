@@ -275,7 +275,7 @@ export default function useForm() {
       })
     );
 
-    console.log({ newForm });
+    // console.log({ newForm });
     !formData && setFormData(newForm);
 
     const submitForm = (e: MouseEvent<HTMLButtonElement>): void => {

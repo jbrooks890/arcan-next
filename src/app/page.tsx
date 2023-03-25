@@ -41,7 +41,7 @@ export default function Home() {
         <StarRating />
         <br />
         <Questionnaire />
-        <UserGate login={false} />
+        <UserGate login={true} />
       </Section>
       <Section name="Connect">
         <h2>Connect</h2>

@@ -10,7 +10,7 @@ export default function Contents({ content }: { content?: string }) {
   console.log({ _UNAVAILABLE });
 
   return (
-    <div className={`${styles.wrapper} contents`}>
+    <div className={`${styles.wrapper} contents flex col`}>
       <h3>Contents</h3>
       <div className={`${styles.cache} content-cache flex col`}>
         {CHAPTERS.map((chapter, i) => {

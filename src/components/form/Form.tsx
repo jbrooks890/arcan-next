@@ -1,4 +1,4 @@
-import "@/styles/Form.module.css";
+import styles from "@/styles/Form.module.css";
 import { FormEventHandler, ReactElement } from "react";
 
 type PropsType = {

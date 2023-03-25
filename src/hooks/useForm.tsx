@@ -1,6 +1,6 @@
 import { makeHTMLSafe } from "@/lib/utility";
 import Form from "@/components/form/Form";
-import { FormEventHandler, MouseEventHandler, useState } from "react";
+import { MouseEvent, MouseEventHandler, useState } from "react";
 import Label from "@/components/form/Label";
 import TextField from "@/components/form/TextField";
 import NumField from "@/components/form/NumField";
@@ -50,19 +50,20 @@ export type FormType = {
   name: string;
   fields: FieldType[];
   validate?: boolean;
-  handleSubmit: FormEventHandler<HTMLFormElement>;
+  handleSubmit: (v?: any) => void;
   submitTxt?: string;
   resetTxt?: string;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
   postMessage?: (v: FormDataType) => string;
 };
 
-// =====================================
-// %%%%%%%%%%%%\ COMPONENT /%%%%%%%%%%%%
-// =====================================
+// =================================================
+// %%%%%%%%%%%%%%%%%%\ COMPONENT /%%%%%%%%%%%%%%%%%%
+// =================================================
 
 export default function useForm() {
-  const [formData, setFormData] = useState();
+  const [formData, setFormData] = useState<FormDataType>();
+  const [submitted, setSubmitted] = useState(false);
 
   const labelize = (str: string, isArray = false) => {
     let label = str;
@@ -253,7 +254,7 @@ export default function useForm() {
     handleReset,
     postMessage,
   }: FormType) => {
-    const newForm = Object.fromEntries(
+    const newForm: FormDataType = Object.fromEntries(
       fields.map(entry => {
         const { name, value, field, confirm } = entry;
         // console.log({ confirm });
@@ -275,7 +276,14 @@ export default function useForm() {
     );
 
     console.log({ newForm });
-    // setFormData(newForm);
+    !formData && setFormData(newForm);
+
+    const submitForm = (e: MouseEvent<HTMLButtonElement>): void => {
+      e.preventDefault();
+      setSubmitted(true);
+      // TODO: IF VALIDATE, VALIDATE
+      handleSubmit();
+    };
 
     return (
       <Form name={name} handleSubmit={handleSubmit}>
@@ -283,7 +291,10 @@ export default function useForm() {
         <div className="form-body flex col">
           {Object.values(newForm).map(entry => entry.element)}
         </div>
-        <button type="submit" onClick={e => e.preventDefault()}>
+        <button
+          type="submit"
+          onClick={(e: MouseEvent<HTMLButtonElement>) => submitForm(e)}
+        >
           {submitTxt ?? "Submit"}
         </button>
         <button type="reset" onClick={handleReset}>

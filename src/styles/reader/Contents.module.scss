@@ -1,10 +1,23 @@
 .wrapper {
+  position: absolute;
   width: 30ch;
   max-height: 100vh;
   text-align: left;
   padding: 1em;
   border: 1px solid var(--pop);
   border-radius: var(--inside);
+
+  &:global {
+    &.active {
+      opacity: 1;
+      z-index: 100;
+    }
+
+    &.inactive {
+      opacity: 0;
+      z-index: -1;
+    }
+  }
 
   h3 {
     margin: 0;

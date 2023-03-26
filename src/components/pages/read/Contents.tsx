@@ -1,6 +1,16 @@
+"use client";
 import styles from "@/styles/reader/Contents.module.scss";
+import { useState } from "react";
 
-export default function Contents({ content }: { content?: string }) {
+export default function Contents({
+  content,
+  isActive = false,
+}: {
+  content?: string;
+  isActive?: boolean;
+}) {
+  const [active, setActive] = useState(false);
+
   const CHAPTERS =
     "Turbulent Calm; Corruption; Living Darkness; Faces of Truth; The Company Kept; Scheme of the Wicked; Pursuit; Nexus Advent; Closed Eyes Open; The Descended; Trouble In Paradise; The Powers That Be; The Deadwoods; The Wick; Rough Acquaintances; Unshadowed; Restless Outsiders; Obstruction & Injustice; Inky Truth; Under the Black Sun; The Red Dragon; Seized Souls; Revenant; Near & Far".split(
       "; "
@@ -10,7 +20,11 @@ export default function Contents({ content }: { content?: string }) {
   // console.log({ _UNAVAILABLE });
 
   return (
-    <div className={`${styles.wrapper} contents flex col`}>
+    <div
+      className={`${styles.wrapper} ${
+        active ? "active" : "inactive"
+      } contents flex col`}
+    >
       <h3>Contents</h3>
       <div className={`${styles.cache} content-cache flex col`}>
         {CHAPTERS.map((chapter, i) => {

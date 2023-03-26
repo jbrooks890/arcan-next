@@ -1,0 +1,10 @@
+.viewport {
+  p {
+    text-align: justify;
+    font-size: larger;
+  }
+
+  div > *:not(p) {
+    display: none;
+  }
+}

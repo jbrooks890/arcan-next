@@ -1,6 +1,6 @@
 .wrapper {
   position: relative;
-  border: 1px solid coral;
+  /* border: 1px solid coral; */
   width: var(--chunk);
   min-height: 100vh;
   max-width: 100vw;

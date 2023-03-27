@@ -28,7 +28,7 @@ export default async function Reader() {
   const content = await getStoryContent();
   // console.log({ content });
 
-  const wordCount = content.split(/\s+/).length;
+  const wordCount = content?.split(/\s+/).length;
 
   // console.log({ content });
 

@@ -6,7 +6,7 @@ type PropsType = {
   book: string;
   warning: boolean;
   version: number;
-  wordCount: number;
+  wordCount: number | undefined;
 };
 
 export default function Header({

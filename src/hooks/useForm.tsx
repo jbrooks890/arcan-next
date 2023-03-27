@@ -22,7 +22,7 @@ export type FieldTypeEnum =
   | "select"
   | "multi";
 
-type validatorFn = Function; //TODO: function that returns bool
+type validatorFn = (v: any) => boolean | Promise<boolean>; //TODO: function that returns bool
 
 export type FieldType = {
   name: string;
@@ -33,7 +33,10 @@ export type FieldType = {
   required?: boolean;
   confirm?: boolean;
   choices?: (string | object)[];
-  validation?: { validator: validatorFn; criteria: string };
+  subFields?: FieldType[];
+  validation?:
+    | validatorFn
+    | { validator: validatorFn; criteria: string; error?: string }[];
   labelize?: boolean;
   options?: {
     block?: boolean;
@@ -64,6 +67,8 @@ export type FormType = {
 export default function useForm() {
   const [formData, setFormData] = useState<FormDataType>();
   const [submitted, setSubmitted] = useState(false);
+
+  // <><><><><><><><>\ LABELIZE /<><><><><><><><>
 
   const labelize = (str: string, isArray = false) => {
     let label = str;
@@ -98,6 +103,8 @@ export default function useForm() {
     return label;
   };
 
+  // <><><><><><><><>\ FIELD /<><><><><><><><>
+
   const field = ({
     name,
     field,
@@ -114,24 +121,7 @@ export default function useForm() {
     confirm,
   });
 
-  const choice = (
-    name: string,
-    choices: (string | object)[],
-    multi = false,
-    field = makeHTMLSafe(name),
-    required = false,
-    value?: any,
-    placeholder?: string
-  ): FieldType => {
-    return {
-      name,
-      type: multi ? "multi" : "select",
-      value,
-      required,
-      field,
-      choices,
-    };
-  };
+  // <><><><><><><><>\ TEXT /<><><><><><><><>
 
   const text = (
     content: string,
@@ -154,38 +144,69 @@ export default function useForm() {
     };
   };
 
-  const ask = (
-    question: string,
-    type = "string" as FieldTypeEnum,
-    value?: any
-  ) => ({
-    name: question,
-    type,
-    value,
-  });
-
-  const questionList = (questions: any[], name?: string): FieldType[] => {
-    return questions.map((question, i): FieldType => {
-      return {
-        name: question.name,
-        field: (name ? `${makeHTMLSafe(name)}-` : "Q") + (i + 1),
-        type: question.type,
-        value: question.value,
-      };
-    });
-  };
+  // <><><><><><><><>\ PASSWORD /<><><><><><><><>
 
   const password = (
     confirm = false,
-    name = "Password",
-    field = "password"
+    options?: Partial<Omit<FieldType, "confirm" | "type">>
   ): FieldType => ({
-    name,
+    name: "Password",
+    field: "password",
     type: "password",
-    field,
     required: true,
     confirm,
+    ...options,
   });
+
+  // <><><><><><><><>\ EMAIL /<><><><><><><><>
+
+  const email = (options: Partial<Omit<FieldType, "type">>): FieldType => ({
+    name: "Email",
+    field: "email",
+    type: "email",
+    required: false,
+    ...options,
+  });
+
+  // <><><><><><><><>\ SELECT /<><><><><><><><>
+
+  const select = (
+    content: string,
+    choices: string[],
+    options?: Omit<FieldType, "type" | "choices">
+  ): FieldType => {
+    const [name, field] = content.startsWith("$")
+      ? [labelize(content.slice(1)), content.slice(1)]
+      : [content, makeHTMLSafe(content)];
+    return {
+      name,
+      field,
+      type: "select",
+      choices,
+      ...options,
+    };
+  };
+
+  // <><><><><><><><>\ GROUP /<><><><><><><><>
+
+  const group = (
+    content: string,
+    subFields: FieldType[],
+    options?: Partial<Omit<FieldType, "type" | "subFields">>
+  ): FieldType => {
+    const [name, field] = content.startsWith("$")
+      ? [labelize(content.slice(1)), content.slice(1)]
+      : [content, makeHTMLSafe(content)];
+    return {
+      name,
+      field,
+      subFields,
+      type: "set",
+      ...options,
+    };
+  };
+
+  // %%%%%%%%%%%%%%\ RENDER FIELD /%%%%%%%%%%%%%%
 
   const renderField = (entry: FieldType) => {
     const { name, type, value, required, field, placeholder } = entry;
@@ -219,6 +240,12 @@ export default function useForm() {
         case "password":
           return <Password {...props} />;
           break;
+        case "select":
+          return <div>{`${field} (select)`}</div>;
+          break;
+        case "set":
+          return <div>{`${field} (set)`}</div>;
+          break;
         default:
           return <div>{`${field}...?`}</div>;
       }
@@ -231,18 +258,9 @@ export default function useForm() {
     );
   };
 
-  const email = (
-    required = false,
-    name = "Email",
-    field = "email"
-  ): FieldType => ({
-    name,
-    field,
-    type: "email",
-    required,
-  });
-
   const defaultPostMsg = `## Thanks for your feedback!`;
+
+  // <><><><><><><><>\ FORM /<><><><><><><><>
 
   const form = ({
     name,
@@ -275,7 +293,7 @@ export default function useForm() {
       })
     );
 
-    // console.log({ newForm });
+    console.log({ newForm });
     !formData && setFormData(newForm);
 
     const submitForm = (e: MouseEvent<HTMLButtonElement>): void => {
@@ -304,5 +322,9 @@ export default function useForm() {
     );
   };
 
-  return { form, field, password, email, text, choice, ask, questionList };
+  // ======================================
+  // %%%%%%%%%%%%%%\ RETURN /%%%%%%%%%%%%%%
+  // ======================================
+
+  return { form, field, password, email, text, group, select };
 }

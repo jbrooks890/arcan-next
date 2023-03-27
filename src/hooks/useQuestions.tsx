@@ -15,6 +15,25 @@ export default function useQuestions() {
     value,
   });
 
+  const choice = (
+    name: string,
+    choices?: (string | object)[],
+    multi = false,
+    field = makeHTMLSafe(name),
+    required = false,
+    value?: any,
+    placeholder?: string
+  ): FieldType => {
+    return {
+      name,
+      type: multi ? "multi" : "select",
+      value,
+      required,
+      field,
+      choices: choices ?? "Yes No".split(" "),
+    };
+  };
+
   const questionList = (questions: any[], name?: string): FieldType[] => {
     return questions.map((question, i): FieldType => {
       return {
@@ -26,5 +45,5 @@ export default function useQuestions() {
     });
   };
 
-  return { ask, questionList };
+  return { ask, choice, questionList };
 }

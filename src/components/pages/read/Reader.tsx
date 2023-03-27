@@ -40,7 +40,7 @@ export default async function Reader() {
           book="Arcan: The Missing Nexus"
           warning={true}
           version={0.5}
-          wordCount={wordCount}
+          wordCount={wordCount ?? 0}
         />
         <Contents />
         <Viewport content={content} />

@@ -3,7 +3,9 @@ const apiUrls = {
   development: "http://localhost:3005/api",
 };
 
-export default apiUrl =
+const apiUrl =
   window.location.hostname === "localhost"
     ? apiUrls.development
     : apiUrls.production;
+
+export default apiUrl;

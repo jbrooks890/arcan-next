@@ -19,8 +19,8 @@ export type FieldTypeEnum =
   | "email"
   | "password"
   | "set"
-  | "select"
-  | "multi";
+  | "select";
+// | "multi";
 
 type validatorFn = (v: any) => boolean | Promise<boolean>; //TODO: function that returns bool
 
@@ -42,6 +42,7 @@ export type FieldType = {
     block?: boolean;
     min?: number;
     max?: number;
+    multi?: boolean;
   };
 };
 
@@ -124,15 +125,15 @@ export default function useForm() {
   // <><><><><><><><>\ TEXT /<><><><><><><><>
 
   const text = (
-    content: string,
+    label: string,
     options = {
       block: false,
       required: false,
     } as Partial<FieldType>
   ): FieldType => {
-    const [name, field] = content.startsWith("$")
-      ? [options.name || labelize(content.slice(1)), content.slice(1)]
-      : [content, options.field || makeHTMLSafe(content)];
+    const [name, field] = label.startsWith("$")
+      ? [options.name || labelize(label.slice(1)), label.slice(1)]
+      : [label, options.field || makeHTMLSafe(label)];
 
     return {
       name,
@@ -171,32 +172,37 @@ export default function useForm() {
   // <><><><><><><><>\ SELECT /<><><><><><><><>
 
   const select = (
-    content: string,
-    choices: string[],
+    label: string,
+    choices: (string | object)[],
+    multi = false,
     options?: Omit<FieldType, "type" | "choices">
   ): FieldType => {
-    const [name, field] = content.startsWith("$")
-      ? [labelize(content.slice(1)), content.slice(1)]
-      : [content, makeHTMLSafe(content)];
+    const [name, field] = label.startsWith("$")
+      ? [labelize(label.slice(1)), label.slice(1)]
+      : [label, makeHTMLSafe(label)];
     return {
       name,
       field,
       type: "select",
       choices,
       ...options,
+      options: {
+        multi,
+        ...options?.options,
+      },
     };
   };
 
   // <><><><><><><><>\ GROUP /<><><><><><><><>
 
   const group = (
-    content: string,
+    label: string,
     subFields: FieldType[],
     options?: Partial<Omit<FieldType, "type" | "subFields">>
   ): FieldType => {
-    const [name, field] = content.startsWith("$")
-      ? [labelize(content.slice(1)), content.slice(1)]
-      : [content, makeHTMLSafe(content)];
+    const [name, field] = label.startsWith("$")
+      ? [labelize(label.slice(1)), label.slice(1)]
+      : [label, makeHTMLSafe(label)];
     return {
       name,
       field,

@@ -3,46 +3,50 @@ import { makeHTMLSafe } from "@/lib/utility";
 import useForm from "./useForm";
 
 export default function useQuestions() {
-  const { form } = useForm();
+  const { form, select } = useForm();
+
+  type QuestionType = Omit<FieldType, "required" | "field">;
 
   const ask = (
     question: string,
     type = "string" as FieldTypeEnum,
-    value?: any
+    options?: FieldType
   ) => ({
     name: question,
     type,
-    value,
+    ...options,
   });
 
   const choice = (
     name: string,
     choices?: (string | object)[],
     multi = false,
-    field = makeHTMLSafe(name),
-    required = false,
-    value?: any,
-    placeholder?: string
-  ): FieldType => {
+    options?: Partial<Omit<QuestionType, "type">>
+  ): QuestionType => {
     return {
       name,
-      type: multi ? "multi" : "select",
-      value,
-      required,
-      field,
+      type: "select",
       choices: choices ?? "Yes No".split(" "),
+      ...options,
+      options: {
+        multi,
+        ...options?.options,
+      },
     };
   };
 
-  const questionList = (questions: any[], name?: string): FieldType[] => {
-    return questions.map((question, i): FieldType => {
-      return {
+  const questionList = (
+    questions: QuestionType[],
+    name?: string
+  ): FieldType[] => {
+    return questions.map(
+      (question, i): FieldType => ({
         name: question.name,
         field: (name ? `${makeHTMLSafe(name)}-` : "Q") + (i + 1),
         type: question.type,
         value: question.value,
-      };
-    });
+      })
+    );
   };
 
   return { ask, choice, questionList };

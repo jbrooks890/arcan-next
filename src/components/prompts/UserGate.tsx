@@ -3,6 +3,7 @@ import useForm from "@/hooks/useForm";
 import type { FieldType, FormDataType } from "@/hooks/useForm";
 import axios from "../../interfaces/axios";
 import { useState } from "react";
+import styles from "@/styles/UserGate.module.scss";
 
 export default function UserGate({ loginMode = true }) {
   const [login, setLogin] = useState(loginMode);
@@ -108,7 +109,7 @@ export default function UserGate({ loginMode = true }) {
     postMessage: POST_SUBMIT_MSG,
   });
   return (
-    <div style={{ width: "480px", overflow: "hidden" }}>
+    <div className={styles.wrapper}>
       {content}
       <br />
       {login ? (

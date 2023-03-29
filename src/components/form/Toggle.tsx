@@ -1,5 +1,5 @@
 import { ChangeEventHandler } from "react";
-import "../../styles/form/Toggle.css";
+import styles from "@/styles/form/Toggle.module.scss";
 
 const Toggle = ({ field, handleChange, value = false }: InputPropsType) => {
   return (
@@ -7,11 +7,12 @@ const Toggle = ({ field, handleChange, value = false }: InputPropsType) => {
       <input
         type="checkbox"
         id={field}
+        className={`${styles.input}`}
         name={field}
         onChange={handleChange}
-        checked={value}
+        // checked={value}
       />
-      <div className="cb-toggle" />
+      <div className={`${styles.toggle}`} />
     </>
   );
 };

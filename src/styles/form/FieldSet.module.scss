@@ -67,6 +67,18 @@
       border-radius: 0;
     }
   }
+
+  & > & {
+    margin-block: 1rem;
+    padding-inline: 0;
+    border: none;
+    border-top: var(--input);
+    border-radius: 0;
+
+    & > legend {
+      text-align: center;
+    }
+  }
 }
 
 // .fieldset.wrapper > *:not(legend) {

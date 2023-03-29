@@ -118,6 +118,13 @@ export default function useForm() {
     return label;
   };
 
+  // <><><><><><><><>\ PARSE LABEL /<><><><><><><><>
+
+  const parseLabel = (label: string): [name: string, label: string] =>
+    label.startsWith("$")
+      ? [labelize(label.slice(1)), label.slice(1)]
+      : [label, makeHTMLSafe(label)];
+
   // <><><><><><><><>\ FIELD /<><><><><><><><>
 
   const field = ({
@@ -143,9 +150,7 @@ export default function useForm() {
     block?: false,
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = label.startsWith("$")
-      ? [labelize(label.slice(1)), label.slice(1)]
-      : [label, makeHTMLSafe(label)];
+    const [name, field] = parseLabel(label);
 
     return {
       name,
@@ -167,9 +172,7 @@ export default function useForm() {
     range?: { min?: number; max?: number },
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = label.startsWith("$")
-      ? [labelize(label.slice(1)), label.slice(1)]
-      : [label, makeHTMLSafe(label)];
+    const [name, field] = parseLabel(label);
 
     return {
       name,
@@ -191,9 +194,7 @@ export default function useForm() {
     range?: { min?: number; max?: number },
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = label.startsWith("$")
-      ? [labelize(label.slice(1)), label.slice(1)]
-      : [label, makeHTMLSafe(label)];
+    const [name, field] = parseLabel(label);
 
     return {
       name,
@@ -238,14 +239,27 @@ export default function useForm() {
     label: string,
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = label.startsWith("$")
-      ? [labelize(label.slice(1)), label.slice(1)]
-      : [label, makeHTMLSafe(label)];
+    const [name, field] = parseLabel(label);
 
     return {
       name,
       field,
       type: "date",
+      ...options,
+    };
+  };
+
+  // <><><><><><><><>\ BOOLEAN /<><><><><><><><>
+
+  const boolean = (
+    label: string,
+    options?: Partial<Omit<FieldType, "type">>
+  ): FieldType => {
+    const [name, field] = parseLabel(label);
+    return {
+      name,
+      field,
+      type: "boolean",
       ...options,
     };
   };
@@ -298,11 +312,22 @@ export default function useForm() {
   // NOT RENDERED AS PART OF THE OUTPUT BUT EFFECTS THE VALUE OF PARENT
   const condition = (label: string, options: Omit<FieldType, "type">) => {};
 
+  // %%%%%%%%%%%%%%\ UPDATE FIELD /%%%%%%%%%%%%%%
+
+  const updateField = (e, field, parent) => {
+    console.log({ parent });
+    setFormOutput(prev => ({
+      ...prev,
+      [field]: e.target.value,
+    }));
+  };
+
   // %%%%%%%%%%%%%%\ RENDER FIELD /%%%%%%%%%%%%%%
 
   const renderField = (
     entry: FieldType,
-    ancestors: string[] = [],
+    // ancestors: string[] = [],
+    parent?: object,
     changeHandler?: ChangeEventHandler<HTMLInputElement>
   ) => {
     const {
@@ -317,20 +342,12 @@ export default function useForm() {
       confirm,
     } = entry;
 
-    ancestors.length &&
-      console.log({ field, ancestors, chain: [...ancestors, field].join(".") });
-
-    const updateField = e =>
-      setFormOutput(prev => ({
-        ...prev,
-        [[...ancestors, field].join(".")]: e.target.value,
-      }));
     const props: InputPropsType = {
       field,
       value,
       placeholder,
       handleChange: e => {
-        changeHandler ? changeHandler(e) : updateField(e);
+        changeHandler ? changeHandler(e) : updateField(e, field, parent);
       },
     };
 
@@ -366,7 +383,6 @@ export default function useForm() {
         case "select":
           return <div>{`${field} ( select )`}</div>;
         case "set":
-          // return <>{renderFields(entry.subFields!)}</>;
           return <>{entry.subFields!.map(field => renderField(field))}</>;
         default:
           return <div>{`${field}...?`}</div>;
@@ -431,16 +447,30 @@ export default function useForm() {
   }: FormType) => {
     // =-=-=-=-=-=-=-=-\ GET FIELD DATA /=-=-=-=-=-=-=-=-
 
-    const readObj = (obj: object, field: string | string[]) => {};
-
     const getFieldData = (
       fields: FieldType[],
-      ancestors: string[] = []
+      // ancestors: string[] = []
+      parent?: object
     ): FormDataType => {
+      // -------------\ RETRIEVE /-------------
+
+      const retrieve = (fields: FieldType[], properties?: string[]) => {
+        return Object.fromEntries(
+          fields.map(entry => {
+            let { field, subFields, ...data } = entry;
+            data = properties?.length
+              ? Object.fromEntries(properties.map(key => [key, data[key]]))
+              : data;
+            subFields && Object.assign(data, retrieve(subFields));
+            return [field, data];
+          })
+        );
+      };
+
       const [formData, formElements, formOutput] = fields
         .map(entry => {
           const { field, type, subFields, value, ...data } = entry;
-          const element = renderField(entry, ancestors);
+          const element = renderField(entry, parent);
           const result = [
             [
               field,
@@ -449,18 +479,16 @@ export default function useForm() {
                 element,
                 ...data,
                 subFields: subFields
-                  ? getFieldData(subFields, [...ancestors, field])
+                  ? getFieldData(subFields, {
+                      [field]: parent?.[field],
+                    })
                   : null,
               },
             ],
             [field, element],
             [
               field,
-              subFields
-                ? Object.fromEntries(
-                    subFields.map(entry => [entry.field, entry.value])
-                  )
-                : value ?? undefined,
+              subFields ? retrieve(subFields, ["value"]) : value ?? undefined,
             ],
           ];
           return result;
@@ -528,6 +556,7 @@ export default function useForm() {
     text,
     number,
     float,
+    boolean,
     password,
     email,
     date,

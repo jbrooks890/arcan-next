@@ -21,7 +21,8 @@
     }
     letter-spacing: 0.1em;
 
-    strong > em {
+    strong > em,
+    em > strong {
       color: var(--pop);
     }
   }

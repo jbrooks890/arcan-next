@@ -8,15 +8,15 @@ import styles from "@/styles/UserGate.module.scss";
 export default function UserGate({ loginMode = true }) {
   const [login, setLogin] = useState(loginMode);
   const {
+    form,
     field,
     text,
-    form,
+    boolean,
     password,
     email,
     date,
-    isSubmitted,
     group,
-    number,
+    isSubmitted,
   } = useForm();
 
   const UNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
@@ -37,6 +37,10 @@ export default function UserGate({ loginMode = true }) {
     text("$firstName", false, { placeholder: "Jane" }),
     text("$middleName", false),
     text("$lastName", false, { placeholder: "Doe" }),
+    group("$preferredName", [
+      boolean("$cheeseMan"),
+      text("$preferredNameEntry"),
+    ]),
   ];
   const NAME = group("name", NAME_FIELDS);
 

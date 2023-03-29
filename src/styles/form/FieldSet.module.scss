@@ -1,0 +1,81 @@
+/* ::::::::\ FIELDSET /:::::::: */
+
+.fieldset {
+  resize: vertical;
+  padding: 1rem;
+  border: var(--input);
+  border-radius: var(--outside);
+
+  &:global {
+    &.closed {
+      & > legend {
+        max-width: 0;
+        overflow: hidden;
+        opacity: 0;
+        padding: 0;
+      }
+    }
+  }
+
+  & > *:not(legend) {
+    margin-bottom: 0.5em;
+  }
+
+  & > legend {
+    position: relative;
+    padding-inline: 1em;
+    color: var(--mint);
+    font: {
+      family: var(--keyFont2);
+      size: small;
+      weight: bold;
+    }
+    text: {
+      align: left;
+      transform: uppercase;
+    }
+    letter-spacing: 0.1em;
+    line-height: 1;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 25% 0;
+      border-inline: var(--input);
+    }
+  }
+
+  & > label {
+    display: flex;
+    flex-direction: column-reverse;
+
+    & > span {
+      margin-top: 0.25em;
+      // color: red !important;
+      color: var(--pop) !important;
+      font: {
+        family: var(--bodyFont) !important;
+        weight: normal !important;
+      }
+    }
+
+    & > input {
+      padding: 0;
+      padding-bottom: 0.25em;
+      border: none;
+      border-bottom: 1px solid var(--pop);
+      border-radius: 0;
+    }
+  }
+}
+
+// .fieldset.wrapper > *:not(legend) {
+//   margin-bottom: 0.5em;
+// }
+
+// .fieldset.closed > legend {
+//   max-width: 0;
+//   overflow: hidden;
+//   opacity: 0;
+//   padding: 0;
+// }

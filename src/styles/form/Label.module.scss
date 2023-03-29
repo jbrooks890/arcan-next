@@ -1,22 +1,9 @@
 .label {
-  margin-bottom: 1em;
+  // margin-bottom: 1rem;
 
-  &:global {
-
-    &.required {
-      
-      .label-text {
-        &::after {
-          content: "*";
-          color: red;
-          // font-size: 1rem;
-        }
-      }
-
-    }
-
+  .validate & {
+    color: red;
   }
-
 
   .label-text {
     display: block;
@@ -37,7 +24,5 @@
     strong > em {
       color: var(--pop);
     }
-
   }
-
 }

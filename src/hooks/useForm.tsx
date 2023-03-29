@@ -1,6 +1,14 @@
 import { makeHTMLSafe } from "@/lib/utility";
 import Form from "@/components/form/Form";
-import { MouseEvent, MouseEventHandler, useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  FormEventHandler,
+  MouseEvent,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import Label from "@/components/form/Label";
 import TextField from "@/components/form/TextField";
 import NumField from "@/components/form/NumField";
@@ -8,6 +16,8 @@ import Toggle from "@/components/form/Toggle";
 import Password from "@/components/form/Password";
 import DateField from "@/components/form/DateField";
 import EmailField from "@/components/form/EmailField";
+import Markdown from "markdown-to-jsx";
+import FieldSet from "@/components/form/FieldSet";
 
 export type FieldTypeEnum =
   | "string"
@@ -43,6 +53,7 @@ export type FieldType = {
     min?: number;
     max?: number;
     multi?: boolean;
+    step?: number;
   };
 };
 
@@ -67,7 +78,10 @@ export type FormType = {
 
 export default function useForm() {
   const [formData, setFormData] = useState<FormDataType>();
-  const [submitted, setSubmitted] = useState(false);
+  const [formOutput, setFormOutput] = useState();
+  // const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => console.log({ formOutput }), [formOutput]);
 
   // <><><><><><><><>\ LABELIZE /<><><><><><><><>
 
@@ -126,22 +140,71 @@ export default function useForm() {
 
   const text = (
     label: string,
-    options = {
-      block: false,
-      required: false,
-    } as Partial<FieldType>
+    block?: false,
+    options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
     const [name, field] = label.startsWith("$")
-      ? [options.name || labelize(label.slice(1)), label.slice(1)]
-      : [label, options.field || makeHTMLSafe(label)];
+      ? [labelize(label.slice(1)), label.slice(1)]
+      : [label, makeHTMLSafe(label)];
 
     return {
       name,
       field,
       type: "string",
-      value: options.value,
-      required: options.required,
-      // options: block ? { block: true } : undefined,
+      ...options,
+      options: {
+        ...options?.options,
+        block,
+      },
+    };
+  };
+
+  // <><><><><><><><>\ NUMBER /<><><><><><><><>
+
+  const number = (
+    label: string,
+    float = false,
+    range?: { min?: number; max?: number },
+    options?: Partial<Omit<FieldType, "type">>
+  ): FieldType => {
+    const [name, field] = label.startsWith("$")
+      ? [labelize(label.slice(1)), label.slice(1)]
+      : [label, makeHTMLSafe(label)];
+
+    return {
+      name,
+      field,
+      type: float ? "float" : "number",
+      ...options,
+      options: {
+        ...options?.options,
+        ...range,
+      },
+    };
+  };
+
+  // <><><><><><><><>\ FLOAT /<><><><><><><><>
+
+  const float = (
+    label: string,
+    step?: number,
+    range?: { min?: number; max?: number },
+    options?: Partial<Omit<FieldType, "type">>
+  ): FieldType => {
+    const [name, field] = label.startsWith("$")
+      ? [labelize(label.slice(1)), label.slice(1)]
+      : [label, makeHTMLSafe(label)];
+
+    return {
+      name,
+      field,
+      type: "float",
+      ...options,
+      options: {
+        ...options?.options,
+        ...range,
+        step,
+      },
     };
   };
 
@@ -168,6 +231,24 @@ export default function useForm() {
     required: false,
     ...options,
   });
+
+  // <><><><><><><><>\ DATE /<><><><><><><><>
+
+  const date = (
+    label: string,
+    options?: Partial<Omit<FieldType, "type">>
+  ): FieldType => {
+    const [name, field] = label.startsWith("$")
+      ? [labelize(label.slice(1)), label.slice(1)]
+      : [label, makeHTMLSafe(label)];
+
+    return {
+      name,
+      field,
+      type: "date",
+      ...options,
+    };
+  };
 
   // <><><><><><><><>\ SELECT /<><><><><><><><>
 
@@ -212,59 +293,129 @@ export default function useForm() {
     };
   };
 
+  // <><><><><><><><>\ CONDITION /<><><><><><><><>
+
+  // NOT RENDERED AS PART OF THE OUTPUT BUT EFFECTS THE VALUE OF PARENT
+  const condition = (label: string, options: Omit<FieldType, "type">) => {};
+
   // %%%%%%%%%%%%%%\ RENDER FIELD /%%%%%%%%%%%%%%
 
-  const renderField = (entry: FieldType) => {
-    const { name, type, value, required, field, placeholder } = entry;
+  const renderField = (
+    entry: FieldType,
+    ancestors: string[] = [],
+    changeHandler?: ChangeEventHandler<HTMLInputElement>
+  ) => {
+    const {
+      name,
+      field,
+      subFields,
+      type,
+      value,
+      required,
+      placeholder,
+      validation,
+      confirm,
+    } = entry;
+
+    ancestors.length &&
+      console.log({ field, ancestors, chain: [...ancestors, field].join(".") });
+
+    const updateField = e =>
+      setFormOutput(prev => ({
+        ...prev,
+        [[...ancestors, field].join(".")]: e.target.value,
+      }));
     const props: InputPropsType = {
       field,
       value,
       placeholder,
-      // handleChange: e => setFormData(prev=>({...prev,[field]:e.value})),
-      handleChange: () => {},
+      handleChange: e => {
+        changeHandler ? changeHandler(e) : updateField(e);
+      },
     };
+
     let element = () => {
       switch (type) {
         case "string":
           return <TextField {...props} />;
-          break;
         case "number":
-          return <NumField {...props} />;
-          break;
+          return (
+            <NumField
+              {...props}
+              min={entry.options?.min}
+              max={entry.options?.max}
+            />
+          );
         case "float":
-          return <NumField {...props} step={0.1} />;
-          break;
+          return (
+            <NumField
+              {...props}
+              min={entry.options?.min}
+              max={entry.options?.max}
+              step={entry.options?.step ?? 0.1}
+            />
+          );
         case "boolean":
           return <Toggle {...props} />;
-          break;
         case "date":
           return <DateField {...props} />;
-          break;
         case "email":
           return <EmailField {...props} />;
-          break;
         case "password":
           return <Password {...props} />;
-          break;
         case "select":
-          return <div>{`${field} (select)`}</div>;
-          break;
+          return <div>{`${field} ( select )`}</div>;
         case "set":
-          return <div>{`${field} (set)`}</div>;
-          break;
+          // return <>{renderFields(entry.subFields!)}</>;
+          return <>{entry.subFields!.map(field => renderField(field))}</>;
         default:
           return <div>{`${field}...?`}</div>;
       }
     };
 
+    const Container = subFields ? FieldSet : Label;
+
     return (
-      <Label key={field} name={name!} field={field} required={required}>
-        {element()}
-      </Label>
+      <>
+        <Container
+          key={field}
+          name={name!}
+          field={field}
+          required={required}
+          criteria={
+            Array.isArray(validation)
+              ? validation?.map(validator => validator.criteria)
+              : undefined
+          }
+          className={subFields ? "flex col" : ""}
+        >
+          {element()}
+        </Container>
+        {confirm &&
+          renderField({
+            ...entry,
+            name: `Confirm ${field}`,
+            field: `confirm-${name}`,
+            confirm: false,
+            validation: undefined,
+          })}
+      </>
     );
   };
 
-  const defaultPostMsg = `## Thanks for your feedback!`;
+  // %%%%%%%%%%%%%%\ VALIDATE FORM /%%%%%%%%%%%%%%
+
+  const validateForm = () => {
+    Object.entries(formData!).forEach(([field, { required, validation }]) => {
+      const multi = Array.isArray(validation);
+    });
+  };
+
+  // _____________________________________________
+
+  const defaultPostMsg = () => `## Thanks for your feedback!`;
+
+  const isSubmitted = () => formData?.submitted;
 
   // <><><><><><><><>\ FORM /<><><><><><><><>
 
@@ -276,54 +427,93 @@ export default function useForm() {
     submitTxt,
     resetTxt,
     handleReset,
-    postMessage,
+    postMessage = defaultPostMsg,
   }: FormType) => {
-    const newForm: FormDataType = Object.fromEntries(
-      fields.map(entry => {
-        const { name, value, field, confirm } = entry;
-        // console.log({ confirm });
-        const element = confirm ? (
-          <>
-            {renderField(entry)}
-            {renderField({
-              ...entry,
-              name: `Confirm ${field}`,
-              field: `confirm-${name}`,
-              confirm: false,
-            })}
-          </>
-        ) : (
-          renderField(entry)
+    // =-=-=-=-=-=-=-=-\ GET FIELD DATA /=-=-=-=-=-=-=-=-
+
+    const readObj = (obj: object, field: string | string[]) => {};
+
+    const getFieldData = (
+      fields: FieldType[],
+      ancestors: string[] = []
+    ): FormDataType => {
+      const [formData, formElements, formOutput] = fields
+        .map(entry => {
+          const { field, type, subFields, value, ...data } = entry;
+          const element = renderField(entry, ancestors);
+          const result = [
+            [
+              field,
+              {
+                type,
+                element,
+                ...data,
+                subFields: subFields
+                  ? getFieldData(subFields, [...ancestors, field])
+                  : null,
+              },
+            ],
+            [field, element],
+            [
+              field,
+              subFields
+                ? Object.fromEntries(
+                    subFields.map(entry => [entry.field, entry.value])
+                  )
+                : value ?? undefined,
+            ],
+          ];
+          return result;
+        })
+        .reduce(
+          ([_data, _elements, _outputs], [data, element, output]) => {
+            return [
+              [..._data, data],
+              [..._elements, element],
+              [..._outputs, output],
+            ];
+          },
+          [[], [], []]
         );
-        return [field, { value, field, element, label: name }];
-      })
-    );
 
-    console.log({ newForm });
-    !formData && setFormData(newForm);
-
-    const submitForm = (e: MouseEvent<HTMLButtonElement>): void => {
-      e.preventDefault();
-      setSubmitted(true);
-      // TODO: IF VALIDATE, VALIDATE
-      handleSubmit();
+      return Object.fromEntries([
+        ["data", Object.fromEntries(formData)],
+        ["elements", Object.fromEntries(formElements)],
+        ["initialOutput", Object.fromEntries(formOutput)],
+      ]);
     };
 
-    return (
-      <Form name={name} handleSubmit={handleSubmit}>
-        <h2>{name}</h2>
-        <div className="form-body flex col">
-          {Object.values(newForm).map(entry => entry.element)}
-        </div>
-        <button
-          type="submit"
-          onClick={(e: MouseEvent<HTMLButtonElement>) => submitForm(e)}
-        >
-          {submitTxt ?? "Submit"}
-        </button>
-        <button type="reset" onClick={handleReset}>
-          {resetTxt ?? "Reset"}
-        </button>
+    // const newForm: FormDataType = renderFields(fields);
+    const newForm: FormDataType = getFieldData(fields);
+
+    console.log({ newForm });
+    !formData && setFormData({ ...newForm, validation: {}, submitted: false });
+    !formOutput && setFormOutput(newForm.initialOutput);
+
+    const submitForm: FormEventHandler<HTMLFormElement> = (
+      e: MouseEvent<HTMLButtonElement>
+    ): void => {
+      e.preventDefault();
+      handleSubmit();
+      setFormData(prev => ({ ...prev, submitted: true }));
+      // TODO: IF VALIDATE, VALIDATE
+    };
+
+    return formData?.submitted ? (
+      <Markdown className={`post-submit-msg`} options={{ forceBlock: true }}>
+        {postMessage(formOutput!)}
+      </Markdown>
+    ) : (
+      <Form
+        name={name}
+        validate={validate}
+        className="flex col"
+        handleSubmit={submitForm}
+        submitTxt={submitTxt}
+        resetTxt={resetTxt}
+      >
+        {/* {Object.values(newForm).map(entry => entry.element)} */}
+        {Object.values(newForm.elements)}
       </Form>
     );
   };
@@ -332,5 +522,17 @@ export default function useForm() {
   // %%%%%%%%%%%%%%\ RETURN /%%%%%%%%%%%%%%
   // ======================================
 
-  return { form, field, password, email, text, group, select };
+  return {
+    form,
+    field,
+    text,
+    number,
+    float,
+    password,
+    email,
+    date,
+    group,
+    select,
+    isSubmitted,
+  };
 }

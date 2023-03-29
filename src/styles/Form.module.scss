@@ -1,5 +1,15 @@
-.button {
-  outline: none;
+.form {
+  & > *:not(button) {
+    margin-bottom: 1.5rem;
+  }
+
+  button {
+    outline: none;
+
+    &[type="submit"] {
+      margin-bottom: 0.5rem;
+    }
+  }
 }
 
 .input {

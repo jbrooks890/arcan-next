@@ -1,0 +1,33 @@
+.criteria {
+  max-height: 0;
+  transition: 0.1s ease-out;
+
+  &:global {
+    &.hide {
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    &.show {
+      opacity: 1;
+    }
+  }
+}
+
+.list {
+  padding-bottom: 1em;
+  text-align: left;
+
+  li {
+    color: var(--pop);
+    font-size: smaller;
+    // list-style-position: outside;
+    &::before {
+      // content: "\232A";
+      content: "\2013";
+      display: block;
+      margin-right: 1ch;
+      color: var(--mint);
+    }
+  }
+}

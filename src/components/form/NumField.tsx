@@ -13,7 +13,7 @@ export default function NumField({
   field,
   handleChange,
   value,
-  min,
+  min = 0,
   max,
   step = 1,
 }: PropsType) {
@@ -27,9 +27,8 @@ export default function NumField({
       min={min}
       max={max}
       onChange={handleChange}
-      // onMouseEnter={e => e.currentTarget.focus()}
       step={step}
-      value={value ?? min ?? 0}
+      defaultValue={value ?? min ?? 0}
     />
   );
 }

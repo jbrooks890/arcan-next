@@ -191,6 +191,25 @@ button {
   }
 }
 
+.post-submit-msg {
+  strong {
+    color: var(--mint);
+    font: {
+      weight: normal;
+    }
+
+    & > em {
+      color: var(--mint);
+      font: {
+        family: var(--keyFont2);
+        size: smaller;
+        weight: bold;
+        style: normal;
+      }
+    }
+  }
+}
+
 input {
   appearance: none;
   display: block;
@@ -208,9 +227,7 @@ input {
 
   &::placeholder {
     color: inherit;
-    /* font-family: var(--bodyFont); */
     opacity: 0.5;
-    /* font-family: initial; */
     font-style: italic;
   }
 }
@@ -232,6 +249,24 @@ input[type="email"] {
 .flex input:not([type="radio"]:not([type="checkbox"])) {
   flex-grow: 1;
   align-self: stretch;
+}
+
+label {
+  .validate & {
+    &.has-criteria {
+      cursor: pointer;
+    }
+
+    &.required {
+      .label-text {
+        &::after {
+          content: "*";
+          color: red;
+          // font-size: 1rem;
+        }
+      }
+    }
+  }
 }
 
 /* ::::::::::\ FLEX /:::::::::: */

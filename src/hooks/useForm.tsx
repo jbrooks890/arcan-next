@@ -65,10 +65,10 @@ export type FormType = {
   name: string;
   fields: FieldType[];
   validate?: boolean;
-  handleSubmit: (v?: any) => void;
   submitTxt?: string;
   resetTxt?: string;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
+  handleSubmit: (v?: any) => void;
   postMessage?: (v: FormDataType) => string;
 };
 
@@ -439,13 +439,13 @@ export default function useForm() {
     name,
     fields,
     validate = false,
-    handleSubmit,
-    submitTxt,
     resetTxt,
+    submitTxt,
     handleReset,
+    handleSubmit,
     postMessage = defaultPostMsg,
   }: FormType) => {
-    // =-=-=-=-=-=-=-=-\ GET FIELD DATA /=-=-=-=-=-=-=-=-
+    // -=-=-=-=-=-=-=-=-\ GET FIELD DATA /-=-=-=-=-=-=-=-=-
 
     const getFieldData = (
       fields: FieldType[],
@@ -527,6 +527,11 @@ export default function useForm() {
       // TODO: IF VALIDATE, VALIDATE
     };
 
+    const resetForm: FormEventHandler<HTMLFormElement> = e => {
+      e.preventDefault();
+      setFormData(formData.initialOutput);
+    };
+
     return formData?.submitted ? (
       <Markdown className={`post-submit-msg`} options={{ forceBlock: true }}>
         {postMessage(formOutput!)}
@@ -537,6 +542,7 @@ export default function useForm() {
         validate={validate}
         className="flex col"
         handleSubmit={submitForm}
+        handleReset={resetForm}
         submitTxt={submitTxt}
         resetTxt={resetTxt}
       >

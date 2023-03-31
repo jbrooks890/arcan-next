@@ -30,9 +30,9 @@ export default function Questionnaire() {
       //   "no",
       // ]
     ),
-    choice("Which genre do you prefer?", "Fantasy Science-Fiction".split(" ")),
+    choice("Which genre do you prefer?", "Fantasy Sci-Fi Horror".split(" ")),
     choice(
-      "What content are you most interested in?",
+      "What **_Arcan_** content are you most interested in?",
       "Books Lore World Characters Magic Creatures".split(" ").sort(),
       true
     ),

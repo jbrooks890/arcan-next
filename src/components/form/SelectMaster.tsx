@@ -29,13 +29,17 @@ export default function SelectMaster({
   } = props;
   const Selector = dropdown ? Dropdown : ChoiceBox;
 
+  const OUTPUT = (
+    <Selector
+      {...props}
+      inline={(!dropdown && inline) ?? false}
+      multi={(!dropdown && multi) ?? false}
+    />
+  );
+
   return other ? (
     <>
-      <Selector
-        {...props}
-        inline={(!dropdown && inline) ?? false}
-        multi={(!dropdown && multi) ?? false}
-      />
+      {OUTPUT}
       <Label name="other" field={`${field}-other`}>
         <TextField
           field={field}
@@ -45,6 +49,6 @@ export default function SelectMaster({
       </Label>
     </>
   ) : (
-    <Selector {...props} />
+    OUTPUT
   );
 }

@@ -132,7 +132,6 @@ export default function useForm() {
     const required = label.endsWith("*") ?? undefined;
     if (required) label = label.slice(0, -1);
 
-    console.log({ label });
     const output: [name: string, field: string] = label.startsWith("$")
       ? [labelize(label.slice(1)), label.slice(1)]
       : [label, makeHTMLSafe(label)];

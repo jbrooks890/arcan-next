@@ -126,10 +126,23 @@ export default function useForm() {
 
   // <><><><><><><><>\ PARSE LABEL /<><><><><><><><>
 
-  const parseLabel = (label: string): [name: string, label: string] =>
-    label.startsWith("$")
+  type ParseLabelType = [name: string, field: string, required?: boolean];
+
+  const parseLabel = (label: string): ParseLabelType => {
+    const required = label.endsWith("*") ?? undefined;
+    if (required) label = label.slice(0, -1);
+
+    console.log({ label });
+    const output: [name: string, field: string] = label.startsWith("$")
       ? [labelize(label.slice(1)), label.slice(1)]
       : [label, makeHTMLSafe(label)];
+
+    return [...output, required];
+  };
+
+  // <><><><><><><><>\ SHORTHAND /<><><><><><><><>
+
+  const shorthand = (label: string) => {};
 
   // <><><><><><><><>\ FIELD /<><><><><><><><>
 
@@ -156,13 +169,14 @@ export default function useForm() {
     block?: false,
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = parseLabel(label);
+    const [name, field, required] = parseLabel(label);
 
     return {
       name,
       field,
-      type: "string",
+      required,
       ...options,
+      type: "string",
       options: {
         ...options?.options,
         block,
@@ -178,13 +192,14 @@ export default function useForm() {
     range?: { min?: number; max?: number },
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = parseLabel(label);
+    const [name, field, required] = parseLabel(label);
 
     return {
       name,
       field,
-      type: float ? "float" : "number",
+      required,
       ...options,
+      type: float ? "float" : "number",
       options: {
         ...options?.options,
         ...range,
@@ -200,13 +215,14 @@ export default function useForm() {
     range?: { min?: number; max?: number },
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = parseLabel(label);
+    const [name, field, required] = parseLabel(label);
 
     return {
       name,
       field,
-      type: "float",
+      required,
       ...options,
+      type: "float",
       options: {
         ...options?.options,
         ...range,
@@ -245,11 +261,12 @@ export default function useForm() {
     label: string,
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = parseLabel(label);
+    const [name, field, required] = parseLabel(label);
 
     return {
       name,
       field,
+      required,
       type: "date",
       ...options,
     };
@@ -261,10 +278,11 @@ export default function useForm() {
     label: string,
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
-    const [name, field] = parseLabel(label);
+    const [name, field, required] = parseLabel(label);
     return {
       name,
       field,
+      required,
       type: "boolean",
       ...options,
     };
@@ -278,13 +296,12 @@ export default function useForm() {
     multi = false,
     options?: Omit<FieldType, "type" | "choices">
   ): FieldType => {
-    const [name, field] = label.startsWith("$")
-      ? [labelize(label.slice(1)), label.slice(1)]
-      : [label, makeHTMLSafe(label)];
+    const [name, field, required] = parseLabel(label);
     return {
       name,
       field,
       type: "select",
+      required,
       choices,
       ...options,
       options: {
@@ -301,12 +318,11 @@ export default function useForm() {
     children: FieldType[],
     options?: Partial<Omit<FieldType, "type" | "children">>
   ): FieldType => {
-    const [name, field] = label.startsWith("$")
-      ? [labelize(label.slice(1)), label.slice(1)]
-      : [label, makeHTMLSafe(label)];
+    const [name, field, required] = parseLabel(label);
     return {
       name,
       field,
+      required,
       children,
       type: "set",
       ...options,

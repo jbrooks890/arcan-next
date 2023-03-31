@@ -59,8 +59,7 @@ export default function UserGate({ loginMode = true }) {
     "Username must be 3-23 characters, may not contain special characters";
   const pwdCriteria = "Password must be 8-24 characters, may include: !@#$%";
 
-  const USERNAME = text("$username", false, {
-    required: true,
+  const USERNAME = text("$username*", false, {
     placeholder: !login ? "fishy_01" : undefined,
     validation: !login
       ? [
@@ -90,7 +89,7 @@ export default function UserGate({ loginMode = true }) {
     placeholder: !login ? "jane_doe01@gmail.com" : undefined,
     validation: v => EMAIL_REGEX.test(v),
   });
-  const DOB = date("$dob", { required: true });
+  const DOB = date("$dob*");
   const PASSWORD = password(
     !login,
     !login

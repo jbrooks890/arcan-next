@@ -1,21 +1,14 @@
 import { useRef, useState } from "react";
 import styles from "@/styles/form/Dropdown.module.scss";
 
-type PropsType = {
-  options: string[];
-  display?: { [key: string]: string };
-  field: string;
-  value?: any | any[];
-  handleChange: Function;
-};
-
 export default function Dropdown({
   options,
   display,
   field,
   handleChange,
   value,
-}: PropsType) {
+  other,
+}: SelectType) {
   const [selected, setSelected] = useState(value ?? options[0]);
   const [open, setOpen] = useState(false);
   const list = useRef<HTMLUListElement | null>(null);
@@ -47,7 +40,7 @@ export default function Dropdown({
           {String(selected) || display?.[selected] || NO_CHOICE}
         </div>
         <ul
-          className={`option-list ${open ? "open" : ""}`}
+          className={`${styles.cache} ${open ? "open" : ""}`}
           ref={list}
           style={{
             maxHeight: open ? list?.current?.scrollHeight + "px" : undefined,

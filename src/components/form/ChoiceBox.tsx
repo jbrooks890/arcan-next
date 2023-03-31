@@ -7,14 +7,9 @@ import {
 } from "react";
 import styles from "@/styles/form/ChoiceBox.module.scss";
 
-type PropsType = {
-  options: string[];
-  display?: { [key: string]: string };
-  field: string;
+type PropsType = SelectType & {
   multi?: boolean;
   inline?: boolean;
-  value?: any | any[];
-  handleChange: Function;
 };
 
 export default function ChoiceBox({

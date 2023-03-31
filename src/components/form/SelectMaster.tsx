@@ -3,15 +3,10 @@ import Dropdown from "./Dropdown";
 import Label from "./Label";
 import TextField from "./TextField";
 
-type PropsType = {
-  options: string[];
-  display?: { [key: string]: string };
-  field: string;
+type PropsType = SelectType & {
   multi?: boolean;
   inline?: boolean;
-  value?: any | any[];
-  other?: boolean;
-  handleChange: Function;
+  dropdown?: boolean;
 };
 
 export default function SelectMaster({
@@ -19,7 +14,7 @@ export default function SelectMaster({
   inline,
   multi,
   ...props
-}: PropsType & { dropdown?: boolean }) {
+}: PropsType) {
   const {
     options,
     field,
@@ -27,13 +22,15 @@ export default function SelectMaster({
     other = false,
     handleChange,
   } = props;
+  dropdown = options?.length > 4;
   const Selector = dropdown ? Dropdown : ChoiceBox;
+  if (!dropdown) Object.assign(props, { inline, multi });
 
   const OUTPUT = (
     <Selector
       {...props}
-      inline={(!dropdown && inline) ?? false}
-      multi={(!dropdown && multi) ?? false}
+      // inline={(!dropdown && inline) ?? false}
+      // multi={(!dropdown && multi) ?? false}
     />
   );
 

@@ -11,11 +11,8 @@ type PropsType = {
   options: string[];
   display?: { [key: string]: string };
   field: string;
-  fieldPath: string;
-  required: boolean;
-  single?: boolean;
-  label: string;
-  className: string;
+  multi?: boolean;
+  inline?: boolean;
   value?: any | any[];
   handleChange: Function;
 };
@@ -24,50 +21,54 @@ export default function ChoiceBox({
   options,
   display,
   field,
-  fieldPath,
-  required,
-  single = true,
-  label,
-  className,
-  value = [],
+  multi = false,
+  inline = options.length < 4,
+  value = multi ? [] : undefined,
   handleChange,
 }: PropsType) {
   const inputs = useRef<HTMLInputElement[]>([]);
 
   return (
-    <fieldset
-      className={`${styles["choice-box"]} choice-box ${className ?? ""} ${
-        options.length > 3 ? "scroll" : "no-scroll"
-      } flex col`}
+    <div
+      className={`${styles["choice-box"]} flex ${
+        inline ? "inline" : "block col"
+      }`}
     >
-      <legend className={required ? "required" : "not-required"}>
-        {label}
-      </legend>
       {options.length ? (
         options.map((option, i) => {
-          const id = `${fieldPath}-${option}`;
+          const id = `${field}-${option}`;
           return (
-            <label key={i} htmlFor={id} className="flex start middle">
+            <label
+              key={i}
+              htmlFor={id}
+              className={`flex start middle ${
+                (multi ? value.includes(option) : option === value)
+                  ? "selected"
+                  : "not-selected"
+              }`}
+            >
               <input
                 ref={(element: HTMLInputElement) =>
                   (inputs.current[i] = element)
                 }
                 id={id}
                 name={id}
-                type={single ? "radio" : "checkbox"}
+                type={multi ? "checkbox" : "radio"}
                 value={option}
-                checked={option === value || value.includes(option)}
+                checked={multi ? value.includes(option) : option === value}
                 onChange={() =>
                   handleChange(
-                    single
-                      ? option
-                      : inputs.current
+                    multi
+                      ? inputs.current
                           .filter(input => input?.checked)
                           .map(input => input.value)
+                      : option
                   )
                 }
               />
-              <div className={`ticker ${single ? "radio" : "checkbox"}`} />
+              <div
+                className={`${styles.ticker} ${multi ? "checkbox" : "radio"}`}
+              />
               <div>{display ? display[option] : option}</div>
             </label>
           );
@@ -75,6 +76,6 @@ export default function ChoiceBox({
       ) : (
         <span className="fade">No entries</span>
       )}
-    </fieldset>
+    </div>
   );
 }

@@ -29,8 +29,8 @@ export default function useQuestions() {
       choices: choices ?? "Yes No".split(" "),
       ...options,
       options: {
-        multi,
         ...options?.options,
+        multi,
       },
     };
   };
@@ -41,10 +41,9 @@ export default function useQuestions() {
   ): FieldType[] => {
     return questions.map(
       (question, i): FieldType => ({
-        name: question.name,
+        ...question,
+        name: `${i + 1}. ${question.name}`,
         field: (name ? `${makeHTMLSafe(name)}-` : "Q") + (i + 1),
-        type: question.type,
-        value: question.value,
       })
     );
   };

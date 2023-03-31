@@ -1,33 +1,50 @@
 import ChoiceBox from "./ChoiceBox";
 import Dropdown from "./Dropdown";
+import Label from "./Label";
+import TextField from "./TextField";
 
 type PropsType = {
   options: string[];
   display?: { [key: string]: string };
   field: string;
-  fieldPath: string;
-  required: boolean;
-  single?: boolean;
-  label: string;
-  className: string;
+  multi?: boolean;
+  inline?: boolean;
   value?: any | any[];
+  other?: boolean;
   handleChange: Function;
 };
 
 export default function SelectMaster({
-  options,
-  display,
-  field,
-  fieldPath,
-  required,
-  single = true,
-  label,
-  className,
-  value = [],
-  handleChange,
   dropdown = false,
+  inline,
+  multi,
+  ...props
 }: PropsType & { dropdown?: boolean }) {
+  const {
+    options,
+    field,
+    value = multi ? [] : undefined,
+    other = false,
+    handleChange,
+  } = props;
   const Selector = dropdown ? Dropdown : ChoiceBox;
 
-  return <Selector />;
+  return other ? (
+    <>
+      <Selector
+        {...props}
+        inline={(!dropdown && inline) ?? false}
+        multi={(!dropdown && multi) ?? false}
+      />
+      <Label name="other" field={`${field}-other`}>
+        <TextField
+          field={field}
+          value={""}
+          handleChange={e => handleChange(e.target.value)}
+        />
+      </Label>
+    </>
+  ) : (
+    <Selector {...props} />
+  );
 }

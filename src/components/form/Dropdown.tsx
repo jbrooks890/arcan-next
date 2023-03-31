@@ -1,20 +1,28 @@
 import { useRef, useState } from "react";
-import "../../styles/form/Dropdown.css";
+import styles from "@/styles/form/Dropdown.module.scss";
+
+type PropsType = {
+  options: string[];
+  display?: { [key: string]: string };
+  field: string;
+  value?: any | any[];
+  handleChange: Function;
+};
 
 export default function Dropdown({
-  required = false,
   options,
   display,
-  label,
-  classList = [],
+  field,
   handleChange,
   value,
-}) {
+}: PropsType) {
   const [selected, setSelected] = useState(value ?? options[0]);
   const [open, setOpen] = useState(false);
-  const list = useRef();
+  const list = useRef<HTMLUListElement | null>(null);
 
-  const selectOption = selection => {
+  const NO_CHOICE = "--";
+
+  const selectOption = (selection: string) => {
     handleChange(selection);
     setSelected(selection);
     setOpen(false);
@@ -23,40 +31,28 @@ export default function Dropdown({
   const toggle = () => setOpen(prev => !prev);
 
   return (
-    <label
-      className={`select-box ${classList.length ? classList.join(" ") : ""}`}
-    >
-      <span className={required ? "required" : ""}>{label}</span>
-      <select name={label} style={{ display: "none" }} defaultValue={selected}>
+    <label className={`${styles.dropdown}`}>
+      <select name={field} style={{ display: "none" }} defaultValue={selected}>
         {options.map((option, i) => (
-          <option
-            key={i}
-            value={option}
-            // selected={selected === option ? "selected" : null}
-            // onChange={() => onChange(selected)}
-          >
+          <option key={i} value={option}>
             {option}
           </option>
         ))}
       </select>
-      <div
-        className="wrapper"
-        // onMouseLeave={() => open && toggle()}
-        // onBlur={() => open && toggle()}
-      >
+      <div className={`${styles.wrapper}`}>
         <div
-          className={`option-display flex ${open ? "open" : ""}`}
+          className={`${styles.display} flex ${open ? "open" : "closed"}`}
           onClick={toggle}
-          // onMouseLeave={() => setOpen(false)}
         >
-          {String(selected) || display?.[selected] || "--"}
+          {String(selected) || display?.[selected] || NO_CHOICE}
         </div>
         <ul
           className={`option-list ${open ? "open" : ""}`}
           ref={list}
-          style={open ? { maxHeight: list.current.scrollHeight + "px" } : null}
+          style={{
+            maxHeight: open ? list?.current?.scrollHeight + "px" : undefined,
+          }}
           onMouseLeave={() => open && toggle()}
-          // onBlur={() => setOpen(false)}
         >
           {options.map((option, i) => (
             <li
@@ -67,7 +63,7 @@ export default function Dropdown({
               onClick={() => selectOption(option)}
             >
               {!option ? (
-                "--"
+                NO_CHOICE
               ) : option === "other" ? (
                 <i>{option}</i>
               ) : display ? (

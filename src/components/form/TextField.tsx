@@ -7,15 +7,22 @@ type PropsType = {
   value: any;
 };
 
-const TextField = ({ field, placeholder, handleChange, value }: PropsType) => {
+const TextField = ({
+  field,
+  placeholder,
+  handleChange,
+  value,
+  ...props
+}: PropsType) => {
   return (
     <input
       name={field}
       type="text"
-      placeholder={placeholder ?? ""}
-      // value={value ?? ""}
+      placeholder={placeholder}
+      value={value ?? ""}
       onChange={handleChange}
       // onBlur={() => required && validator()}
+      {...props}
     />
   );
 };

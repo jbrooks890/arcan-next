@@ -1,11 +1,15 @@
+"use client";
 import { makeHTMLSafe } from "@/lib/utility";
 import Form from "@/components/form/Form";
 import {
   ChangeEvent,
   ChangeEventHandler,
+  createElement,
   FormEventHandler,
+  Fragment,
   MouseEvent,
   MouseEventHandler,
+  ReactElement,
   useEffect,
   useState,
 } from "react";
@@ -16,8 +20,10 @@ import Toggle from "@/components/form/Toggle";
 import Password from "@/components/form/Password";
 import DateField from "@/components/form/DateField";
 import EmailField from "@/components/form/EmailField";
-import Markdown from "markdown-to-jsx";
 import FieldSet from "@/components/form/FieldSet";
+import Markdown from "markdown-to-jsx";
+import ChoiceBox from "@/components/form/ChoiceBox";
+import SelectMaster from "@/components/form/SelectMaster";
 
 export type FieldTypeEnum =
   | "string"
@@ -43,7 +49,7 @@ export type FieldType = {
   required?: boolean;
   confirm?: boolean;
   choices?: (string | object)[];
-  subFields?: FieldType[];
+  children?: FieldType[];
   validation?:
     | validatorFn
     | { validator: validatorFn; criteria: string; error?: string }[];
@@ -292,8 +298,8 @@ export default function useForm() {
 
   const group = (
     label: string,
-    subFields: FieldType[],
-    options?: Partial<Omit<FieldType, "type" | "subFields">>
+    children: FieldType[],
+    options?: Partial<Omit<FieldType, "type" | "children">>
   ): FieldType => {
     const [name, field] = label.startsWith("$")
       ? [labelize(label.slice(1)), label.slice(1)]
@@ -301,7 +307,7 @@ export default function useForm() {
     return {
       name,
       field,
-      subFields,
+      children,
       type: "set",
       ...options,
     };
@@ -312,55 +318,99 @@ export default function useForm() {
   // NOT RENDERED AS PART OF THE OUTPUT BUT EFFECTS THE VALUE OF PARENT
   const condition = (label: string, options: Omit<FieldType, "type">) => {};
 
-  // %%%%%%%%%%%%%%\ UPDATE FIELD /%%%%%%%%%%%%%%
-
-  const updateField = (e, field, parent) => {
-    console.log({ parent });
-    setFormOutput(prev => ({
-      ...prev,
-      [field]: e.target.value,
-    }));
-  };
-
   // %%%%%%%%%%%%%%\ RENDER FIELD /%%%%%%%%%%%%%%
 
   const renderField = (
     entry: FieldType,
-    // ancestors: string[] = [],
-    parent?: object,
+    ancestors: string[] = [],
     changeHandler?: ChangeEventHandler<HTMLInputElement>
-  ) => {
+  ): ReactElement | ReactElement[] => {
     const {
       name,
       field,
-      subFields,
+      children,
       type,
-      value,
+      value: defaultValue,
       required,
       placeholder,
       validation,
       confirm,
     } = entry;
 
-    const props: InputPropsType = {
+    const PATH = [...ancestors, field];
+    const CHAIN = PATH.join("-");
+    const parent = ancestors.reduce(
+      (_parent, child) => _parent?.[child],
+      formOutput
+    );
+    const value = parent?.[field] ?? defaultValue;
+
+    const props: Omit<InputPropsType, "handleChange"> = {
       field,
       value,
       placeholder,
-      handleChange: e => {
-        changeHandler ? changeHandler(e) : updateField(e, field, parent);
-      },
+    };
+
+    const updateValue = (value: any) => {
+      setFormOutput($STATE => {
+        return ancestors.length
+          ? ancestors
+              .reduce<any[]>(
+                (chain, current) => {
+                  const parent = chain.pop();
+                  const [key, obj] = parent;
+                  const child = [current, obj[key]];
+
+                  return [...chain, parent, child];
+                },
+                [[ancestors.shift() ?? field, $STATE]]
+              )
+              .reduceRight(
+                (data, [path, parent]) => {
+                  const child = { ...parent[path], ...data };
+                  return { ...parent, [path]: child };
+                },
+                { [field]: value }
+              )
+          : {
+              ...$STATE,
+              [field]: value,
+            };
+      });
     };
 
     let element = () => {
+      if (type === "select") {
+        return (
+          <SelectMaster
+            options={Array.isArray(entry.choices) ? entry.choices : []}
+            field={CHAIN}
+            multi={entry.options?.multi}
+            value={value}
+            handleChange={updateValue}
+          />
+        );
+      }
+
       switch (type) {
         case "string":
-          return <TextField {...props} />;
+          return (
+            <TextField
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.value)
+              }
+            />
+          );
         case "number":
           return (
             <NumField
               {...props}
               min={entry.options?.min}
               max={entry.options?.max}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.value)
+              }
             />
           );
         case "float":
@@ -370,43 +420,71 @@ export default function useForm() {
               min={entry.options?.min}
               max={entry.options?.max}
               step={entry.options?.step ?? 0.1}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.value)
+              }
             />
           );
         case "boolean":
-          return <Toggle {...props} />;
+          return (
+            <Toggle
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.checked)
+              }
+            />
+          );
         case "date":
-          return <DateField {...props} />;
+          return (
+            <DateField
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.value)
+              }
+            />
+          );
         case "email":
-          return <EmailField {...props} />;
+          return (
+            <EmailField
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.value)
+              }
+            />
+          );
         case "password":
-          return <Password {...props} />;
+          return (
+            <Password
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.value)
+              }
+            />
+          );
         case "select":
           return <div>{`${field} ( select )`}</div>;
-        case "set":
-          return <>{entry.subFields!.map(field => renderField(field))}</>;
         default:
           return <div>{`${field}...?`}</div>;
       }
     };
 
-    const Container = subFields ? FieldSet : Label;
+    const wrapperProps = {
+      name: name!,
+      field,
+      required,
+      criteria: Array.isArray(validation)
+        ? validation?.map(validator => validator.criteria)
+        : undefined,
+      className: children ? "flex col" : "",
+    };
 
-    return (
-      <>
-        <Container
-          key={field}
-          name={name!}
-          field={field}
-          required={required}
-          criteria={
-            Array.isArray(validation)
-              ? validation?.map(validator => validator.criteria)
-              : undefined
-          }
-          className={subFields ? "flex col" : ""}
-        >
+    return children ? (
+      <FieldSet key={CHAIN} {...wrapperProps} children={[]} />
+    ) : confirm ? (
+      <Fragment key={CHAIN}>
+        <Label key={CHAIN} {...wrapperProps}>
           {element()}
-        </Container>
+        </Label>
         {confirm &&
           renderField({
             ...entry,
@@ -415,7 +493,11 @@ export default function useForm() {
             confirm: false,
             validation: undefined,
           })}
-      </>
+      </Fragment>
+    ) : (
+      <Label key={CHAIN} {...wrapperProps}>
+        {element()}
+      </Label>
     );
   };
 
@@ -447,48 +529,45 @@ export default function useForm() {
   }: FormType) => {
     // -=-=-=-=-=-=-=-=-\ GET FIELD DATA /-=-=-=-=-=-=-=-=-
 
+    type GetFieldsDataType = {
+      data: FormDataType;
+      elements: { [key: string]: ReactElement };
+      // ^^ TODO: key should be generic: keyof data
+      initialOutput: object;
+    };
+
     const getFieldData = (
       fields: FieldType[],
-      // ancestors: string[] = []
-      parent?: object
-    ): FormDataType => {
-      // -------------\ RETRIEVE /-------------
+      ancestors: string[] = [] // TODO
+    ): GetFieldsDataType => {
+      // !!ancestors.length && console.log({ ancestors });
 
-      const retrieve = (fields: FieldType[], properties?: string[]) => {
-        return Object.fromEntries(
-          fields.map(entry => {
-            let { field, subFields, ...data } = entry;
-            data = properties?.length
-              ? Object.fromEntries(properties.map(key => [key, data[key]]))
-              : data;
-            subFields && Object.assign(data, retrieve(subFields));
-            return [field, data];
-          })
-        );
-      };
-
-      const [formData, formElements, formOutput] = fields
+      const [_formData, _formElements, _formOutput] = fields
         .map(entry => {
-          const { field, type, subFields, value, ...data } = entry;
-          const element = renderField(entry, parent);
+          const { field, type, children, value, ...data } = entry;
+          const parent = [...ancestors, field];
+          const element = renderField(entry, ancestors);
+          if (children) data.children = getFieldData(children, parent);
+          const output = {
+            type,
+            element,
+            ...data,
+          };
           const result = [
+            [field, output],
             [
               field,
-              {
-                type,
-                element,
-                ...data,
-                subFields: subFields
-                  ? getFieldData(subFields, {
-                      [field]: parent?.[field],
-                    })
-                  : null,
-              },
+              children
+                ? createElement(
+                    FieldSet,
+                    { ...element.props, key: element.key },
+                    Object.values(data.children.elements)
+                  )
+                : element,
             ],
-            [field, element],
             [
               field,
-              subFields ? retrieve(subFields, ["value"]) : value ?? undefined,
+              children ? data.children.initialOutput : value ?? undefined,
             ],
           ];
           return result;
@@ -504,11 +583,11 @@ export default function useForm() {
           [[], [], []]
         );
 
-      return Object.fromEntries([
-        ["data", Object.fromEntries(formData)],
-        ["elements", Object.fromEntries(formElements)],
-        ["initialOutput", Object.fromEntries(formOutput)],
-      ]);
+      return {
+        data: Object.fromEntries(_formData),
+        elements: Object.fromEntries(_formElements),
+        initialOutput: Object.fromEntries(_formOutput),
+      };
     };
 
     // const newForm: FormDataType = renderFields(fields);
@@ -529,7 +608,7 @@ export default function useForm() {
 
     const resetForm: FormEventHandler<HTMLFormElement> = e => {
       e.preventDefault();
-      setFormData(formData.initialOutput);
+      setFormData(formData?.initialOutput);
     };
 
     return formData?.submitted ? (
@@ -546,7 +625,6 @@ export default function useForm() {
         submitTxt={submitTxt}
         resetTxt={resetTxt}
       >
-        {/* {Object.values(newForm).map(entry => entry.element)} */}
         {Object.values(newForm.elements)}
       </Form>
     );

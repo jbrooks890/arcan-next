@@ -17,7 +17,7 @@ export default function ChoiceBox({
   display,
   field,
   multi = false,
-  inline = options.length < 4,
+  inline = options.length < 3,
   value = multi ? [] : undefined,
   handleChange,
 }: PropsType) {

@@ -6,10 +6,12 @@ export default function Questionnaire() {
   const { form, field } = useForm();
   const { choice, ask, questionList } = useQuestions();
 
-  const SOURCES =
-    "Facebook; Twitter; Instagram; TikTok; YouTube; Twitch; Reddit; Discord; Bookstore; Amazon Kindle; Friend".split(
-      "; "
-    );
+  const SOURCES = [
+    ..."Facebook; Twitter; Instagram; TikTok; YouTube; Twitch; Reddit; Discord; Book store; Amazon; Goodreads; Kickstarter; Patreon; Bookshelf"
+      .split("; ")
+      .sort(),
+    "Friend",
+  ];
 
   const questions = [
     // field("Name"),

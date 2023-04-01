@@ -11,6 +11,7 @@ export default function UserGate({ loginMode = true }) {
     form,
     field,
     text,
+    number,
     boolean,
     password,
     email,
@@ -51,7 +52,7 @@ export default function UserGate({ loginMode = true }) {
       name: "Same as above",
       field: "sameEmail",
       type: "boolean",
-      value: false,
+      value: true,
     }),
   ];
 

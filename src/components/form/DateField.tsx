@@ -7,5 +7,5 @@ type PropsType = {
 };
 
 export default function DateField({ field, value, handleChange }: PropsType) {
-  return <input type="date" onChange={handleChange} />;
+  return <input type="date" onChange={handleChange} value={value} />;
 }

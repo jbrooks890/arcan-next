@@ -28,7 +28,7 @@ export default function NumField({
       max={max}
       onChange={handleChange}
       step={step}
-      defaultValue={value ?? min ?? 0}
+      value={value ?? min ?? 0}
     />
   );
 }

@@ -22,7 +22,7 @@ export default function SelectMaster({
     other = false,
     handleChange,
   } = props;
-  dropdown = options?.length > 4;
+  dropdown = !multi && options?.length > 4;
   const Selector = dropdown ? Dropdown : ChoiceBox;
   if (!dropdown) Object.assign(props, { inline, multi });
 

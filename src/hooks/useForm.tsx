@@ -152,14 +152,17 @@ export default function useForm() {
     value,
     required = false,
     confirm = false,
-  }: FieldType): FieldType => ({
-    name,
-    field: field ?? makeHTMLSafe(name),
-    type: type ?? "string",
-    value,
-    required,
-    confirm,
-  });
+  }: FieldType): FieldType => {
+    value !== undefined && console.log({ field, value });
+    return {
+      name,
+      field: field ?? makeHTMLSafe(name),
+      type: type ?? "string",
+      value,
+      required,
+      confirm,
+    };
+  };
 
   // <><><><><><><><>\ TEXT /<><><><><><><><>
 
@@ -358,6 +361,9 @@ export default function useForm() {
       (_parent, child) => _parent?.[child],
       formOutput
     );
+
+    console.log({ field, defaultValue });
+    // console.log({ TEST: parent?.[field], defaultValue });
     const value = parent?.[field] ?? defaultValue;
 
     const props: Omit<InputPropsType, "handleChange"> = {
@@ -476,8 +482,6 @@ export default function useForm() {
               }
             />
           );
-        case "select":
-          return <div>{`${field} ( select )`}</div>;
         default:
           return <div>{`${field}...?`}</div>;
       }
@@ -560,6 +564,7 @@ export default function useForm() {
       const [_formData, _formElements, _formOutput] = fields
         .map(entry => {
           const { field, type, children, value, ...data } = entry;
+          // console.log({ field, value });
           const parent = [...ancestors, field];
           const element = renderField(entry, ancestors);
           if (children) data.children = getFieldData(children, parent);

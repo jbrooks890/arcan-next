@@ -1,7 +1,7 @@
 import { ChangeEventHandler } from "react";
 import styles from "@/styles/form/Toggle.module.scss";
 
-const Toggle = ({ field, handleChange, value = false }: InputPropsType) => {
+const Toggle = ({ field, handleChange, value }: InputPropsType) => {
   return (
     <>
       <input
@@ -10,7 +10,7 @@ const Toggle = ({ field, handleChange, value = false }: InputPropsType) => {
         className={`${styles.input}`}
         name={field}
         onChange={handleChange}
-        // checked={value}
+        checked={value}
       />
       <div className={`${styles.toggle}`} />
     </>

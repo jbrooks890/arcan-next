@@ -9,7 +9,7 @@ export default function Dropdown({
   value,
   other,
 }: SelectType) {
-  const [selected, setSelected] = useState(value ?? options[0]);
+  const [selected, setSelected] = useState(value);
   const [open, setOpen] = useState(false);
   const list = useRef<HTMLUListElement | null>(null);
 
@@ -37,7 +37,7 @@ export default function Dropdown({
           className={`${styles.display} flex ${open ? "open" : "closed"}`}
           onClick={toggle}
         >
-          {String(selected) || display?.[selected] || NO_CHOICE}
+          {(selected && String(selected)) ?? (display?.[selected] || NO_CHOICE)}
         </div>
         <ul
           className={`${styles.cache} ${open ? "open" : ""}`}

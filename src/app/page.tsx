@@ -32,7 +32,7 @@ export default function Home() {
           <li>Characters</li>
           <li>Creatures</li>
           <li>Magic</li>
-          <li>Wiki</li>
+          <li>Glossary</li>
         </ul>
       </Section>
       <Section name="Feedback">

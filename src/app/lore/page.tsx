@@ -13,7 +13,7 @@ export default function Lore() {
           </ul>
         </li>
         <li>Magic</li>
-        <li>Wiki</li>
+        <li>Glossary</li>
       </ul>
     </Page>
   );

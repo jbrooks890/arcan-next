@@ -40,7 +40,7 @@ export default function Dropdown({
           {(selected && String(selected)) ?? (display?.[selected] || NO_CHOICE)}
         </div>
         <ul
-          className={`${styles.cache} ${open ? "open" : ""}`}
+          className={`${styles.cache} ${open ? "open" : "closed"}`}
           ref={list}
           style={{
             maxHeight: open ? list?.current?.scrollHeight + "px" : undefined,
@@ -50,7 +50,7 @@ export default function Dropdown({
           {options.map((option, i) => (
             <li
               key={i}
-              className={display ? "display" : ""}
+              className={display ? "display" : "plain"}
               data-choice={option}
               data-choice-display={display?.[option]}
               onClick={() => selectOption(option)}

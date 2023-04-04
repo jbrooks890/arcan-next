@@ -20,3 +20,5 @@ export default function useNav() {
 
   return { nav };
 }
+
+export const getCrumbs = () => {};

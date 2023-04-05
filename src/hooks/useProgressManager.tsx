@@ -16,5 +16,12 @@ export default function useProgressManager() {
 
   const redeem = (cost: number) => {}; // PURCHASE [SOMETHING] WITH POINTS
 
-  return { startActivity, updateActivity };
+  return {
+    notify,
+    startActivity,
+    updateActivity,
+    givePoints,
+    giveReward,
+    redeem,
+  };
 }

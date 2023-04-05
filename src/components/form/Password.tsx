@@ -1,11 +1,5 @@
 import { ChangeEventHandler, useRef, useState } from "react";
-import styles from "@/styles/form/Password.module.scss"
-
-// type PropsType = {
-//   field: string;
-//   handleChange: ChangeEventHandler<HTMLInputElement>;
-//   value: any;
-// };
+import styles from "@/styles/form/Password.module.scss";
 
 export default function Password({
   field,
@@ -13,10 +7,13 @@ export default function Password({
   handleChange,
 }: InputPropsType) {
   const [showing, toggleShowing] = useState(false);
+  const input = useRef<HTMLInputElement | null>(null);
 
   const ShowPassword = () => (
     <button
-      className={`${styles.show} ${showing?"active":"inactive"} show-password flex center symbol-font`}
+      className={`${styles.show} ${
+        showing ? "active" : "inactive"
+      } show-password flex center symbol-font`}
       type="button"
       onClick={e => {
         e.preventDefault();
@@ -29,14 +26,13 @@ export default function Password({
   );
 
   return (
-    <div
-      className={`${styles.password} password-wrap flex center`}
-    >
+    <div className={`${styles.password} password-wrap flex center`}>
       <input
+        ref={input}
         type={showing ? "text" : "password"}
         name={field}
         id={field}
-        className={showing ? "showing" : ""}
+        className={showing ? "showing" : "hidden"}
         onChange={handleChange}
         value={value}
       />

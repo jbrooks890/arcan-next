@@ -26,3 +26,7 @@ export const getLetter = n => {
 
   return String.fromCharCode(first + n).toUpperCase();
 };
+
+// =========== CAPITALIZE ===========
+
+export const capitalize = str => str[0].toUpperCase() + str.slice(1);

@@ -24,6 +24,7 @@ import FieldSet from "@/components/form/FieldSet";
 import Markdown from "markdown-to-jsx";
 import ChoiceBox from "@/components/form/ChoiceBox";
 import SelectMaster from "@/components/form/SelectMaster";
+import { capitalize } from "@/utility/helperFns";
 
 export type FieldTypeEnum =
   | "string"
@@ -35,10 +36,17 @@ export type FieldTypeEnum =
   | "email"
   | "password"
   | "set"
+  | "modifier"
   | "select";
 // | "multi";
 
-type validatorFn = (v: any) => boolean | Promise<boolean>; //TODO: function that returns bool
+type validatorFn = (v: any) => boolean | Promise<boolean>;
+
+type validatorObj = {
+  validator: validatorFn;
+  criteria: string;
+  error?: string;
+};
 
 export type FieldType = {
   name: string;
@@ -50,9 +58,7 @@ export type FieldType = {
   confirm?: boolean;
   choices?: (string | object)[];
   children?: FieldType[];
-  validation?:
-    | validatorFn
-    | { validator: validatorFn; criteria: string; error?: string }[];
+  validation?: validatorFn | validatorObj[];
   labelize?: boolean;
   options?: {
     block?: boolean;
@@ -60,6 +66,7 @@ export type FieldType = {
     max?: number;
     multi?: boolean;
     step?: number;
+    element?: ReactElement | ReactElement[];
   };
 };
 
@@ -153,7 +160,7 @@ export default function useForm() {
     required = false,
     confirm = false,
   }: FieldType): FieldType => {
-    value !== undefined && console.log({ field, value });
+    // value !== undefined && console.log({ field, value });
     return {
       name,
       field: field ?? makeHTMLSafe(name),
@@ -334,7 +341,20 @@ export default function useForm() {
   // <><><><><><><><>\ CONDITION /<><><><><><><><>
 
   // NOT RENDERED AS PART OF THE OUTPUT BUT EFFECTS THE VALUE OF PARENT
-  const condition = (label: string, options: Omit<FieldType, "type">) => {};
+  const condition = (
+    label: string,
+    operation: Function,
+    options?: Omit<FieldType, "type">
+  ): FieldType => {
+    const [name, field, required] = parseLabel(label);
+    return {
+      name,
+      field,
+      required,
+      type: "modifier",
+      ...options,
+    };
+  };
 
   // %%%%%%%%%%%%%%\ RENDER FIELD /%%%%%%%%%%%%%%
 
@@ -362,7 +382,7 @@ export default function useForm() {
       formOutput
     );
 
-    console.log({ field, defaultValue });
+    // console.log({ field, defaultValue });
     // console.log({ TEST: parent?.[field], defaultValue });
     const value = parent?.[field] ?? defaultValue;
 
@@ -372,32 +392,34 @@ export default function useForm() {
       placeholder,
     };
 
-    const updateValue = (value: any) => {
-      setFormOutput($STATE => {
-        return ancestors.length
-          ? ancestors
-              .reduce<any[]>(
-                (chain, current) => {
-                  const parent = chain.pop();
-                  const [key, obj] = parent;
-                  const child = [current, obj[key]];
+    const updateNestedValue = (source, value: any, target = field) => {
+      return ancestors.length
+        ? ancestors
+            .reduce<any[]>(
+              (chain, current) => {
+                const parent = chain.pop();
+                const [key, obj] = parent;
+                const child = [current, obj[key]];
 
-                  return [...chain, parent, child];
-                },
-                [[ancestors.shift() ?? field, $STATE]]
-              )
-              .reduceRight(
-                (data, [path, parent]) => {
-                  const child = { ...parent[path], ...data };
-                  return { ...parent, [path]: child };
-                },
-                { [field]: value }
-              )
-          : {
-              ...$STATE,
-              [field]: value,
-            };
-      });
+                return [...chain, parent, child];
+              },
+              [[ancestors.shift() ?? target, source]]
+            )
+            .reduceRight(
+              (data, [path, parent]) => {
+                const child = { ...parent[path], ...data };
+                return { ...parent, [path]: child };
+              },
+              { [target]: value }
+            )
+        : {
+            ...source,
+            [field]: value,
+          };
+    };
+
+    const updateValue = (value: any) => {
+      setFormOutput($STATE => updateNestedValue($STATE, value));
     };
 
     let element = () => {
@@ -505,13 +527,16 @@ export default function useForm() {
           {element()}
         </Label>
         {confirm &&
-          renderField({
-            ...entry,
-            name: `Confirm ${field}`,
-            field: `confirm-${name}`,
-            confirm: false,
-            validation: undefined,
-          })}
+          renderField(
+            {
+              ...entry,
+              name: `Confirm ${field}`,
+              field: `confirm${capitalize(field)}`,
+              confirm: false,
+              validation: undefined,
+            },
+            ancestors
+          )}
       </Fragment>
     ) : (
       <Label key={CHAIN} {...wrapperProps}>

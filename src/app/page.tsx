@@ -12,13 +12,13 @@ export default function Home() {
       <h2 className={`${styles["logo-main"]} flex center`}>
         <ARCAN_LOGO />
       </h2>
-      <Section name="Read" size="content">
+      {/* <Section name="Read" size="content">
         <ul className={`${styles["book-selector"]} flex`}>
           <li>The Immortal Curse</li>
           <li>The Missing Nexus</li>
           <li>The Vengeful Traitor</li>
         </ul>
-      </Section>
+      </Section> */}
       <Section name="Start Here">
         <h2>Start Here</h2>
         <p>Welcome, newcomer. Your adventure has only just begun.</p>

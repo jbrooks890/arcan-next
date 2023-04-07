@@ -5,11 +5,13 @@ import {
   ChangeEvent,
   ChangeEventHandler,
   createElement,
+  Dispatch,
   FormEventHandler,
   Fragment,
   MouseEvent,
   MouseEventHandler,
   ReactElement,
+  SetStateAction,
   useEffect,
   useState,
 } from "react";
@@ -44,7 +46,7 @@ type validatorFn = (v: any) => boolean | Promise<boolean>;
 
 type validatorObj = {
   validator: validatorFn;
-  criteria: string;
+  criteria?: string;
   error?: string;
 };
 
@@ -95,6 +97,7 @@ export default function useForm() {
   // const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => console.log({ formOutput }), [formOutput]);
+  useEffect(() => formData && console.log({ formData }), [formData]);
 
   // <><><><><><><><>\ LABELIZE /<><><><><><><><>
 
@@ -361,7 +364,11 @@ export default function useForm() {
   const renderField = (
     entry: FieldType,
     ancestors: string[] = [],
-    changeHandler?: ChangeEventHandler<HTMLInputElement>
+    options?: {
+      changeHandler?: ChangeEventHandler<HTMLInputElement>;
+      source?: object;
+      updater?: Dispatch<SetStateAction<any>>;
+    }
   ): ReactElement | ReactElement[] => {
     const {
       name,
@@ -381,9 +388,6 @@ export default function useForm() {
       (_parent, child) => _parent?.[child],
       formOutput
     );
-
-    // console.log({ field, defaultValue });
-    // console.log({ TEST: parent?.[field], defaultValue });
     const value = parent?.[field] ?? defaultValue;
 
     const props: Omit<InputPropsType, "handleChange"> = {
@@ -392,7 +396,11 @@ export default function useForm() {
       placeholder,
     };
 
-    const updateNestedValue = (source, value: any, target = field) => {
+    const updateNestedValue = (
+      source = formOutput,
+      value: any,
+      target = field
+    ) => {
       return ancestors.length
         ? ancestors
             .reduce<any[]>(
@@ -413,13 +421,16 @@ export default function useForm() {
               { [target]: value }
             )
         : {
-            ...source,
+            ...(options?.source ?? source),
             [field]: value,
           };
     };
 
-    const updateValue = (value: any) => {
-      setFormOutput($STATE => updateNestedValue($STATE, value));
+    const updateValue = (
+      value: any,
+      updater = options?.updater ?? setFormOutput
+    ) => {
+      updater($STATE => updateNestedValue($STATE, value));
     };
 
     let element = () => {
@@ -514,30 +525,13 @@ export default function useForm() {
       field,
       required,
       criteria: Array.isArray(validation)
-        ? validation?.map(validator => validator.criteria)
-        : undefined,
+        ? validation.map(validator => validator.criteria)
+        : "",
       className: children ? "flex col" : "",
     };
 
     return children ? (
       <FieldSet key={CHAIN} {...wrapperProps} children={[]} />
-    ) : confirm ? (
-      <Fragment key={CHAIN}>
-        <Label key={CHAIN} {...wrapperProps}>
-          {element()}
-        </Label>
-        {confirm &&
-          renderField(
-            {
-              ...entry,
-              name: `Confirm ${field}`,
-              field: `confirm${capitalize(field)}`,
-              confirm: false,
-              validation: undefined,
-            },
-            ancestors
-          )}
-      </Fragment>
     ) : (
       <Label key={CHAIN} {...wrapperProps}>
         {element()}
@@ -545,12 +539,82 @@ export default function useForm() {
     );
   };
 
+  // %%%%%%%%%%%%%%\ CREATE CONFIRM CLONE /%%%%%%%%%%%%%%
+
+  const createConfirmClone = (entry, ancestors) => {
+    const { name, field } = entry;
+    const confirm_name = `Confirm ${name}`;
+    const confirm_field = `confirm${capitalize(field)}`;
+    const confirm_data = {
+      ...entry,
+      name: confirm_name,
+      field: confirm_field,
+      confirm: false,
+      validation: undefined,
+    };
+    const confirm_ancestors = ["data", ...ancestors, "aux", "values"];
+    const confirm_element = renderField(confirm_data, confirm_ancestors, {
+      source: formData,
+      updater: setFormData,
+    });
+
+    // console.log({ formData, formOutput });
+    // const { data, elements, initialOutput } = fieldData(
+    //   [confirm_data],
+    //   confirm_ancestors
+    // );
+
+    const validator = {
+      validator: v => {
+        console.log(
+          `%cCOMPARE:`,
+          "color:cyan",
+          { formData }
+          // formData.data.password.aux.values.confirmPassword
+        );
+
+        return v === "fish";
+      },
+      error: `${entry.name}s do not match`,
+    };
+
+    return {
+      confirm_data,
+      confirm_element,
+      validator,
+    };
+  };
+
   // %%%%%%%%%%%%%%\ VALIDATE FORM /%%%%%%%%%%%%%%
 
   const validateForm = () => {
-    Object.entries(formData!).forEach(([field, { required, validation }]) => {
-      const multi = Array.isArray(validation);
-    });
+    const result = Object.entries(formData.data)
+      .filter(([field, { required, validation }]) => required || !!validation)
+      .map(([field, { name, required, validation }]) => {
+        // console.log({ field, required, validation });
+        const FAILS = ["", undefined, null, NaN];
+        const VALUE = formOutput![field];
+
+        if (required && FAILS.includes(VALUE))
+          return [field, `${capitalize(name)} is required`];
+
+        if (validation) {
+          const multi = Array.isArray(validation);
+          console.log({ validation });
+          if (multi)
+            for (const { validator, error } of validation) {
+              console.log({ VALUE, isValid: validator(VALUE) });
+              if (!validator(VALUE))
+                return [field, error ?? `Invalid ${capitalize(name)}`];
+            }
+          else {
+            if (!validation(VALUE))
+              return [field, `Invalid ${capitalize(name)}`];
+          }
+        }
+        return [field, true];
+      });
+    console.log({ result });
   };
 
   // _____________________________________________
@@ -588,17 +652,53 @@ export default function useForm() {
 
       const [_formData, _formElements, _formOutput] = fields
         .map(entry => {
-          const { field, type, children, value, ...data } = entry;
-          // console.log({ field, value });
+          const { field, type, children, confirm, value, ...data } = entry;
           const parent = [...ancestors, field];
           const element = renderField(entry, ancestors);
+
           if (children) data.children = getFieldData(children, parent);
-          const output = {
+
+          type FieldDataOutput = Omit<FieldType, "field" | "confirm"> & {
+            element: ReactElement | ReactElement[];
+            aux?: Omit<GetFieldsDataType, "initialOutput"> & {
+              values: object;
+            };
+            children?: GetFieldsDataType;
+          };
+
+          const output: FieldDataOutput = {
             type,
             element,
             ...data,
           };
-          const result = [
+
+          if (confirm) {
+            const { confirm_data, confirm_element, validator } =
+              createConfirmClone(entry, parent);
+
+            const { data, elements, initialOutput } = getFieldData(
+              [confirm_data],
+              ["data", ...parent, "aux", "values"]
+            );
+
+            output.aux = {
+              data,
+              elements: {
+                ...elements,
+                [confirm_data.field]: confirm_element,
+                // [confirm_field]: <>FISH</>,
+              },
+              values: initialOutput,
+            };
+            Array.isArray(output.validation)
+              ? output.validation.push(validator)
+              : (output.validation = [
+                  { validator: output.validation as validatorFn },
+                  validator,
+                ]);
+          }
+
+          return [
             [field, output],
             [
               field,
@@ -608,6 +708,8 @@ export default function useForm() {
                     { ...element.props, key: element.key },
                     Object.values(data.children.elements)
                   )
+                : confirm
+                ? [element, output.aux!.elements[`confirm${capitalize(field)}`]]
                 : element,
             ],
             [
@@ -615,7 +717,6 @@ export default function useForm() {
               children ? data.children.initialOutput : value ?? undefined,
             ],
           ];
-          return result;
         })
         .reduce(
           ([_data, _elements, _outputs], [data, element, output]) => {
@@ -638,7 +739,7 @@ export default function useForm() {
     // const newForm: FormDataType = renderFields(fields);
     const newForm: FormDataType = getFieldData(fields);
 
-    console.log({ newForm });
+    // console.log({ newForm });
     !formData && setFormData({ ...newForm, validation: {}, submitted: false });
     !formOutput && setFormOutput(newForm.initialOutput);
 
@@ -647,7 +748,8 @@ export default function useForm() {
     ): void => {
       e.preventDefault();
       handleSubmit();
-      setFormData(prev => ({ ...prev, submitted: true }));
+      validateForm();
+      // setFormData(prev => ({ ...prev, submitted: true }));
       // TODO: IF VALIDATE, VALIDATE
     };
 

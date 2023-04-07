@@ -4,17 +4,6 @@ import Criteria from "./Criteria";
 import styles from "@/styles/form/Label.module.scss";
 import Markdown from "markdown-to-jsx";
 
-type PropsType = {
-  name: string;
-  field: string;
-  required?: boolean;
-  criteria?: string | string[];
-  error?: string;
-  children: ReactElement | ReactElement[];
-  // id?: string;
-  className?: string;
-};
-
 export default function Label({
   name,
   field,
@@ -23,7 +12,7 @@ export default function Label({
   children,
   // id,
   className,
-}: PropsType) {
+}: InputWrapperType) {
   const [showCriteria, setShowCriteria] = useState(false);
 
   const toggleCriteria = () => setShowCriteria(prev => !prev);

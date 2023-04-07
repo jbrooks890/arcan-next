@@ -64,10 +64,10 @@ export default function UserGate({ loginMode = true }) {
     placeholder: !login ? "fishy_01" : undefined,
     validation: !login
       ? [
-          {
-            validator: v => claimUsername(v.username),
-            criteria: "Username must be available",
-          },
+          // {
+          //   validator: v => claimUsername(v.username),
+          //   criteria: "Username must be available",
+          // },
           {
             validator: v => UNAME_REGEX.test(v),
             criteria: unameCriteria,
@@ -96,10 +96,10 @@ export default function UserGate({ loginMode = true }) {
     !login
       ? {
           validation: [
-            {
-              validator: v => PWD_REGEX.test(v),
-              criteria: pwdCriteria,
-            },
+            // {
+            //   validator: v => PWD_REGEX.test(v),
+            //   criteria: pwdCriteria,
+            // },
             {
               validator: v => v.length >= 8,
               criteria: pwdCriteria,

@@ -558,12 +558,6 @@ export default function useForm() {
       updater: setFormData,
     });
 
-    // console.log({ formData, formOutput });
-    // const { data, elements, initialOutput } = fieldData(
-    //   [confirm_data],
-    //   confirm_ancestors
-    // );
-
     const validator = {
       validator: v => {
         console.log(

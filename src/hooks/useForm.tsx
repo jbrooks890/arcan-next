@@ -527,7 +527,7 @@ export default function useForm() {
       criteria: Array.isArray(validation)
         ? validation.map(validator => validator.criteria)
         : "",
-      className: children ? "flex col" : "",
+      className: children ? "flex col" : undefined,
     };
 
     return children ? (
@@ -541,40 +541,62 @@ export default function useForm() {
 
   // %%%%%%%%%%%%%%\ CREATE CONFIRM CLONE /%%%%%%%%%%%%%%
 
+  const getValue = (ancestors: string[]) => {
+    console.log({ formData });
+    return ancestors.reduce((obj, prop) => obj[prop], formData);
+  };
+
   const createConfirmClone = (entry, ancestors) => {
-    const { name, field } = entry;
-    const confirm_name = `Confirm ${name}`;
-    const confirm_field = `confirm${capitalize(field)}`;
-    const confirm_data = {
+    // const { name, field } = entry;
+    const name = `Confirm ${entry.name}`;
+    const field = `confirm${capitalize(entry.field)}`;
+    const data = {
       ...entry,
-      name: confirm_name,
-      field: confirm_field,
+      name,
+      field,
       confirm: false,
       validation: undefined,
     };
-    const confirm_ancestors = ["data", ...ancestors, "aux", "values"];
-    const confirm_element = renderField(confirm_data, confirm_ancestors, {
+    // const confirm_ancestors = ["data", ...ancestors, "aux", "values"];
+    const element = renderField(data, ancestors, {
       source: formData,
       updater: setFormData,
     });
 
-    const validator = {
-      validator: v => {
-        console.log(
-          `%cCOMPARE:`,
-          "color:cyan",
-          { formData }
-          // formData.data.password.aux.values.confirmPassword
-        );
+    console.log({ ancestors });
 
-        return v === "fish";
-      },
+    const confirm_value = () =>
+      ancestors.reduce((obj, prop) => obj?.[prop], formData);
+
+    console.log(
+      `%cTEST:`,
+      "color:lime",
+      confirm_value()
+      // { formData }
+      // formData.data.password.aux.values.confirmPassword
+    );
+
+    const confirm_validation = v => {
+      console.log(
+        `%cCOMPARE:`,
+        "color:cyan",
+        // confirm_value()
+        { formData }
+        // formData.data.password.aux.values.confirmPassword
+      );
+      return v === "fish";
+    };
+
+    // console.log({ confirm_value });
+
+    const validator = {
+      validator: confirm_validation,
       error: `${entry.name}s do not match`,
     };
 
     return {
-      confirm_data,
-      confirm_element,
+      data,
+      element,
       validator,
     };
   };
@@ -583,7 +605,7 @@ export default function useForm() {
 
   const validateForm = () => {
     const result = Object.entries(formData.data)
-      .filter(([field, { required, validation }]) => required || !!validation)
+      .filter(([_, { required, validation }]) => required || !!validation)
       .map(([field, { name, required, validation }]) => {
         // console.log({ field, required, validation });
         const FAILS = ["", undefined, null, NaN];
@@ -594,10 +616,10 @@ export default function useForm() {
 
         if (validation) {
           const multi = Array.isArray(validation);
-          console.log({ validation });
+          // console.log({ validation });
           if (multi)
             for (const { validator, error } of validation) {
-              console.log({ VALUE, isValid: validator(VALUE) });
+              // console.log({ VALUE, isValid: validator(VALUE) });
               if (!validator(VALUE))
                 return [field, error ?? `Invalid ${capitalize(name)}`];
             }
@@ -609,6 +631,106 @@ export default function useForm() {
         return [field, true];
       });
     console.log({ result });
+  };
+
+  // -=-=-=-=-=-=-=-=-\ GET FIELD DATA /-=-=-=-=-=-=-=-=-
+
+  type GetFieldsDataType = {
+    data: FormDataType;
+    elements: { [key: string]: ReactElement };
+    // ^^ TODO: key should be generic: keyof data
+    initialOutput: object;
+  };
+
+  const getFieldData = (
+    fields: FieldType[],
+    ancestors: string[] = [] // TODO
+  ): GetFieldsDataType => {
+    // !!ancestors.length && console.log({ ancestors });
+
+    const [_formData, _formElements, _formOutput] = fields
+      .map(entry => {
+        const { field, type, children, confirm, value, ...data } = entry;
+        const parent = [...ancestors, field];
+        const element = renderField(entry, ancestors);
+
+        if (children) data.children = getFieldData(children, parent);
+
+        type FieldDataOutput = Omit<FieldType, "field" | "confirm"> & {
+          element: ReactElement | ReactElement[];
+          aux?: Omit<GetFieldsDataType, "initialOutput"> & {
+            values: object;
+          };
+          children?: GetFieldsDataType;
+        };
+
+        const output: FieldDataOutput = {
+          type,
+          element,
+          ...data,
+        };
+
+        if (confirm) {
+          const confirm_ancestors = ["data", ...parent, "aux", "values"];
+          const {
+            data: confirm_data,
+            element,
+            validator,
+          } = createConfirmClone(entry, confirm_ancestors);
+
+          const { data, elements, initialOutput } = getFieldData(
+            [confirm_data],
+            confirm_ancestors
+          );
+
+          output.aux = {
+            data,
+            elements: {
+              ...elements,
+              [confirm_data.field]: element,
+              // [confirm_field]: <>FISH</>,
+            },
+            values: initialOutput,
+          };
+          Array.isArray(output.validation)
+            ? output.validation.push(validator)
+            : (output.validation = [
+                { validator: output.validation as validatorFn },
+                validator,
+              ]);
+        }
+
+        return [
+          [field, output],
+          [
+            field,
+            children
+              ? createElement(
+                  FieldSet,
+                  { ...element.props, key: element.key },
+                  Object.values(data.children.elements)
+                )
+              : confirm
+              ? [element, output.aux!.elements[`confirm${capitalize(field)}`]]
+              : element,
+          ],
+          [field, children ? data.children.initialOutput : value ?? undefined],
+        ];
+      })
+      .reduce(
+        ([_data, _elements, _outputs], [data, element, output]) => [
+          [..._data, data],
+          [..._elements, element],
+          [..._outputs, output],
+        ],
+        [[], [], []]
+      );
+
+    return {
+      data: Object.fromEntries(_formData),
+      elements: Object.fromEntries(_formElements),
+      initialOutput: Object.fromEntries(_formOutput),
+    };
   };
 
   // _____________________________________________
@@ -629,107 +751,6 @@ export default function useForm() {
     handleSubmit,
     postMessage = defaultPostMsg,
   }: FormType) => {
-    // -=-=-=-=-=-=-=-=-\ GET FIELD DATA /-=-=-=-=-=-=-=-=-
-
-    type GetFieldsDataType = {
-      data: FormDataType;
-      elements: { [key: string]: ReactElement };
-      // ^^ TODO: key should be generic: keyof data
-      initialOutput: object;
-    };
-
-    const getFieldData = (
-      fields: FieldType[],
-      ancestors: string[] = [] // TODO
-    ): GetFieldsDataType => {
-      // !!ancestors.length && console.log({ ancestors });
-
-      const [_formData, _formElements, _formOutput] = fields
-        .map(entry => {
-          const { field, type, children, confirm, value, ...data } = entry;
-          const parent = [...ancestors, field];
-          const element = renderField(entry, ancestors);
-
-          if (children) data.children = getFieldData(children, parent);
-
-          type FieldDataOutput = Omit<FieldType, "field" | "confirm"> & {
-            element: ReactElement | ReactElement[];
-            aux?: Omit<GetFieldsDataType, "initialOutput"> & {
-              values: object;
-            };
-            children?: GetFieldsDataType;
-          };
-
-          const output: FieldDataOutput = {
-            type,
-            element,
-            ...data,
-          };
-
-          if (confirm) {
-            const { confirm_data, confirm_element, validator } =
-              createConfirmClone(entry, parent);
-
-            const { data, elements, initialOutput } = getFieldData(
-              [confirm_data],
-              ["data", ...parent, "aux", "values"]
-            );
-
-            output.aux = {
-              data,
-              elements: {
-                ...elements,
-                [confirm_data.field]: confirm_element,
-                // [confirm_field]: <>FISH</>,
-              },
-              values: initialOutput,
-            };
-            Array.isArray(output.validation)
-              ? output.validation.push(validator)
-              : (output.validation = [
-                  { validator: output.validation as validatorFn },
-                  validator,
-                ]);
-          }
-
-          return [
-            [field, output],
-            [
-              field,
-              children
-                ? createElement(
-                    FieldSet,
-                    { ...element.props, key: element.key },
-                    Object.values(data.children.elements)
-                  )
-                : confirm
-                ? [element, output.aux!.elements[`confirm${capitalize(field)}`]]
-                : element,
-            ],
-            [
-              field,
-              children ? data.children.initialOutput : value ?? undefined,
-            ],
-          ];
-        })
-        .reduce(
-          ([_data, _elements, _outputs], [data, element, output]) => {
-            return [
-              [..._data, data],
-              [..._elements, element],
-              [..._outputs, output],
-            ];
-          },
-          [[], [], []]
-        );
-
-      return {
-        data: Object.fromEntries(_formData),
-        elements: Object.fromEntries(_formElements),
-        initialOutput: Object.fromEntries(_formOutput),
-      };
-    };
-
     // const newForm: FormDataType = renderFields(fields);
     const newForm: FormDataType = getFieldData(fields);
 

@@ -34,7 +34,7 @@ export default function Password({
         id={field}
         className={showing ? "showing" : "hidden"}
         onChange={handleChange}
-        value={value}
+        value={value ?? ""}
       />
       <ShowPassword />
     </div>

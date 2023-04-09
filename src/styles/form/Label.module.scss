@@ -5,6 +5,23 @@
     color: red;
   }
 
+  .error {
+    margin-bottom: 1em;
+    padding: 0.25em 0.5em;
+    background-color: var(--pop);
+    color: var(--dark);
+    font: {
+      family: var(--keyFont2);
+      weight: bold;
+      size: small;
+    }
+    text: {
+      align: left;
+      transform: uppercase;
+    }
+    border-radius: 2px;
+  }
+
   .label-text {
     display: block;
     margin-bottom: 0.5em;
@@ -24,6 +41,21 @@
     strong > em,
     em > strong {
       color: var(--pop);
+    }
+
+    &:global {
+      &.has-error {
+        &::after {
+          content: "* " attr(data-error) !important;
+          color: coral !important;
+          font: {
+            family: var(--bodyFont);
+            weight: normal;
+          }
+          letter-spacing: normal;
+          text-transform: none;
+        }
+      }
     }
   }
 }

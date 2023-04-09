@@ -29,9 +29,19 @@ export default function UserGate({ loginMode = true }) {
   The last step is to **verify your email address**. A link has been sent to **_${v.email}_**. The link will expire in 72 hours. If this is not your email address or if the specified email address is incorrect you may change your email address in **Profile > Settings** and request a new verification link.`;
 
   const claimUsername = async (username: string) => {
-    const response = await axios.get(`/users/${username}`);
-    const { user } = response.data;
-    return !!user;
+    console.log({ username });
+    try {
+      const response = await axios.get(`/users/${username}?allow=true`);
+      // console.log(`%cRESPONSE:`, "color:coral", response.data);
+      const { user } = response.data;
+      return !user;
+    } catch (error) {
+      // console.error("TEST" + "%".repeat(20), err);
+      // console.warn({ error });
+      if (error.response.status >= 500 && error.response.status < 600)
+        throw new Error(error.message);
+      return true;
+    }
   };
 
   const NAME_FIELDS = [
@@ -40,7 +50,7 @@ export default function UserGate({ loginMode = true }) {
     text("$lastName", false, { placeholder: "Doe" }),
     group("$preferredName", [
       boolean("$cheeseMan"),
-      text("$preferredNameEntry"),
+      text("$preferredNameEntry", false),
     ]),
   ];
   const NAME = group("name", NAME_FIELDS);
@@ -61,16 +71,19 @@ export default function UserGate({ loginMode = true }) {
   const pwdCriteria = "Password must be 8-24 characters, may include: !@#$%";
 
   const USERNAME = text("$username*", false, {
+    value: "arcanboi",
     placeholder: !login ? "fishy_01" : undefined,
     validation: !login
       ? [
-          // {
-          //   validator: v => claimUsername(v.username),
-          //   criteria: "Username must be available",
-          // },
           {
             validator: v => UNAME_REGEX.test(v),
             criteria: unameCriteria,
+          },
+          {
+            validator: v => claimUsername(v),
+            criteria: "Username must be available",
+            // error: `'${v}' is unavailable`
+            error: "Username is unavailable",
           },
           {
             validator: v => v.length >= 3,
@@ -96,10 +109,6 @@ export default function UserGate({ loginMode = true }) {
     !login
       ? {
           validation: [
-            // {
-            //   validator: v => PWD_REGEX.test(v),
-            //   criteria: pwdCriteria,
-            // },
             {
               validator: v => v.length >= 8,
               criteria: pwdCriteria,
@@ -110,6 +119,10 @@ export default function UserGate({ loginMode = true }) {
               criteria: pwdCriteria,
               error: "Password is too long",
             },
+            {
+              validator: v => PWD_REGEX.test(v),
+              criteria: pwdCriteria,
+            },
           ],
         }
       : {}
@@ -117,7 +130,7 @@ export default function UserGate({ loginMode = true }) {
 
   const fields = login
     ? [USERNAME, PASSWORD]
-    : [USERNAME, EMAIL, NAME, DOB, PASSWORD];
+    : [USERNAME, EMAIL, NAME, DOB, PASSWORD]; // TODO: remove NAME
 
   const content = form({
     name: login ? "Login" : "Register",

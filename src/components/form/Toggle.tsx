@@ -10,7 +10,7 @@ const Toggle = ({ field, handleChange, value }: InputPropsType) => {
         className={`${styles.input}`}
         name={field}
         onChange={handleChange}
-        checked={value}
+        checked={value ?? false}
       />
       <div className={`${styles.toggle}`} />
     </>

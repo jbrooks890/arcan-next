@@ -17,7 +17,7 @@ export default function EmailField({
     <input
       type="email"
       name={field}
-      value={value}
+      value={value ?? ""}
       onChange={handleChange}
       placeholder={placeholder}
     />

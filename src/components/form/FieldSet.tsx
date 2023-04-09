@@ -8,6 +8,7 @@ export default function FieldSet({
   className,
   required,
   open = true,
+  error,
   children,
 }: InputWrapperType) {
   const fieldset = useRef<HTMLFieldSetElement | null>(null);

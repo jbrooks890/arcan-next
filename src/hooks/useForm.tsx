@@ -42,7 +42,7 @@ export type FieldTypeEnum =
   | "select";
 // | "multi";
 
-type validatorFn = (v: any) => boolean | Promise<boolean>;
+type validatorFn = (v: any, source?: object) => boolean | Promise<boolean>;
 
 type validatorObj = {
   validator: validatorFn;
@@ -62,6 +62,7 @@ export type FieldType = {
   children?: FieldType[];
   validation?: validatorFn | validatorObj[];
   labelize?: boolean;
+  peripheral?: boolean;
   options?: {
     block?: boolean;
     min?: number;
@@ -72,7 +73,7 @@ export type FieldType = {
   };
 };
 
-export type FormDataType = {
+export type FormMasterType = {
   [key: string]: any;
 };
 
@@ -84,7 +85,7 @@ export type FormType = {
   resetTxt?: string;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
   handleSubmit: (v?: any) => void;
-  postMessage?: (v: FormDataType) => string;
+  postMessage?: (v: FormMasterType) => string;
 };
 
 // =================================================
@@ -92,12 +93,12 @@ export type FormType = {
 // =================================================
 
 export default function useForm() {
-  const [formData, setFormData] = useState<FormDataType>();
-  const [formOutput, setFormOutput] = useState();
+  const [formMaster, setFormMaster] = useState<FormMasterType>();
+  const [formData, setFormData] = useState();
   // const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => console.log({ formOutput }), [formOutput]);
-  useEffect(() => formData && console.log({ formData }), [formData]);
+  useEffect(() => console.log({ formData }), [formData]);
+  useEffect(() => formMaster && console.log({ formMaster }), [formMaster]);
 
   // <><><><><><><><>\ LABELIZE /<><><><><><><><>
 
@@ -359,6 +360,40 @@ export default function useForm() {
     };
   };
 
+  // %%%%%%%%%%%%%%\ EXPAND (FIELDS) /%%%%%%%%%%%%%%
+
+  const expand = (
+    fields: FieldType[],
+    ancestors: string[] = []
+  ): FieldType[] => {
+    const expanded = [...fields];
+    fields.forEach((entry, i) => {
+      const { field, name, confirm } = entry;
+      let index = expanded.indexOf(entry);
+      confirm &&
+        expanded.splice(++index, 0, {
+          ...entry,
+          name: `Confirm ${name}`,
+          field: `confirm${capitalize(field)}`,
+          confirm: false,
+          validation: [
+            {
+              error: `${name}s do not match`,
+              validator: (v, source) => {
+                const compareValue = ancestors.reduce(
+                  (parent, child) => parent[child],
+                  source
+                )[field];
+                console.log({ compareValue });
+                return v === compareValue;
+              },
+            },
+          ],
+        });
+    });
+    return expanded;
+  };
+
   // %%%%%%%%%%%%%%\ RENDER FIELD /%%%%%%%%%%%%%%
 
   const renderField = (
@@ -379,14 +414,14 @@ export default function useForm() {
       required,
       placeholder,
       validation,
-      confirm,
+      // confirm,
     } = entry;
 
     const PATH = [...ancestors, field];
     const CHAIN = PATH.join("-");
     const parent = ancestors.reduce(
       (_parent, child) => _parent?.[child],
-      formOutput
+      formData
     );
     const value = parent?.[field] ?? defaultValue;
 
@@ -397,7 +432,7 @@ export default function useForm() {
     };
 
     const updateNestedValue = (
-      source = formOutput,
+      source = formData,
       value: any,
       target = field
     ) => {
@@ -428,7 +463,7 @@ export default function useForm() {
 
     const updateValue = (
       value: any,
-      updater = options?.updater ?? setFormOutput
+      updater = options?.updater ?? setFormData
     ) => {
       updater($STATE => updateNestedValue($STATE, value));
     };
@@ -529,6 +564,12 @@ export default function useForm() {
         : "",
       className: children ? "flex col" : undefined,
     };
+    const error = ancestors.reduce(
+      (parent, child) => parent?.[child],
+      formMaster?.validation
+    )?.[field];
+
+    if (error) wrapperProps.error = error;
 
     return children ? (
       <FieldSet key={CHAIN} {...wrapperProps} children={[]} />
@@ -539,104 +580,65 @@ export default function useForm() {
     );
   };
 
-  // %%%%%%%%%%%%%%\ CREATE CONFIRM CLONE /%%%%%%%%%%%%%%
-
-  const getValue = (ancestors: string[]) => {
-    console.log({ formData });
-    return ancestors.reduce((obj, prop) => obj[prop], formData);
-  };
-
-  const createConfirmClone = (entry, ancestors) => {
-    // const { name, field } = entry;
-    const name = `Confirm ${entry.name}`;
-    const field = `confirm${capitalize(entry.field)}`;
-    const data = {
-      ...entry,
-      name,
-      field,
-      confirm: false,
-      validation: undefined,
-    };
-    // const confirm_ancestors = ["data", ...ancestors, "aux", "values"];
-    const element = renderField(data, ancestors, {
-      source: formData,
-      updater: setFormData,
-    });
-
-    console.log({ ancestors });
-
-    const confirm_value = () =>
-      ancestors.reduce((obj, prop) => obj?.[prop], formData);
-
-    console.log(
-      `%cTEST:`,
-      "color:lime",
-      confirm_value()
-      // { formData }
-      // formData.data.password.aux.values.confirmPassword
-    );
-
-    const confirm_validation = v => {
-      console.log(
-        `%cCOMPARE:`,
-        "color:cyan",
-        // confirm_value()
-        { formData }
-        // formData.data.password.aux.values.confirmPassword
-      );
-      return v === "fish";
-    };
-
-    // console.log({ confirm_value });
-
-    const validator = {
-      validator: confirm_validation,
-      error: `${entry.name}s do not match`,
-    };
-
-    return {
-      data,
-      element,
-      validator,
-    };
-  };
-
   // %%%%%%%%%%%%%%\ VALIDATE FORM /%%%%%%%%%%%%%%
 
   const validateForm = () => {
-    const result = Object.entries(formData.data)
-      .filter(([_, { required, validation }]) => required || !!validation)
-      .map(([field, { name, required, validation }]) => {
-        // console.log({ field, required, validation });
-        const FAILS = ["", undefined, null, NaN];
-        const VALUE = formOutput![field];
+    const validateObj = (source: object, ancestors: string[] = []) => {
+      return Object.fromEntries(
+        Object.entries(source.data)
+          .filter(
+            ([_, { required, validation, children }]) =>
+              required || !!validation || !!children
+          )
+          .map(([field, { name, required, validation, children }]) => {
+            // console.log({ field, required, validation });
+            const FAILS = ["", undefined, null, NaN];
+            const VALUE = ancestors.reduce(
+              (parent, child) => parent[child],
+              formData
+            )[field];
 
-        if (required && FAILS.includes(VALUE))
-          return [field, `${capitalize(name)} is required`];
+            // console.log({ children: !!children });
+            let nested;
+            if (children) nested = validateObj(children, [...ancestors, field]);
+            // ancestors.length && console.log({ field, VALUE });
 
-        if (validation) {
-          const multi = Array.isArray(validation);
-          // console.log({ validation });
-          if (multi)
-            for (const { validator, error } of validation) {
-              // console.log({ VALUE, isValid: validator(VALUE) });
-              if (!validator(VALUE))
-                return [field, error ?? `Invalid ${capitalize(name)}`];
+            if (required && FAILS.includes(VALUE))
+              return [field, "required field"];
+
+            if (validation) {
+              // console.log({ validation });
+              if (Array.isArray(validation))
+                for (const { validator, error } of validation) {
+                  // console.log({ VALUE, isValid: validator(VALUE) });
+                  if (!validator(VALUE, formData))
+                    return [field, error ?? `Invalid ${capitalize(name)}`];
+                }
+              else {
+                if (!validation(VALUE, formData))
+                  return [field, `Invalid ${capitalize(name)}`];
+              }
             }
-          else {
-            if (!validation(VALUE))
-              return [field, `Invalid ${capitalize(name)}`];
-          }
-        }
-        return [field, true];
-      });
+            return [
+              field,
+              !!nested && Object.keys(nested).length ? nested : false,
+            ];
+          })
+          .filter(([_, value]) => !!value)
+      );
+    };
+    const result = validateObj(formMaster!);
     console.log({ result });
+    setFormMaster(prev => ({
+      ...prev,
+      validation: result,
+    }));
   };
 
-  // -=-=-=-=-=-=-=-=-\ GET FIELD DATA /-=-=-=-=-=-=-=-=-
+  // %%%%%%%%%%%%%%\ GET FIELD DATA /%%%%%%%%%%%%%%
 
   type GetFieldsDataType = {
-    data: FormDataType;
+    data: FormMasterType;
     elements: { [key: string]: ReactElement };
     // ^^ TODO: key should be generic: keyof data
     initialOutput: object;
@@ -646,62 +648,31 @@ export default function useForm() {
     fields: FieldType[],
     ancestors: string[] = [] // TODO
   ): GetFieldsDataType => {
-    // !!ancestors.length && console.log({ ancestors });
+    type FieldDataOutput = Omit<FieldType, "field" | "confirm"> & {
+      element: ReactElement | ReactElement[];
+      aux?: Omit<GetFieldsDataType, "initialOutput"> & {
+        values: object;
+      };
+      children?: GetFieldsDataType;
+    };
 
-    const [_formData, _formElements, _formOutput] = fields
+    const [_formMaster, _formElements, _formData] = fields
       .map(entry => {
         const { field, type, children, confirm, value, ...data } = entry;
         const parent = [...ancestors, field];
         const element = renderField(entry, ancestors);
 
-        if (children) data.children = getFieldData(children, parent);
+        if (children)
+          data.children = getFieldData(expand(children, parent), parent);
 
-        type FieldDataOutput = Omit<FieldType, "field" | "confirm"> & {
-          element: ReactElement | ReactElement[];
-          aux?: Omit<GetFieldsDataType, "initialOutput"> & {
-            values: object;
-          };
-          children?: GetFieldsDataType;
-        };
-
-        const output: FieldDataOutput = {
+        const summary: FieldDataOutput = {
           type,
           element,
           ...data,
         };
 
-        if (confirm) {
-          const confirm_ancestors = ["data", ...parent, "aux", "values"];
-          const {
-            data: confirm_data,
-            element,
-            validator,
-          } = createConfirmClone(entry, confirm_ancestors);
-
-          const { data, elements, initialOutput } = getFieldData(
-            [confirm_data],
-            confirm_ancestors
-          );
-
-          output.aux = {
-            data,
-            elements: {
-              ...elements,
-              [confirm_data.field]: element,
-              // [confirm_field]: <>FISH</>,
-            },
-            values: initialOutput,
-          };
-          Array.isArray(output.validation)
-            ? output.validation.push(validator)
-            : (output.validation = [
-                { validator: output.validation as validatorFn },
-                validator,
-              ]);
-        }
-
         return [
-          [field, output],
+          [field, summary],
           [
             field,
             children
@@ -710,8 +681,6 @@ export default function useForm() {
                   { ...element.props, key: element.key },
                   Object.values(data.children.elements)
                 )
-              : confirm
-              ? [element, output.aux!.elements[`confirm${capitalize(field)}`]]
               : element,
           ],
           [field, children ? data.children.initialOutput : value ?? undefined],
@@ -726,10 +695,12 @@ export default function useForm() {
         [[], [], []]
       );
 
+    // console.log({ _formMaster, _formElements, _formData });
+
     return {
-      data: Object.fromEntries(_formData),
+      data: Object.fromEntries(_formMaster),
       elements: Object.fromEntries(_formElements),
-      initialOutput: Object.fromEntries(_formOutput),
+      initialOutput: Object.fromEntries(_formData),
     };
   };
 
@@ -737,7 +708,7 @@ export default function useForm() {
 
   const defaultPostMsg = () => `## Thanks for your feedback!`;
 
-  const isSubmitted = () => formData?.submitted;
+  const isSubmitted = () => formMaster?.submitted;
 
   // <><><><><><><><>\ FORM /<><><><><><><><>
 
@@ -751,12 +722,24 @@ export default function useForm() {
     handleSubmit,
     postMessage = defaultPostMsg,
   }: FormType) => {
-    // const newForm: FormDataType = renderFields(fields);
-    const newForm: FormDataType = getFieldData(fields);
+    // const newForm: FormMasterType = renderFields(fields);
+
+    // console.log({ fields });
+
+    const newForm: FormMasterType = getFieldData(expand(fields));
 
     // console.log({ newForm });
-    !formData && setFormData({ ...newForm, validation: {}, submitted: false });
-    !formOutput && setFormOutput(newForm.initialOutput);
+    !formMaster &&
+      setFormMaster({ ...newForm, validation: {}, submitted: false });
+    !formData && setFormData(newForm.initialOutput);
+
+    const purge = obj => {
+      return Object.fromEntries(
+        Object.entries(obj).filter(([field, data]) =>
+          typeof data === "object" ? purge(data) : !formMaster[field].peripheral
+        )
+      );
+    };
 
     const submitForm: FormEventHandler<HTMLFormElement> = (
       e: MouseEvent<HTMLButtonElement>
@@ -764,18 +747,18 @@ export default function useForm() {
       e.preventDefault();
       handleSubmit();
       validateForm();
-      // setFormData(prev => ({ ...prev, submitted: true }));
+      // setFormMaster(prev => ({ ...prev, submitted: true }));
       // TODO: IF VALIDATE, VALIDATE
     };
 
     const resetForm: FormEventHandler<HTMLFormElement> = e => {
       e.preventDefault();
-      setFormData(formData?.initialOutput);
+      setFormMaster(formMaster?.initialOutput);
     };
 
-    return formData?.submitted ? (
+    return formMaster?.submitted ? (
       <Markdown className={`post-submit-msg`} options={{ forceBlock: true }}>
-        {postMessage(formOutput!)}
+        {postMessage(formData!)}
       </Markdown>
     ) : (
       <Form

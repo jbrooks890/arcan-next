@@ -10,6 +10,7 @@ export default function Label({
   required = false,
   criteria,
   children,
+  error,
   // id,
   className,
 }: InputWrapperType) {
@@ -27,11 +28,17 @@ export default function Label({
       } ${criteria ? "has-criteria" : "no-criteria"} ${className ?? ""}`}
     >
       <Markdown
-        className={`${styles["label-text"]} label-text`}
+        className={`${styles["label-text"]} label-text ${
+          error ? "has-error" : "no-error"
+        }`}
         onClick={() => criteria && toggleCriteria()}
+        data-error={error ?? undefined}
       >
         {name}
       </Markdown>
+      {/* {required || criteria ? (
+        <span className={`${styles.error}`}>{error ?? "Valid"}</span>
+      ) : undefined} */}
       {criteria ? (
         <Criteria
           content={criteria}

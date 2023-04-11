@@ -57,7 +57,7 @@ export default function UserGate({ loginMode = true }) {
   const NAME = group("name", NAME_FIELDS);
 
   const PATREON_FIELDS = [
-    field({ name: "Are you a Patron?", field: "isPatron", type: "boolean" }),
+    // field({ name: "Are you a Patron?", field: "isPatron", type: "boolean" }),
     email({ name: "Patreon Email", field: "patronEmail" }),
     field({
       name: "Same as above",
@@ -67,7 +67,9 @@ export default function UserGate({ loginMode = true }) {
     }),
   ];
 
-  const PATREON = group("$patreon", PATREON_FIELDS);
+  const PATREON = group("$patreon", PATREON_FIELDS, {
+    options: { block: true },
+  });
 
   const unameCriteria =
     "Username must be 3-23 characters, may not contain special characters";

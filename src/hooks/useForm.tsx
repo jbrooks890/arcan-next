@@ -578,7 +578,7 @@ export default function useForm() {
       <FieldSet
         key={CHAIN}
         {...wrapperProps}
-        inline={children?.length < 3}
+        inline={!entry.options?.block && children?.length < 3}
         children={[]}
       />
     ) : (

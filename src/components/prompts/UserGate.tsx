@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import useForm from "@/hooks/useForm";
-import type { FieldType, FormDataType } from "@/hooks/useForm";
+import type { FieldType, FormMasterType } from "@/hooks/useForm";
 import axios from "../../interfaces/axios";
 import styles from "@/styles/UserGate.module.scss";
+import { AxiosError } from "axios";
 
 export default function UserGate({ loginMode = true }) {
   const [login, setLogin] = useState(loginMode);
@@ -24,7 +25,7 @@ export default function UserGate({ loginMode = true }) {
   const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
-  const POST_SUBMIT_MSG = (v: FormDataType): string => `## Welcome!
+  const POST_SUBMIT_MSG = (v: FormMasterType): string => `## Welcome!
   ### Almost There.
   The last step is to **verify your email address**. A link has been sent to **_${v.email}_**. The link will expire in 72 hours. If this is not your email address or if the specified email address is incorrect you may change your email address in **Profile > Settings** and request a new verification link.`;
 
@@ -35,27 +36,27 @@ export default function UserGate({ loginMode = true }) {
       // console.log(`%cRESPONSE:`, "color:coral", response.data);
       const { user } = response.data;
       return !user;
-    } catch (error) {
-      // console.error("TEST" + "%".repeat(20), err);
-      // console.warn({ error });
-      if (error.response.status >= 500 && error.response.status < 600)
-        throw new Error(error.message);
+    } catch (err: AxiosError | Error) {
+      // console.err("TEST" + "%".repeat(20), err);
+      // console.warn({ err });
+      if (err.response.status >= 500 && err.response.status < 600)
+        throw new Error(err.message);
       return true;
     }
   };
 
   const NAME_FIELDS = [
     text("$firstName", false, { placeholder: "Jane" }),
-    text("$middleName", false),
+    // text("$middleName", false),
     text("$lastName", false, { placeholder: "Doe" }),
-    group("$preferredName", [
-      boolean("$cheeseMan"),
-      text("$preferredNameEntry", false),
-    ]),
+    // group("$preferredName", [
+    //   boolean("$cheeseMan"),
+    //   text("$preferredNameEntry", false),
+    // ]),
   ];
   const NAME = group("name", NAME_FIELDS);
 
-  const PATREON = [
+  const PATREON_FIELDS = [
     field({ name: "Are you a Patron?", field: "isPatron", type: "boolean" }),
     email({ name: "Patreon Email", field: "patronEmail" }),
     field({
@@ -65,6 +66,8 @@ export default function UserGate({ loginMode = true }) {
       value: true,
     }),
   ];
+
+  const PATREON = group("$patreon", PATREON_FIELDS);
 
   const unameCriteria =
     "Username must be 3-23 characters, may not contain special characters";
@@ -130,7 +133,7 @@ export default function UserGate({ loginMode = true }) {
 
   const fields = login
     ? [USERNAME, PASSWORD]
-    : [USERNAME, EMAIL, NAME, DOB, PASSWORD]; // TODO: remove NAME
+    : [USERNAME, EMAIL, NAME, PATREON, DOB, PASSWORD]; // TODO: remove NAME
 
   const content = form({
     name: login ? "Login" : "Register",

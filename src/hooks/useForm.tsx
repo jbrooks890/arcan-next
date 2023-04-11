@@ -555,14 +555,17 @@ export default function useForm() {
       }
     };
 
+    const parentName = ancestors?.length && [...ancestors].pop();
+    const junior = parentName && name.match(new RegExp(parentName, "i"));
+
     const wrapperProps = {
-      name: name!,
+      name: junior ? name!.replace(parentName, "").trim() : name!,
       field,
       required,
       criteria: Array.isArray(validation)
         ? validation.map(validator => validator.criteria)
         : "",
-      className: children ? "flex col" : undefined,
+      validated: !!formMaster?.validation,
     };
     const error = ancestors.reduce(
       (parent, child) => parent?.[child],
@@ -572,12 +575,23 @@ export default function useForm() {
     if (error) wrapperProps.error = error;
 
     return children ? (
-      <FieldSet key={CHAIN} {...wrapperProps} children={[]} />
+      <FieldSet
+        key={CHAIN}
+        {...wrapperProps}
+        inline={children?.length < 3}
+        children={[]}
+      />
     ) : (
       <Label key={CHAIN} {...wrapperProps}>
         {element()}
       </Label>
     );
+  };
+
+  // %%%%%%%%%%%%%%\ VALIDATE FIELD /%%%%%%%%%%%%%%
+
+  const validateField = (field: string, ancestors: string[] = []) => {
+    const parent = ancestors.reduce((obj, path) => obj[path], formMaster);
   };
 
   // %%%%%%%%%%%%%%\ VALIDATE FORM /%%%%%%%%%%%%%%
@@ -730,13 +744,15 @@ export default function useForm() {
 
     // console.log({ newForm });
     !formMaster &&
-      setFormMaster({ ...newForm, validation: {}, submitted: false });
+      setFormMaster({ ...newForm, validation: undefined, submitted: false });
     !formData && setFormData(newForm.initialOutput);
 
     const purge = obj => {
       return Object.fromEntries(
         Object.entries(obj).filter(([field, data]) =>
-          typeof data === "object" ? purge(data) : !formMaster[field].peripheral
+          typeof data === "object"
+            ? purge(data)
+            : !formMaster?.[field].peripheral
         )
       );
     };

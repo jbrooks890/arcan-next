@@ -25,6 +25,8 @@
     &::before {
       // content: "\232A";
       content: "\2013";
+      // content: ">";
+      // font-family: var(--symbols);
       display: block;
       margin-right: 1ch;
       color: var(--mint);

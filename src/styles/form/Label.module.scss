@@ -1,29 +1,32 @@
 .label {
-  // margin-bottom: 1rem;
+  position: relative;
+  text-align: left;
 
   .validate & {
     color: red;
   }
 
   .error {
-    margin-bottom: 1em;
-    padding: 0.25em 0.5em;
-    background-color: var(--pop);
-    color: var(--dark);
+    display: inline-block;
+    margin-left: 1ch;
+    color: coral !important;
     font: {
-      family: var(--keyFont2);
-      weight: bold;
-      size: small;
+      family: var(--bodyFont);
+      weight: normal;
+      size: smaller;
     }
     text: {
       align: left;
-      transform: uppercase;
+      transform: none;
     }
-    border-radius: 2px;
+    letter-spacing: normal;
+    line-height: 1;
+    // border: 1px solid red;
   }
 
   .label-text {
-    display: block;
+    position: relative;
+    display: inline-block;
     margin-bottom: 0.5em;
     -webkit-font-smoothing: antialiased;
     color: var(--mint);
@@ -37,6 +40,9 @@
       weight: 600;
     }
     letter-spacing: 0.1em;
+    // line-height: 1;
+    // border: 1px solid purple;
+    // overflow: visible;
 
     strong > em,
     em > strong {
@@ -44,16 +50,59 @@
     }
 
     &:global {
-      &.has-error {
+      &.required {
         &::after {
-          content: "* " attr(data-error) !important;
-          color: coral !important;
-          font: {
-            family: var(--bodyFont);
-            weight: normal;
+          content: "*";
+          // color: var(--pop-alt);
+          font-weight: normal;
+        }
+
+        &.validated {
+          &::before {
+            position: absolute;
+            display: inline;
+            align-items: center;
+            // height: 100%;
+            transform: translateX(calc(-100% - 0.5ch));
+            // transform: translateX(-100%);
+            font: {
+              family: var(--symbols);
+              weight: normal;
+            }
+            // text-align: right;
+            // line-height: 1;
+            letter-spacing: normal;
+            // border: 1px solid red;
+            // vertical-align: text-top;
           }
-          letter-spacing: normal;
-          text-transform: none;
+
+          &.no-error {
+            &::before {
+              content: "B";
+              // content: var(--checkmark);
+              color: var(--pop);
+            }
+          }
+          &.has-error {
+            &::before {
+              content: "X";
+              // content: var(--cancel);
+              color: var(--pop-alt);
+              // font-size: smaller;
+            }
+          }
+
+          // &::after {
+          //   content: "* " attr(data-error) !important;
+          //   // display: flex;
+          //   color: coral !important;
+          //   font: {
+          //     family: var(--bodyFont);
+          //     weight: normal;
+          //   }
+          //   letter-spacing: normal;
+          //   text-transform: none;
+          // }
         }
       }
     }

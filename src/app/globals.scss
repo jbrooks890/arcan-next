@@ -4,7 +4,7 @@
 }
 @font-face {
   font-family: jb-webdings;
-  src: url(/assets/fonts/JBWebdings.otf);
+  src: url(/assets/fonts/JBWebdings-Arcan.otf);
 }
 @font-face {
   font-family: brands;
@@ -37,7 +37,12 @@
   font-size: 18px;
   /* ========== SPECIAL CHARS ========== */
   --plus: "\254B";
-  --cancel: "\2573";
+  --cancel: "\2715";
+  --cancel-alt: "\2573";
+  --checkmark: "\2713\FE0F";
+  /* ---------- VARIANT SELECTORS ---------- */
+  --vary1: \FE0E;
+
   /* ========== BORDERS ========== */
   --inside: 5px;
   --outside: 10px;
@@ -258,15 +263,15 @@ label {
       cursor: pointer;
     }
 
-    &.required {
-      .label-text {
-        &::after {
-          content: "*";
-          color: red;
-          // font-size: 1rem;
-        }
-      }
-    }
+    // &.required {
+    //   .label-text {
+    //     &::after {
+    //       content: "*";
+    //       color: red;
+    //       // font-size: 1rem;
+    //     }
+    //   }
+    // }
   }
 }
 

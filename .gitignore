@@ -2,6 +2,7 @@
 
 #assets
 /public/assets/fonts/JBWebdings.otf
+/public/assets/fonts/JBWebdings-Arcan.otf
 
 # dependencies
 /node_modules

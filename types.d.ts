@@ -10,6 +10,7 @@ type InputWrapperType = {
   field: string;
   required?: boolean;
   criteria?: string | string[];
+  validated?: boolean;
   error?: string;
   id?: string;
   className?: string;

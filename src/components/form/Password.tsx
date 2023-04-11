@@ -6,8 +6,10 @@ export default function Password({
   value,
   handleChange,
 }: InputPropsType) {
-  const [showing, toggleShowing] = useState(false);
+  const [showing, setShowing] = useState(false);
   const input = useRef<HTMLInputElement | null>(null);
+
+  const toggle = () => setShowing(prev => !prev);
 
   const ShowPassword = () => (
     <button
@@ -17,7 +19,7 @@ export default function Password({
       type="button"
       onClick={e => {
         e.preventDefault();
-        toggleShowing(prev => !prev);
+        setShowing(prev => !prev);
       }}
       tabIndex={0}
     >
@@ -34,6 +36,7 @@ export default function Password({
         id={field}
         className={showing ? "showing" : "hidden"}
         onChange={handleChange}
+        onBlur={() => showing && toggle()}
         value={value ?? ""}
       />
       <ShowPassword />

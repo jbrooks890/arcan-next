@@ -10,6 +10,7 @@ export default function Label({
   required = false,
   criteria,
   children,
+  validated = false,
   error,
   // id,
   className,
@@ -29,16 +30,19 @@ export default function Label({
     >
       <Markdown
         className={`${styles["label-text"]} label-text ${
+          required ? "required" : "not-required"
+        } ${validated ? "validated" : "not-validated"} ${
           error ? "has-error" : "no-error"
         }`}
+        // options={{ forceBlock: true }}
         onClick={() => criteria && toggleCriteria()}
-        data-error={error ?? undefined}
+        // data-error={error ?? undefined}
       >
         {name}
       </Markdown>
-      {/* {required || criteria ? (
-        <span className={`${styles.error}`}>{error ?? "Valid"}</span>
-      ) : undefined} */}
+      {required || criteria ? (
+        <span className={`${styles.error}`}>{error ?? ""}</span>
+      ) : undefined}
       {criteria ? (
         <Criteria
           content={criteria}

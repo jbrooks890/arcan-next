@@ -8,7 +8,8 @@ export default function Dropdown({
   handleChange,
   value,
   other,
-}: SelectType) {
+  className,
+}: SelectType & Passthrough) {
   const [selected, setSelected] = useState(value);
   const [open, setOpen] = useState(false);
   const list = useRef<HTMLUListElement | null>(null);
@@ -24,7 +25,7 @@ export default function Dropdown({
   const toggle = () => setOpen(prev => !prev);
 
   return (
-    <label className={`${styles.dropdown} dropdown-ext`}>
+    <label className={`${styles.dropdown} dropdown-ext ${className ?? ""}`}>
       <select name={field} style={{ display: "none" }} defaultValue={selected}>
         {options.map((option, i) => (
           <option key={i} value={option}>
@@ -32,7 +33,7 @@ export default function Dropdown({
           </option>
         ))}
       </select>
-      <div className={styles.wrapper}>
+      <div className={`${styles.wrapper} wrapper-ext`}>
         <div
           className={`${styles.display} flex ${open ? "open" : "closed"}`}
           onClick={toggle}

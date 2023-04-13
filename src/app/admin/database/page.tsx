@@ -258,6 +258,7 @@ export default function Database({ params }) {
                   options={Object.keys(models)}
                   value={selection}
                   handleChange={selectCollection}
+                  className={styles.dropdown}
                 />
               </fieldset>
 

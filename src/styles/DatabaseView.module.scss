@@ -37,12 +37,25 @@
     /* --------- COLLECTION SELECTOR --------- */
 
     .selector {
-      .dropdown {
-        flex-grow: 1;
+      position: relative;
 
-        .wrapper {
+      .dropdown {
+        position: static;
+        flex-grow: 1;
+        // border: none;
+
+        & > div:first-of-type {
+          // .wrapper
+          position: static;
           border: none;
+          padding: 0;
         }
+
+        // .wrapper-ext {
+        //   position: static;
+        //   border: none;
+        //   padding: 0;
+        // }
       }
     }
     /* ----------- COLLECTION DATA ----------- */

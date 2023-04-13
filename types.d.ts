@@ -30,3 +30,9 @@ type SelectType = {
   other?: boolean;
   handleChange: Function;
 };
+
+type Passthrough = {
+  id?: string;
+  className?: string;
+  style?: object;
+};

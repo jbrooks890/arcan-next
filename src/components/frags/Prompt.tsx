@@ -11,6 +11,7 @@ type PromptPropsType = {
   message: string | ReactElement;
   options: PromptOptionsType;
   cancelable?: boolean;
+  className?: string;
 };
 
 export default function Prompt({
@@ -18,6 +19,7 @@ export default function Prompt({
   message,
   options,
   cancelable = true,
+  className,
 }: PromptPropsType) {
   const { toggle, close, modal } = useModal();
 
@@ -33,7 +35,7 @@ export default function Prompt({
     };
 
     return (
-      <div className="prompt wrapper col">
+      <div className={"prompt wrapper col"}>
         <p className="prompt-query">{message}</p>
         <Menu
           options={[...optionsMapped.keys()]}
@@ -48,7 +50,7 @@ export default function Prompt({
 
   return (
     <>
-      <button className="modal-btn" onClick={toggle}>
+      <button className={`modal-btn ${className ?? ""}`} onClick={toggle}>
         {btnTxt}
       </button>
       {modal(createDialogBox())}

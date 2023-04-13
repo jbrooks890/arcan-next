@@ -24,7 +24,7 @@ export default function Dropdown({
   const toggle = () => setOpen(prev => !prev);
 
   return (
-    <label className={styles.dropdown}>
+    <label className={`${styles.dropdown} dropdown-ext`}>
       <select name={field} style={{ display: "none" }} defaultValue={selected}>
         {options.map((option, i) => (
           <option key={i} value={option}>

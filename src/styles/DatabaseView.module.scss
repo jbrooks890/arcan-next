@@ -90,7 +90,7 @@
 
         &:global {
           &.flex {
-            justify-content: space-between;
+            // justify-content: space-between;
             align-items: flex-end;
           }
         }
@@ -125,7 +125,7 @@
 
         .button-cache {
           & > :not(:last-child) {
-            margin-right: 1em;
+            margin-inline: 1em;
           }
 
           button {
@@ -133,6 +133,28 @@
             padding: 0;
             opacity: 0;
             transition: 0.1s ease-out;
+
+            &::before {
+              // content: "D";
+              color: var(--brite);
+              font: {
+                family: var(--symbols);
+                weight: normal;
+              }
+              margin-right: 0.5ch;
+            }
+          }
+
+          .edit {
+            &::before {
+              content: "D";
+            }
+          }
+
+          .delete {
+            &::before {
+              content: "X";
+            }
           }
         }
       }
@@ -192,7 +214,7 @@
 
         &::before {
           --size: 0.5em;
-          --border: 2px solid var(--green);
+          --border: var(--input);
           content: "";
           display: block;
           position: absolute;

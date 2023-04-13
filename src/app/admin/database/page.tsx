@@ -302,6 +302,7 @@ export default function Database({ params }) {
               <div className={`${styles.viewport} flex col`}>
                 {entrySelection || draftMode ? (
                   <>
+                    {/* ------- ENTRY HEADER ------- */}
                     <div className={`${styles["entry-header"]} flex`}>
                       <div className={styles["entry-title"]}>
                         <h3
@@ -320,6 +321,7 @@ export default function Database({ params }) {
                       {!draftMode && (
                         <div className={styles["button-cache"]}>
                           <button
+                            className={styles.edit}
                             onClick={() =>
                               setDraftMode({
                                 record: entrySelection,
@@ -342,6 +344,7 @@ export default function Database({ params }) {
                               </>
                             }
                             options={{ Delete: deleteEntry }}
+                            className="delete"
                           />
                         </div>
                       )}

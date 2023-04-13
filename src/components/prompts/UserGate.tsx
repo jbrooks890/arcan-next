@@ -29,42 +29,15 @@ export default function UserGate({ loginMode = true }) {
   ### Almost There.
   The last step is to **verify your email address**. A link has been sent to **_${v.email}_**. The link will expire in 72 hours. If this is not your email address or if the specified email address is incorrect you may change your email address in **Profile > Settings** and request a new verification link.`;
 
-  const claimUsername = async (username: string) => {
-    console.log({ username });
-    try {
-      const response = await axios.get(`/users/${username}?allow=true`);
-      // console.log(`%cRESPONSE:`, "color:coral", response.data);
-      const { user } = response.data;
-      return !user;
-    } catch (err: AxiosError | Error) {
-      // console.err("TEST" + "%".repeat(20), err);
-      // console.warn({ err });
-      if (err.response.status >= 500 && err.response.status < 600)
-        throw new Error(err.message);
-      return true;
-    }
-  };
-
   const NAME_FIELDS = [
     text("$firstName", false, { placeholder: "Jane" }),
-    // text("$middleName", false),
     text("$lastName", false, { placeholder: "Doe" }),
-    // group("$preferredName", [
-    //   boolean("$cheeseMan"),
-    //   text("$preferredNameEntry", false),
-    // ]),
   ];
   const NAME = group("name", NAME_FIELDS);
 
   const PATREON_FIELDS = [
-    // field({ name: "Are you a Patron?", field: "isPatron", type: "boolean" }),
     email({ name: "Patreon Email", field: "patronEmail" }),
-    field({
-      name: "Same as above",
-      field: "sameEmail",
-      type: "boolean",
-      value: true,
-    }),
+    boolean("Same as above", true, { field: "sameEmail" }),
   ];
 
   const PATREON = group("$patreon", PATREON_FIELDS, {
@@ -74,6 +47,18 @@ export default function UserGate({ loginMode = true }) {
   const unameCriteria =
     "Username must be 3-23 characters, may not contain special characters";
   const pwdCriteria = "Password must be 8-24 characters, may include: !@#$%";
+
+  const claimUsername = async (username: string) => {
+    try {
+      const response = await axios.get(`/users/${username}?allow=true`);
+      const { user } = response.data;
+      return !user;
+    } catch (err: AxiosError | Error) {
+      if (err.response.status >= 500 && err.response.status < 600)
+        throw new Error(err.message);
+      return true;
+    }
+  };
 
   const USERNAME = text("$username*", false, {
     value: "arcanboi",
@@ -86,8 +71,6 @@ export default function UserGate({ loginMode = true }) {
           },
           {
             validator: v => claimUsername(v),
-            criteria: "Username must be available",
-            // error: `'${v}' is unavailable`
             error: "Username is unavailable",
           },
           {

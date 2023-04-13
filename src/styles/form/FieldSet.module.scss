@@ -47,7 +47,20 @@
 
   & > label {
     display: flex;
-    flex-direction: column-reverse;
+
+    &:global {
+      &.inline {
+        // flex-direction: row-reverse;
+        .label-text {
+          order: 2;
+          margin: 0;
+        }
+      }
+
+      &:not(.inline) {
+        flex-direction: column-reverse;
+      }
+    }
 
     & > span {
       margin-top: 0.25em;

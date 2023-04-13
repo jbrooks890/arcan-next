@@ -1,11 +1,20 @@
-import { ChangeEventHandler } from "react";
+import styles from "@/styles/form/DateField.module.scss";
 
-type PropsType = {
-  field: string;
-  handleChange: ChangeEventHandler<HTMLInputElement>;
-  value: any;
-};
-
-export default function DateField({ field, value, handleChange }: PropsType) {
-  return <input type="date" onChange={handleChange} value={value} />;
+export default function DateField({
+  field,
+  value,
+  handleChange,
+  min,
+  max = new Date(),
+}: InputPropsType) {
+  return (
+    <input
+      type="date"
+      className={styles.input}
+      onChange={handleChange}
+      min={min as string}
+      max={max as string}
+      value={value}
+    />
+  );
 }

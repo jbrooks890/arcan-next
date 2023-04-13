@@ -1,0 +1,230 @@
+.wrapper {
+  overflow: hidden;
+
+  .home {
+    position: relative;
+    width: 100vw;
+    max-width: 1280px;
+    padding: 1rem;
+    overflow: hidden;
+
+    .flex & {
+      flex-grow: 1;
+    }
+
+    &:global {
+      &.grid {
+        grid-template-columns: 240px 1fr;
+        grid-template-rows: 3rem 1fr;
+        gap: 1rem;
+      }
+    }
+
+    & > * {
+      border: 2px solid var(--green);
+      border-radius: var(--inside);
+    }
+
+    .legend {
+      --spacing: 0.1em;
+      padding-inline: calc(var(--spacing) + 0.5em) 0.5em;
+      font-size: small;
+      text-transform: uppercase;
+      letter-spacing: var(--spacing);
+      line-height: 1;
+    }
+
+    /* --------- COLLECTION SELECTOR --------- */
+
+    .selector {
+      .dropdown {
+        flex-grow: 1;
+
+        .wrapper {
+          border: none;
+        }
+      }
+    }
+    /* ----------- COLLECTION DATA ----------- */
+
+    .collection-data {
+      padding: 0.5em;
+
+      .cache {
+        flex-grow: 1;
+        text-align: left;
+
+        & > * {
+          margin-right: 1em;
+        }
+      }
+
+      .create {
+        align-self: stretch;
+        padding-inline: 1em;
+        text-transform: uppercase;
+        border: 1.5px solid transparent;
+        border-radius: 2px;
+        transition: 0.1s ease-out;
+
+        &::before {
+          content: var(--plus);
+          margin-right: 0.5em;
+        }
+      }
+    }
+
+    /* ----------- VIEWPORT (ENTRY DATA) ----------- */
+
+    .viewport {
+      padding: 1rem;
+      text-align: left;
+      overflow-y: scroll;
+      /* overflow: hidden; */
+
+      /* ========== ENTRY HEADER ========== */
+
+      .entry-header {
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--green);
+
+        &:global {
+          &.flex {
+            justify-content: space-between;
+            align-items: flex-end;
+          }
+        }
+
+        .entry-title {
+          .flex & {
+            flex-grow: 1;
+          }
+
+          & > * {
+            margin: 0;
+          }
+
+          .entry-name {
+            font-size: larger;
+          }
+
+          .entry-id {
+            font: {
+              weight: normal;
+              size: 0.9rem;
+            }
+
+            &::before {
+              content: "id: ";
+              color: var(--mint);
+              font-size: small;
+              text-transform: uppercase;
+            }
+          }
+        }
+
+        .button-cache {
+          & > :not(:last-child) {
+            margin-right: 1em;
+          }
+
+          button {
+            cursor: pointer;
+            padding: 0;
+            opacity: 0;
+            transition: 0.1s ease-out;
+          }
+        }
+      }
+
+      /* ========== ENTRY CONTENT BODY ========== */
+
+      .body {
+        padding-block: 1em;
+        overflow-y: scroll;
+
+        /* ========== ENTRY FIELDS ========== */
+
+        .fields {
+          padding-left: 1ch;
+          overflow-y: scroll;
+
+          ul {
+            margin: 0;
+            padding-left: 1em;
+
+            li {
+              max-width: 480px;
+
+              strong {
+                margin-right: 0.5em;
+                color: var(--mint);
+                font: {
+                  weight: 400;
+                  variant: small-caps;
+                }
+
+                &::after {
+                  content: ":";
+                }
+              }
+            }
+          }
+        }
+      }
+      ul {
+        input[type="checkbox"] {
+          & + ul {
+            max-height: 0;
+            overflow: hidden;
+          }
+
+          &:checked + ul {
+            max-height: none;
+          }
+        }
+      }
+
+      .dropdown > label > strong {
+        cursor: pointer;
+        position: relative;
+        height: 1em;
+
+        &::before {
+          --size: 0.5em;
+          --border: 2px solid var(--green);
+          content: "";
+          display: block;
+          position: absolute;
+          left: -1em;
+          top: 50%;
+          width: var(--size);
+          height: var(--size);
+          border-top: var(--border);
+          border-right: var(--border);
+          border-top-right-radius: 2px;
+          transform: translateY(-50%) rotate(45deg);
+        }
+      }
+    }
+  }
+}
+
+/* ====================================== **
+|| HOVER
+** ====================================== */
+@media (hover: hover) {
+  .wrapper .home {
+    .collection-data .create:hover {
+      border-color: var(--green);
+    }
+
+    .entry-header:hover .button-cache button {
+      opacity: 0.75;
+    }
+
+    .entry-header .button-cache button:hover {
+      opacity: 1;
+    }
+  }
+}

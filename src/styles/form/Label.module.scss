@@ -2,6 +2,12 @@
   position: relative;
   text-align: left;
 
+  &:global {
+    &.inline {
+      cursor: pointer;
+    }
+  }
+
   .validate & {
     color: red;
   }

@@ -1,5 +1,6 @@
-import "../../../styles/DBEntryDraft.css";
-import axios from "../../../apis/axios";
+"use client";
+import "@/styles/DBEntryDraft.css";
+import axios from "@/interfaces/axios";
 import { useState, useEffect } from "react";
 // import { useParams, useLocation } from "react-router-dom";
 import Dropdown from "../../form/Dropdown";
@@ -16,13 +17,21 @@ import ArraySet from "../../form/ArraySet";
 import FormPreview from "../../form/FormPreview";
 import DBDraftProvider from "../../contexts/DBDraftContext";
 import { useDBMaster } from "../../contexts/DBContext";
+import { useForm } from "@/hooks/useForm";
+
+type DBDraftType = {
+  record: object;
+  schemaName: string;
+  updateMaster: Function;
+  cancel: Function;
+};
 
 export default function DatabaseDraft({
   record,
   schemaName,
   updateMaster,
   cancel,
-}) {
+}: DBDraftType) {
   const [entryMaster, setEntryMaster] = useState();
   const [entryData, setEntryData] = useState();
 

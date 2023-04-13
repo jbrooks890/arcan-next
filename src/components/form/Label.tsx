@@ -11,6 +11,7 @@ export default function Label({
   criteria,
   children,
   validated = false,
+  inline = false,
   error,
   // id,
   className,
@@ -26,7 +27,9 @@ export default function Label({
       data-label={name}
       className={`${styles.label} label_ ${
         required ? "required" : "not-required"
-      } ${criteria ? "has-criteria" : "no-criteria"} ${className ?? ""}`}
+      } ${criteria ? "has-criteria" : "no-criteria"} ${
+        inline ? "flex inline middle" : "block"
+      } ${className ?? ""}`}
     >
       <Markdown
         className={`${styles["label-text"]} label-text ${

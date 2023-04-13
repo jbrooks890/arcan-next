@@ -1,19 +1,27 @@
-import { useRef, useState } from "react";
+import { ReactElement, useRef, useState } from "react";
 import { useDBMaster } from "../contexts/DBContext";
 import { useDBDraft } from "../contexts/DBDraftContext";
+
+type PropsType = {
+  entry: object;
+  headers: string[];
+  index: string | number;
+  ancestors: string[];
+  children: ReactElement | ReactElement[];
+};
 
 export default function TableEntry({
   entry,
   headers,
   index,
-  ancestry,
+  ancestors,
   children,
-}) {
+}: PropsType) {
   const [open, setOpen] = useState(false);
-  const dataList = useRef();
   const { getPathData } = useDBDraft();
   const { arcanData } = useDBMaster();
   const { references } = arcanData;
+  const dataList = useRef<HTMLTableRowElement | null>(null);
 
   // console.log({ children });
 
@@ -23,10 +31,10 @@ export default function TableEntry({
 
   // ---------| RENDER ENTRY |---------
 
-  const renderEntry = ancestors => {
+  const renderEntry = (ancestors: string[]) => {
     const pathData = getPathData(ancestors);
     const { instance, options } = pathData;
-    const display = entry[ancestors.pop()];
+    const display = entry[ancestors.pop() ?? 0];
     const isArray = Array.isArray(display);
 
     // instance === "ObjectID" && console.log({ display, instance });
@@ -59,7 +67,7 @@ export default function TableEntry({
           </td>
         }
         {headers.map((field, i) => (
-          <td key={i}>{renderEntry([...ancestry, field])}</td>
+          <td key={i}>{renderEntry([...ancestors, field])}</td>
         ))}
       </tr>
 
@@ -68,7 +76,7 @@ export default function TableEntry({
           ref={dataList}
           className={`data-list ${open ? "open" : "closed"}`}
           style={{
-            maxHeight: open ? dataList.current.scrollHeight + "px" : null,
+            maxHeight: open ? dataList.current?.scrollHeight + "px" : undefined,
           }}
         >
           <td colSpan={headers.length}>{children}</td>

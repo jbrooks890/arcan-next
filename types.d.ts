@@ -3,6 +3,9 @@ type InputPropsType = {
   value: any;
   placeholder?: string;
   handleChange: ChangeEventHandler<HTMLInputElement>;
+  min?: number | string | Date;
+  max?: number | string | Date;
+  step?: number;
 };
 
 type InputWrapperType = {
@@ -15,6 +18,7 @@ type InputWrapperType = {
   id?: string;
   className?: string;
   open?: boolean;
+  inline?: boolean;
   children: ReactElement | ReactElement[];
 };
 

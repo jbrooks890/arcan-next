@@ -1,6 +1,6 @@
-import "../../../styles/DatabaseView.css";
-import "../../../styles/Form.css";
-import axios from "../../../apis/axios";
+import "@/styles/DatabaseView.css";
+import "@/styles/Form.css";
+import axios from "@/apis/axios";
 import { useState, useEffect } from "react";
 import Dropdown from "../../form/Dropdown";
 import Menu from "../../form/Menu";
@@ -9,13 +9,11 @@ import DatabaseDraft from "./DatabaseDraft";
 import DBContextProvider, { useDBMaster } from "../../contexts/DBContext";
 import DBDraftProvider from "../../contexts/DBDraftContext";
 import ObjectNest from "../../form/ObjectNest";
-import Table from "../../form/Table";
 import Prompt from "../../frags/Prompt";
-import useTableElement from "../../../hooks/useTableElement";
+import useTableElement from "@/hooks/useTableElement";
 
-const DatabaseView = () => {
-  const { arcanData, setArcanData, updateArcanData, omittedFields } =
-    useDBMaster();
+export default function DatabaseView() {
+  const { arcanData, setArcanData } = useDBMaster();
   const [selection, setSelection] = useState(Object.keys(arcanData?.models)[0]);
   const [entrySelection, setEntrySelection] = useState();
   const [draftMode, setDraftMode] = useState(false);
@@ -219,6 +217,8 @@ const DatabaseView = () => {
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
 
+  console.log(references[selection]);
+
   return (
     <DBDraftProvider
       state={{
@@ -261,10 +261,14 @@ const DatabaseView = () => {
             {/* ------- ENTRY MENU ------- */}
             <Menu
               label="Entries"
-              options={Object.keys(references[selection])}
+              options={
+                selection === "User"
+                  ? Object.values(references[selection])
+                  : Object.keys(references[selection])
+              }
               className="col"
-              display={references[selection]}
-              handleChange={entry => fetchEntry(entry)}
+              display={selection === "User" ? undefined : references[selection]}
+              handleChange={entry_id => fetchEntry(entry_id)}
               value={entrySelection?._id}
               id="collection-entry-list"
             />
@@ -272,7 +276,7 @@ const DatabaseView = () => {
             {/* ------- ENTRY DATA ------- */}
             <div id="entry-data" className="flex col">
               {entrySelection || draftMode ? (
-                <>
+                (<>
                   <div id="entry-header" className="flex">
                     <div id="entry-title">
                       <h3
@@ -327,8 +331,7 @@ const DatabaseView = () => {
                       />
                     )}
                   </div>
-                </>
-              ) : Object.keys(collection).length ? (
+                </> /* : Object.keys(collection).length ? (
                 createTable(
                   Object.fromEntries(
                     Object.values(collection).map(entry => {
@@ -344,6 +347,71 @@ const DatabaseView = () => {
                     ),
                   }
                 )
+              )  */ /*: Object.keys(collection).length ? (
+                createTable(
+                  Object.fromEntries(
+                    Object.values(collection).map(entry => {
+                      const { name, ...others } = entry;
+                      return [name, others];
+                    })
+                  ),
+                  {
+                    omittedFields,
+                    headers: Object.keys(models[selection].paths).filter(
+                      field =>
+                        !omittedFields.includes(field) && !field.endsWith(".$*")
+                    ),
+                  }
+                )
+              )  */ /*: Object.keys(collection).length ? (
+                createTable(
+                  Object.fromEntries(
+                    Object.values(collection).map(entry => {
+                      const { name, ...others } = entry;
+                      return [name, others];
+                    })
+                  ),
+                  {
+                    omittedFields,
+                    headers: Object.keys(models[selection].paths).filter(
+                      field =>
+                        !omittedFields.includes(field) && !field.endsWith(".$*")
+                    ),
+                  }
+                )
+              )  */ /*: Object.keys(collection).length ? (
+                createTable(
+                  Object.fromEntries(
+                    Object.values(collection).map(entry => {
+                      const { name, ...others } = entry;
+                      return [name, others];
+                    })
+                  ),
+                  {
+                    omittedFields,
+                    headers: Object.keys(models[selection].paths).filter(
+                      field =>
+                        !omittedFields.includes(field) && !field.endsWith(".$*")
+                    ),
+                  }
+                )
+              )  */ /*: Object.keys(collection).length ? (
+                createTable(
+                  Object.fromEntries(
+                    Object.values(collection).map(entry => {
+                      const { name, ...others } = entry;
+                      return [name, others];
+                    })
+                  ),
+                  {
+                    omittedFields,
+                    headers: Object.keys(models[selection].paths).filter(
+                      field =>
+                        !omittedFields.includes(field) && !field.endsWith(".$*")
+                    ),
+                  }
+                )
+              )  */)
               ) : (
                 <span className="fade">No entries</span>
               )}
@@ -355,6 +423,4 @@ const DatabaseView = () => {
       </main>
     </DBDraftProvider>
   );
-};
-
-export default DatabaseView;
+}

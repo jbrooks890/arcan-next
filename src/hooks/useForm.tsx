@@ -27,6 +27,7 @@ import Markdown from "markdown-to-jsx";
 import ChoiceBox from "@/components/form/ChoiceBox";
 import SelectMaster from "@/components/form/SelectMaster";
 import { capitalize } from "@/utility/helperFns";
+import Checkbox from "@/components/form/Checkbox";
 
 export type FieldTypeEnum =
   | "string"
@@ -34,6 +35,7 @@ export type FieldTypeEnum =
   | "number"
   | "float"
   | "boolean"
+  | "checkbox"
   | "date"
   | "email"
   | "password"
@@ -62,14 +64,15 @@ export type FieldType = {
   children?: FieldType[];
   validation?: validatorFn | validatorObj[];
   labelize?: boolean;
-  peripheral?: boolean;
+  aux?: boolean;
   options?: {
     block?: boolean;
+    inline?: boolean;
     min?: number;
     max?: number;
     multi?: boolean;
     step?: number;
-    element?: ReactElement | ReactElement[];
+    Element?: JSX.Element;
   };
 };
 
@@ -109,26 +112,26 @@ export default function useForm() {
 
     if (label.startsWith("_")) label = label.slice(1);
 
-    const shorthands = new Map([
-      ["pref", "preference"],
-      ["ref", "reference"],
-      ["attr", "attribute"],
-      ["org", "organization"],
-      ["diffr", "differential"],
-      ["intro", "introduction"],
-      ["avg", "average"],
-      ["dob", "date of birth"],
-      ["abbr", "abbreviation"],
-      ["msg", "message"],
-    ]);
+    const shorthands = {
+      pref: "preference",
+      ref: "reference",
+      attr: "attribute",
+      org: "organization",
+      diffr: "differential",
+      intro: "introduction",
+      avg: "average",
+      dob: "date of birth",
+      abbr: "abbreviation",
+      msg: "message",
+      qty: "quantity",
+    };
+
     const nonPlurals = ["s", "y"];
 
-    shorthands.forEach((long, short) => {
+    Object.entries(shorthands).forEach(([short, long]) => {
       const regex = new RegExp(`\\b${short}\\b`);
       if (label.match(regex)) label = label.replace(regex, long);
     });
-    // if (parent && label.includes(parent))
-    //   label = label.replace(parent, "").trim();
     if (isArray && !nonPlurals.includes(label.charAt(label.length - 1)))
       label += "(s)";
     if (label.startsWith("is ")) label = label.slice(2) + "?";
@@ -289,17 +292,27 @@ export default function useForm() {
 
   const boolean = (
     label: string,
+    checkbox = false,
     options?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
     const [name, field, required] = parseLabel(label);
+
     return {
       name,
       field,
       required,
-      type: "boolean",
+      type: checkbox ? "checkbox" : "boolean",
       ...options,
+      options: {
+        ...options?.options,
+        inline: true,
+      },
     };
   };
+
+  // const checkbox = (...args:<Parameters<typeof boolean>>) => {
+  //   return boolean(...args)
+  // }
 
   // <><><><><><><><>\ SELECT /<><><><><><><><>
 
@@ -360,6 +373,15 @@ export default function useForm() {
     };
   };
 
+  // <><><><><><><><>\ (GET) VALUE /<><><><><><><><>
+
+  const getValue = (field: string, source = formData) => {
+    const chain = field.includes(".") ? field.split(".") : undefined;
+    return (
+      chain?.reduce((parent, child) => parent[child], source) ?? source![field]
+    );
+  };
+
   // %%%%%%%%%%%%%%\ EXPAND (FIELDS) /%%%%%%%%%%%%%%
 
   const expand = (
@@ -376,13 +398,14 @@ export default function useForm() {
           name: `Confirm ${name}`,
           field: `confirm${capitalize(field)}`,
           confirm: false,
+          aux: true,
           validation: [
             {
               error: `${name}s do not match`,
               validator: (v, source) => {
-                const compareValue = ancestors.reduce(
+                const compareValue = ancestors!.reduce(
                   (parent, child) => parent[child],
-                  source
+                  source!
                 )[field];
                 console.log({ compareValue });
                 return v === compareValue;
@@ -523,6 +546,15 @@ export default function useForm() {
               }
             />
           );
+        case "checkbox":
+          return (
+            <Checkbox
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.checked)
+              }
+            />
+          );
         case "date":
           return (
             <DateField
@@ -563,9 +595,10 @@ export default function useForm() {
       field,
       required,
       criteria: Array.isArray(validation)
-        ? validation.map(validator => validator.criteria)
+        ? validation.map(validator => validator.criteria).filter(Boolean)
         : "",
       validated: !!formMaster?.validation,
+      inline: entry.options?.inline,
     };
     const error = ancestors.reduce(
       (parent, child) => parent?.[child],
@@ -750,9 +783,7 @@ export default function useForm() {
     const purge = obj => {
       return Object.fromEntries(
         Object.entries(obj).filter(([field, data]) =>
-          typeof data === "object"
-            ? purge(data)
-            : !formMaster?.[field].peripheral
+          typeof data === "object" ? purge(data) : !formMaster?.[field].aux
         )
       );
     };
@@ -808,5 +839,6 @@ export default function useForm() {
     group,
     select,
     isSubmitted,
+    getValue,
   };
 }

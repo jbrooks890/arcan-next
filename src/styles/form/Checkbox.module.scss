@@ -1,0 +1,40 @@
+/* ::::::::\ CHECKBOX /:::::::: */
+
+.checkbox {
+  position: absolute;
+  visibility: hidden;
+
+  &:checked + .checkmark {
+    background-color: var(--pop);
+
+    &::before {
+      content: "B";
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+.checkmark {
+  --size: 1.5rem;
+  cursor: pointer;
+  width: var(--size);
+  height: var(--size);
+  margin-right: 0.5rem;
+  box-sizing: border-box;
+  border: var(--input);
+  border-radius: 50%;
+  mix-blend-mode: lighten;
+  transition: 0.1s ease-out;
+  // transform: scale(0.5);
+
+  &::before {
+    content: "B";
+    color: var(--dark);
+    font-family: var(--symbols);
+    line-height: 1;
+    transform: scale(0.5);
+    opacity: 0;
+    transition: 0.1s ease-out 0.1s;
+  }
+}

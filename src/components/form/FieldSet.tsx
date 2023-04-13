@@ -11,7 +11,7 @@ export default function FieldSet({
   inline = false,
   error,
   children,
-}: InputWrapperType & { inline: boolean }) {
+}: InputWrapperType) {
   const fieldset = useRef<HTMLFieldSetElement | null>(null);
   const legend = useRef<HTMLLegendElement | null>(null);
 

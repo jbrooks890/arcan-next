@@ -345,7 +345,7 @@ export default function Database({ params }) {
                               </>
                             }
                             options={{ Delete: deleteEntry }}
-                            className="delete"
+                            className={styles.delete}
                           />
                         </div>
                       )}

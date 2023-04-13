@@ -152,7 +152,7 @@
               color: var(--brite);
               font: {
                 family: var(--symbols);
-                weight: normal;
+                weight: normal !important;
               }
               margin-right: 0.5ch;
             }

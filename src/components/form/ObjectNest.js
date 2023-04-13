@@ -24,6 +24,11 @@ export default function ObjectNest({
       <ul>
         {Object.entries(obj).map(([key, value], i) => {
           const isObject = typeof value === "object";
+          const isSimple =
+            Array.isArray(value) &&
+            value.every(entry => typeof entry !== "object");
+
+          // isObject && console.log({ value, isSimple });
 
           // ---------- RENDER ENTRY ----------
           const renderEntry = () => {
@@ -33,7 +38,7 @@ export default function ObjectNest({
             // instance === "ObjectID" && console.log({ options });
 
             return value === null || value === undefined ? (
-              <span className="fade">{"no entry"}</span>
+              <span className="fade">no entry</span>
             ) : instance === "ObjectID" ? (
               references[options.ref ?? dataObj[options.refPath]][value]
             ) : (

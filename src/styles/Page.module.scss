@@ -1,0 +1,9 @@
+.page {
+  &:global {
+    &.screen-type {
+      flex-grow: 1;
+      overflow: hidden;
+      // border: 1px solid blue;
+    }
+  }
+}

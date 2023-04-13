@@ -1,5 +1,6 @@
 .wrapper {
   overflow: hidden;
+  flex-grow: 1;
 
   .home {
     position: relative;
@@ -7,6 +8,7 @@
     max-width: 1280px;
     padding: 1rem;
     overflow: hidden;
+    flex-grow: 1;
 
     .flex & {
       flex-grow: 1;
@@ -61,7 +63,7 @@
     /* ----------- COLLECTION DATA ----------- */
 
     .collection-data {
-      padding: 0.5em;
+      // padding: 0.5em;
 
       .cache {
         flex-grow: 1;
@@ -79,6 +81,7 @@
         border: 1.5px solid transparent;
         border-radius: 2px;
         transition: 0.1s ease-out;
+        line-height: 1;
 
         &::before {
           content: var(--plus);

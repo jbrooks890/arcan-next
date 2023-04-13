@@ -4,11 +4,11 @@ import Accordion from "./Accordion";
 
 export default function ObjectNest({
   dataObj,
+  ancestors = [],
   id,
   className,
-  ancestry = [],
-  ...props
-}) {
+}: // ...props
+Passthrough & { dataObj: object; ancestors: string[] }) {
   const { arcanData, omittedFields } = useDBMaster();
   const { getPathData } = useDBDraft();
   const { models, references } = arcanData;
@@ -59,10 +59,7 @@ export default function ObjectNest({
                   <strong className={isObject ? "flex middle" : ""}>
                     {key}
                   </strong>
-                  <span>
-                    {renderEntry()}
-                    {/* {String(value)} */}
-                  </span>
+                  <span>{renderEntry()}</span>
                 </>
               )}
             </li>
@@ -74,7 +71,7 @@ export default function ObjectNest({
 
   return (
     <div id={id} className={className}>
-      {buildList(dataObj, ancestry)}
+      {buildList(dataObj, ancestors)}
     </div>
   );
 }

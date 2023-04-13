@@ -1,17 +1,16 @@
 import { ReactNode } from "react";
 import { makeHTMLSafe } from "@/lib/utility";
 import type { SectionElement } from "./Section";
+import styles from "@/styles/Page.module.scss";
 
 type PropsType = {
   name: string;
   children: SectionElement | SectionElement[];
-  id?: string;
-  className?: string;
-  type?: string;
+  type?: "regular" | "screen";
   dir?: string;
   banner?: string;
   theme?: string;
-};
+} & Passthrough;
 
 export default function Page({
   name,
@@ -26,7 +25,9 @@ export default function Page({
   return (
     <div
       id={`${id}-page ${id ?? ""}`}
-      className={`page flex col middle ${className ?? ""}`}
+      className={`${styles.page} page ${type}-type flex col middle ${
+        className ?? ""
+      }`}
       data-page-name={name}
       {...props}
     >

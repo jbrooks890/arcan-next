@@ -247,7 +247,7 @@ export default function Database({ params }) {
         setDraftMode,
       }}
     >
-      <Page name="Database">
+      <Page name="Database" type="screen">
         <div className={`${styles.wrapper} flex col middle`}>
           {selection ? (
             <div className={`${styles.home} grid`}>

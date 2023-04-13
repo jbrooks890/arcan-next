@@ -1,4 +1,4 @@
-import styles from "../../styles/Footer.module.css";
+import styles from "@/styles/Footer.module.css";
 import Copy from "../frags/Copy";
 import Icons from "./Icons";
 

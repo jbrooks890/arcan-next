@@ -75,6 +75,7 @@
               family: var(--symbols);
               weight: normal;
             }
+            text-transform: none;
             // text-align: right;
             // line-height: 1;
             letter-spacing: normal;
@@ -85,14 +86,12 @@
           &.no-error {
             &::before {
               content: "B";
-              // content: var(--checkmark);
               color: var(--pop);
             }
           }
           &.has-error {
             &::before {
               content: "X";
-              // content: var(--cancel);
               color: var(--pop-alt);
               // font-size: smaller;
             }

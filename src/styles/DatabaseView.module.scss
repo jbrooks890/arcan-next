@@ -157,6 +157,7 @@
                 family: var(--symbols);
                 weight: normal !important;
               }
+              text-transform: none;
               margin-right: 0.5ch;
             }
           }
@@ -169,7 +170,7 @@
 
           .delete {
             &::before {
-              content: "X";
+              content: "x";
             }
           }
         }

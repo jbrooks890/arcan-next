@@ -1,40 +1,38 @@
 import { useRef, useState } from "react";
-import "../../styles/form/WordBank.css";
+import styles from "@/styles/form/WordBank.module.scss";
 
 const WordBank = ({
   value = [],
   terms = [...value],
-  label,
   field,
-  required,
-  update,
-}) => {
+  handleChange,
+}: InputPropsType & { terms: string[] }) => {
   const [entry, setEntry] = useState("");
   const placeholder = field.replace(/([A-Z])/g, " $1");
-  const submit = useRef();
+  const submit = useRef<HTMLButtonElement | null>(null);
 
   // console.log("VALUE:", { value });
 
   const addTerm = () => {
     if (entry.length && !terms.includes(entry)) {
       setEntry("");
-      update([...terms, entry]);
+      handleChange([...terms, entry]);
     }
   };
 
-  const removeTerm = term => update(terms.filter(entry => entry !== term));
+  const removeTerm = (term: string) =>
+    handleChange(terms.filter(entry => entry !== term));
 
   return (
-    <fieldset className="word-bank">
-      <legend className={required ? "required" : ""}>{label}</legend>
-      <div className="new-entry-wrap flex middle">
+    <>
+      <div className={`${styles["new-wrap"]} flex middle`}>
         <input
           type="text"
-          className="new-entry"
+          className={styles.new}
           placeholder={`New ${placeholder}`}
           value={entry}
           onChange={e => setEntry(e.currentTarget.value)}
-          onKeyDown={e => e.key === "Enter" && submit.current.click()}
+          onKeyDown={e => e.key === "Enter" && submit.current!.click()}
         />
         <button
           ref={submit}
@@ -42,10 +40,10 @@ const WordBank = ({
           onClick={addTerm}
         />
       </div>
-      <ul className="entry-cache flex wrap">
+      <ul className={`${styles.cache} flex wrap`}>
         {terms.length ? (
           terms.map((term, i) => (
-            <li key={i} className="entry flex middle">
+            <li key={i} className={`${styles.entry} flex middle`}>
               {term}
               <button
                 className="delete-entry"
@@ -57,7 +55,7 @@ const WordBank = ({
           <span className="fade">No entries</span>
         )}
       </ul>
-    </fieldset>
+    </>
   );
 };
 

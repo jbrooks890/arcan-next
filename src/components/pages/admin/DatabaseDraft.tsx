@@ -17,7 +17,7 @@ import ArraySet from "@/components/form/ArraySet";
 import FormPreview from "@/components/form/FormPreview";
 import DBDraftProvider from "@/components/contexts/DBDraftContext";
 import { useDBMaster } from "@/components/contexts/DBContext";
-import useForm from "@/hooks/useForm";
+import useForm, { FieldType } from "@/hooks/useForm";
 
 type DBDraftType = {
   record: object;
@@ -39,7 +39,7 @@ export default function DatabaseDraft({
   const { models, references } = arcanData;
   const SCHEMA = models[schemaName];
 
-  const { form, text, number, date } = useForm();
+  const { form, select, field: formField } = useForm();
 
   // useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
 
@@ -84,8 +84,6 @@ export default function DatabaseDraft({
           options?.default ??
           (required && enumValues ? enumValues[0] : undefined);
 
-        const parent = ancestors[0];
-
         // ---------| CREATE LABEL |---------
 
         const createLabel = (str = path) => {
@@ -126,74 +124,23 @@ export default function DatabaseDraft({
 
         label = createLabel();
 
-        const chain = new Map(
-          ancestors.slice(1).reduce(
-            (links, current) => {
-              const _parent = links.pop();
-              const [path, obj] = _parent;
-              const child = [current, obj?.[path]];
-              return [...links, _parent, child];
-            },
-            // [[parent, entryData ?? record]]
-            [[parent, source]]
-          )
-        );
-
         const set = getNestedValue(source);
         const value = set?.[path] ?? field;
 
-        // parent === "affiliations" && console.log({ set, value });
-        // !"_name lockedAttr".split(" ").includes(parent) &&
-        //   console.log({ path, ancestors, set, value });
-
-        // ---------| HANDLE CHANGE |---------
-
-        const handleChange = value => {
-          updateFn(prev => ({
-            ...prev,
-            [parent ?? path]: parent
-              ? [...chain.entries()]
-                  .slice(1) // EXCLUDE OVERALL FORM
-                  .reduceRight(
-                    (val, [child, parent]) => {
-                      parent[child] = val;
-                      return parent;
-                    },
-                    {
-                      ...set,
-                      [path]: value,
-                    }
-                  )
-              : value,
-            // CHANGE HAS TO BE AT LOWEST LEVEL, RETURNED VALUE HAS TO BE AT HIGHEST LEVEL
-          }));
-        };
-
-        const props = {
-          key,
+        let props: Partial<FieldType> = {
+          name: label,
           field: path,
-          fieldPath: [...ancestors, path].join("-"),
-          schemaName,
-          label,
-          required,
           value,
+          required,
         };
-
-        // ---------| NO ELEMENT: TODO |---------
-        const NO_ELEMENT = (
-          <label key={key} {...props}>
-            <span>{label}</span>
-            <div>?</div>
-          </label>
-        );
 
         // ---------| CREATE DATASET ENTRY |---------
 
-        const createDataSetEntry = (paths, options, single = false) => {
+        const createDataSetEntry = (paths, options, multi = true) => {
           return (
             <DataSetEntry
               {...props}
-              single={single}
+              multi={multi}
               options={options}
               createFields={option =>
                 createFields(paths, [...ancestors, path, option])
@@ -205,21 +152,23 @@ export default function DatabaseDraft({
 
         // ---------| CREATE OBJECT ID BOX |---------
 
-        const createObjIdBox = ({ ref, refPath }, single = true) => {
+        const createObjIdBox = ({ ref, refPath }, multi = false) => {
           const reference = refPath
             ? set?.[refPath] || paths[refPath].enumValues[0]
             : ref;
           const dependency = references[reference];
 
+          return select("", dependency, multi);
+
           return (
             <ChoiceBox
               {...{
                 ...props,
-                value: single
-                  ? value?._id ?? value
-                  : value?.map(entry => entry._id ?? entry),
+                value: multi
+                  ? value?.map(entry => entry._id ?? entry)
+                  : value?._id ?? value,
               }}
-              multi={!single}
+              multi={multi}
               options={Object.keys(dependency)}
               display={dependency}
               handleChange={entry => handleChange(entry)}
@@ -227,7 +176,7 @@ export default function DatabaseDraft({
           );
         };
 
-        // ===========================================
+        // =====================| SELECT/CHOICES |=====================
         const { suggestions, selfRef, enumRef, pathRef } = options;
         const srcPath = enumRef ? set?.[enumRef] : undefined;
 
@@ -275,84 +224,53 @@ export default function DatabaseDraft({
 
           // selfRef && console.log({ display: choiceProps.display });
 
-          element =
-            choices.length > 3 || !required ? (
-              <Dropdown {...choiceProps} />
-            ) : (
-              <ChoiceBox {...choiceProps} />
-            );
+          element = select({ ...choiceProps });
         } else {
           if (instance) {
             switch (instance) {
               case "String":
-                element =
-                  path === "description" ? (
-                    <label key={key}>
-                      <span className={required ? "required" : "not-required"}>
-                        {label}
-                      </span>
-                      <textarea
-                        placeholder={`Description for ${schemaName}`}
-                        onChange={e => handleChange(e.currentTarget.value)}
-                        rows={6}
-                        value={set?.[path] ?? ""}
-                      />
-                    </label>
-                  ) : (
-                    <TextField
-                      {...props}
-                      handleChange={e => handleChange(e.currentTarget.value)}
-                    />
-                  );
+                props = {
+                  ...props,
+                  type: "string",
+                  options: {
+                    block: path === "description",
+                  },
+                };
                 break;
               case "Number":
-                element = (
-                  <NumField
-                    {...props}
-                    min={data.options?.min}
-                    max={data.options?.max}
-                    handleChange={e =>
-                      handleChange(parseInt(e.currentTarget.value))
-                    }
-                  />
-                );
+                props = {
+                  ...props,
+                  type: "number",
+                  options: {
+                    min: data.options?.min,
+                    max: data.options?.max,
+                  },
+                };
                 break;
               case "Decimal128":
-                element = (
-                  <NumField
-                    {...props}
-                    min={data.options?.min}
-                    max={data.options?.max}
-                    step={0.01}
-                    handleChange={e =>
-                      handleChange(parseFloat(e.currentTarget.value))
-                    }
-                  />
-                );
+                props = {
+                  ...props,
+                  type: "number",
+                  options: {
+                    min: data.options?.min,
+                    max: data.options?.max,
+                    step: data.options?.step ?? 0.01,
+                  },
+                };
                 break;
               case "Boolean":
-                element = (
-                  <Toggle
-                    {...props}
-                    handleChange={e => handleChange(e.currentTarget.checked)}
-                  />
-                );
+                props = { ...props, type: "boolean" };
                 break;
               case "Date":
                 // console.log("DATE:", set[path] instanceof Date);
-                element = (
-                  <label key={key}>
-                    <span className={required ? "required" : "not-required"}>
-                      {label}
-                    </span>
-                    <input
-                      type="date"
-                      onChange={e => handleChange(e.currentTarget.value)}
-                      // value={set?.[path].toDateString()}
-                      value={set?.[path]}
-                    />
-                  </label>
-                );
+                props = {
+                  ...props,
+                  type: "date",
+                  options: {
+                    min: data.options?.min,
+                    max: data.options?.max,
+                  },
+                };
                 break;
               case "Array":
                 const { schema, caster } = data;
@@ -367,7 +285,7 @@ export default function DatabaseDraft({
                       />
                     );
                   if (instance === "ObjectID")
-                    element = createObjIdBox(caster.options, false);
+                    element = createObjIdBox(caster.options, true);
                 }
                 if (schema) {
                   const { paths } = schema;
@@ -420,6 +338,8 @@ export default function DatabaseDraft({
                 );
                 element = NO_ELEMENT;
             }
+
+            element = formField(props);
           } else {
             if (options) {
               if (options.type?.paths) {
@@ -441,7 +361,7 @@ export default function DatabaseDraft({
           }
         }
 
-        return [path, { field, label, instance, element }];
+        return element;
       });
   }
 
@@ -534,7 +454,7 @@ export default function DatabaseDraft({
           </ButtonCache>
         </div>
       </Form>
-      {/* {form({validate:true,})} */}
+      {/* {form({validate:true,fields:createFields(SCHEMA.paths),handleSubmit})} */}
       <FormPreview
         form={entryData}
         collection={schemaName}

@@ -1,0 +1,94 @@
+// .word-bank {
+//   border: var(--input);
+//   border-radius: var(--outside);
+
+//   legend {
+//     font-size: small;
+//     text-transform: uppercase;
+//   }
+// }
+
+.new-wrap {
+  margin-bottom: 1em;
+  padding: {
+    block: 0.5em;
+    inline: 0.5em 0;
+  }
+  border: var(--input);
+  border-radius: var(--inside);
+
+  .new {
+    position: relative;
+    border: none !important;
+
+    button {
+      --size: 2em;
+      cursor: pointer;
+      width: var(--size);
+      height: var(--size);
+      margin-inline: 0.5em;
+      border-radius: 50%;
+      border: var(--input);
+      transition: 0.1s ease-out;
+
+      &::before {
+        content: var(--plus);
+        font: {
+          size: smaller;
+          weight: bold;
+        }
+      }
+    }
+  }
+}
+
+.cache {
+  padding: 0;
+
+  .entry {
+    cursor: pointer;
+    margin: 0 0.5em 0.5em 0;
+    padding: 0.25em;
+    background-color: var(--pop);
+    color: var(--dark);
+    line-height: 1em;
+    border-radius: 2px;
+
+    .delete-entry {
+      cursor: pointer;
+      display: inline-block;
+      font: {
+        size: 0.5em;
+        weight: bold;
+      }
+      width: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: 0.1s ease-out;
+      /* border: 1px solid red; */
+
+      &::after {
+        content: var(--cancel);
+      }
+    }
+  }
+}
+
+/* ========================================= *\
+|| >> HOVER <<
+\* ========================================= */
+
+@media (hover: hover) {
+  // .word-bank {}
+
+  .new-entry-wrap button:hover {
+    background-color: var(--green);
+    color: var(--dark);
+  }
+
+  .entry-cache .entry:hover .delete-entry {
+    width: auto;
+    padding-left: 1em;
+    opacity: 0.5;
+  }
+}

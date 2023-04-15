@@ -5,7 +5,7 @@ const DataSetItem = ({
 
   secondaries,
   field,
-  single,
+  multi,
   checked,
   handleChange,
   setRef,
@@ -26,12 +26,12 @@ const DataSetItem = ({
             ref={element => setRef(element)}
             id={option}
             name={field}
-            type={single ? "radio" : "checkbox"}
+            type={multi ? "checkbox" : "radio"}
             value={option}
             checked={checked}
             onChange={handleChange}
           />
-          <div className={`ticker ${single ? "radio" : "checkbox"}`} />
+          <div className={`ticker ${multi ? "checkbox" : "radio"}`} />
           <span>{option}</span>
         </label>
         <button className="arrow" onClick={() => setOpen(prev => !prev)} />

@@ -31,7 +31,6 @@ import Checkbox from "@/components/form/Checkbox";
 
 export type FieldTypeEnum =
   | "string"
-  // | "block"
   | "number"
   | "float"
   | "boolean"
@@ -42,7 +41,6 @@ export type FieldTypeEnum =
   | "set"
   | "modifier"
   | "select";
-// | "multi";
 
 type validatorFn = (v: any, source?: object) => boolean | Promise<boolean>;
 
@@ -72,7 +70,7 @@ export type FieldType = {
     max?: number;
     multi?: boolean;
     step?: number;
-    Element?: JSX.Element;
+    Element?: JSX.Element | ReactElement;
   };
 };
 
@@ -84,6 +82,8 @@ export type FormType = {
   name?: string;
   fields: FieldType[];
   validate?: boolean;
+  autoComplete?: boolean;
+  spellCheck?: boolean;
   submitTxt?: string;
   resetTxt?: string;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
@@ -753,7 +753,7 @@ export default function useForm() {
 
   // _____________________________________________
 
-  const defaultPostMsg = () => `## Thanks for your feedback!`;
+  // const defaultPostMsg = () => `## Thanks for your feedback!`;
 
   const isSubmitted = () => formMaster?.submitted;
 
@@ -763,19 +763,16 @@ export default function useForm() {
     name,
     fields,
     validate = false,
+    autoComplete = false,
+    spellCheck = false,
     resetTxt,
     submitTxt,
     handleReset,
     handleSubmit,
-    postMessage = defaultPostMsg,
+    postMessage,
   }: FormType) => {
-    // const newForm: FormMasterType = renderFields(fields);
-
-    // console.log({ fields });
-
     const newForm: FormMasterType = getFieldData(expand(fields));
 
-    // console.log({ newForm });
     !formMaster &&
       setFormMaster({ ...newForm, validation: undefined, submitted: false });
     !formData && setFormData(newForm.initialOutput);
@@ -805,13 +802,15 @@ export default function useForm() {
 
     return formMaster?.submitted ? (
       <Markdown className={`post-submit-msg`} options={{ forceBlock: true }}>
-        {postMessage(formData!)}
+        {postMessage?.(formData!) ?? "Submitted"}
       </Markdown>
     ) : (
       <Form
         name={name}
         validate={validate}
         className="flex col"
+        autoComplete={autoComplete}
+        spellCheck={spellCheck}
         handleSubmit={submitForm}
         handleReset={resetForm}
         submitTxt={submitTxt}

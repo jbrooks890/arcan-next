@@ -9,7 +9,7 @@ const DataSetEntry = ({
   options,
   display,
   inputText = !options?.length,
-  single = true,
+  multi = false,
   label,
   className,
   cache = [],
@@ -83,7 +83,7 @@ const DataSetEntry = ({
                 option={option}
                 secondaries={ELEMENTS}
                 field={field}
-                single={single}
+                multi={multi}
                 checked={Object.keys(value).includes(option)}
                 handleChange={() => update(option, FIELDS)}
               />

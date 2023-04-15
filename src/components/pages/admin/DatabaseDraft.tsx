@@ -1,23 +1,23 @@
 "use client";
-import "@/styles/DBEntryDraft.css";
+import styles from "@/styles/DBEntryDraft.module.scss";
 import axios from "@/interfaces/axios";
 import { useState, useEffect } from "react";
 // import { useParams, useLocation } from "react-router-dom";
-import Dropdown from "../../form/Dropdown";
-import Form from "../../form/Form";
-import TextField from "../../form/TextField";
-import Toggle from "../../form/Toggle";
-import WordBank from "../../form/WordBank";
-import ButtonCache from "../../form/ButtonCache";
-import ChoiceBox from "../../form/ChoiceBox";
-import FieldSet from "../../form/FieldSet";
-import DataSetEntry from "../../form/DataSetEntry";
-import NumField from "../../form/NumField";
-import ArraySet from "../../form/ArraySet";
-import FormPreview from "../../form/FormPreview";
-import DBDraftProvider from "../../contexts/DBDraftContext";
-import { useDBMaster } from "../../contexts/DBContext";
-import { useForm } from "@/hooks/useForm";
+import Dropdown from "@/components/form/Dropdown";
+import Form from "@/components/form/Form";
+import TextField from "@/components/form/TextField";
+import Toggle from "@/components/form/Toggle";
+import WordBank from "@/components/form/WordBank";
+import ButtonCache from "@/components/form/ButtonCache";
+import ChoiceBox from "@/components/form/ChoiceBox";
+import FieldSet from "@/components/form/FieldSet";
+import DataSetEntry from "@/components/form/DataSetEntry";
+import NumField from "@/components/form/NumField";
+import ArraySet from "@/components/form/ArraySet";
+import FormPreview from "@/components/form/FormPreview";
+import DBDraftProvider from "@/components/contexts/DBDraftContext";
+import { useDBMaster } from "@/components/contexts/DBContext";
+import useForm from "@/hooks/useForm";
 
 type DBDraftType = {
   record: object;
@@ -35,11 +35,13 @@ export default function DatabaseDraft({
   const [entryMaster, setEntryMaster] = useState();
   const [entryData, setEntryData] = useState();
 
-  const { arcanData, updateArcanData } = useDBMaster();
+  const { arcanData } = useDBMaster();
   const { models, references } = arcanData;
   const SCHEMA = models[schemaName];
 
-  useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
+  const { form, text, number, date } = useForm();
+
+  // useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
 
   const initEntry = () => {
     const { paths } = SCHEMA;
@@ -217,7 +219,7 @@ export default function DatabaseDraft({
                   ? value?._id ?? value
                   : value?.map(entry => entry._id ?? entry),
               }}
-              single={single}
+              multi={!single}
               options={Object.keys(dependency)}
               display={dependency}
               handleChange={entry => handleChange(entry)}
@@ -286,7 +288,7 @@ export default function DatabaseDraft({
                 element =
                   path === "description" ? (
                     <label key={key}>
-                      <span className={required ? "required" : ""}>
+                      <span className={required ? "required" : "not-required"}>
                         {label}
                       </span>
                       <textarea
@@ -340,7 +342,9 @@ export default function DatabaseDraft({
                 // console.log("DATE:", set[path] instanceof Date);
                 element = (
                   <label key={key}>
-                    <span className={required ? "required" : ""}>{label}</span>
+                    <span className={required ? "required" : "not-required"}>
+                      {label}
+                    </span>
                     <input
                       type="date"
                       onChange={e => handleChange(e.currentTarget.value)}
@@ -518,7 +522,6 @@ export default function DatabaseDraft({
   return (
     <div id="database-entry" className="flex">
       <Form className="flex col" autoComplete={false}>
-        {/* <h3>{schemaName}</h3> */}
         <div className="form-wrapper flex col">
           {buildForm()}
           <ButtonCache>
@@ -531,6 +534,7 @@ export default function DatabaseDraft({
           </ButtonCache>
         </div>
       </Form>
+      {/* {form({validate:true,})} */}
       <FormPreview
         form={entryData}
         collection={schemaName}

@@ -25,7 +25,7 @@ export default function Dropdown({
   const toggle = () => setOpen(prev => !prev);
 
   return (
-    <label className={`${styles.dropdown} dropdown-ext ${className ?? ""}`}>
+    <label className={`${styles.dropdown} dropdown-ext ${className ?? "exo"}`}>
       <select name={field} style={{ display: "none" }} defaultValue={selected}>
         {options.map((option, i) => (
           <option key={i} value={option}>
@@ -35,7 +35,9 @@ export default function Dropdown({
       </select>
       <div className={`${styles.wrapper} wrapper-ext`}>
         <div
-          className={`${styles.display} flex ${open ? "open" : "closed"}`}
+          className={`${styles.display} flex middle ${
+            open ? "open" : "closed"
+          }`}
           onClick={toggle}
         >
           {(selected && String(selected)) ?? (display?.[selected] || NO_CHOICE)}

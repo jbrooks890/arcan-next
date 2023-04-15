@@ -1,4 +1,4 @@
-import "../../styles/form/ArraySet.css";
+import "@/styles/form/ArraySet.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ArraySetEntry from "./ArraySetEntry";
 import FieldSet from "./FieldSet";
@@ -32,7 +32,7 @@ export default function ArraySet({
   const [expandNew, setExpandNew] = useState(false);
   const [submitDraft, setSubmitDraft] = useState();
   const { omittedFields, models } = useDBMaster();
-  const { createTable } = useTableElement();
+  const { table } = useTableElement();
   const { createButtons } = useOpsCache();
 
   // console.log({ entryDraft, submitDraft });
@@ -108,7 +108,7 @@ export default function ArraySet({
         />
       }
       {cache.length ? (
-        createTable(cache, {
+        table(cache, {
           omittedFields,
           ancestry,
           headers: Object.keys(Object.values(cache)[0]).filter(

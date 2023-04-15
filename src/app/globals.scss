@@ -87,6 +87,10 @@ body {
   font-family: var(--bodyFont);
   text-align: center;
   fill: var(--pop);
+
+  &.modal-lock {
+    overflow: hidden;
+  }
 }
 
 #siteWrapper {

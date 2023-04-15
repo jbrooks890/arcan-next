@@ -1,0 +1,57 @@
+.flex #database-entry {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+#database-entry {
+  position: relative;
+
+  &:global {
+    .flex {
+      justify-content: center;
+    }
+  }
+
+  & > *:not(:last-child) {
+    margin-right: 1rem;
+    /* overflow-y: scroll; */
+  }
+
+  form {
+    position: relative;
+    max-width: 50%;
+    flex-grow: 1;
+    overflow: hidden scroll;
+
+    .form-wrapper {
+      position: relative;
+      border-color: var(--pop);
+
+      & > * {
+        display: block;
+        margin-bottom: 1em;
+        text-align: left;
+      }
+
+      h3 {
+        align-self: stretch;
+        position: sticky;
+        top: 0;
+        margin: 0;
+        padding-block: 1.5em;
+        background-color: var(--dark);
+        text-align: center;
+        z-index: 1000;
+      }
+    }
+
+    label span {
+      text-transform: uppercase;
+      font-size: small;
+
+      & + * {
+        margin-top: 2px;
+      }
+    }
+  }
+}

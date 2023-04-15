@@ -11,7 +11,7 @@ export default function Article({
   return (
     <article
       id={`article-${name} ${name} ${id ?? ""}`.trim()}
-      className={`${className ?? ""}`.trim()}
+      className={`${className ?? "exo"}`.trim()}
     >
       {children}
     </article>

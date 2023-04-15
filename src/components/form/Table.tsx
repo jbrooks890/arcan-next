@@ -33,7 +33,7 @@ export default function Table({
     <table
       id={id}
       className={`${styles.table} ${isArray ? "array" : "object"} ${
-        className ?? ""
+        className ?? "exo"
       }`}
     >
       <thead>

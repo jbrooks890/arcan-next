@@ -1,8 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import "../../styles/Modal.css";
+import styles from "@/styles/Modal.module.scss";
 
 // TUTORIAL: https://upmostly.com/tutorials/modal-components-react-custom-hooks
+
+type ModalPropsType = {
+  isShowing: boolean;
+  auto: boolean;
+  closeable: boolean;
+  screen: boolean;
+  children: ReactElement | ReactElement[];
+} & Passthrough;
 
 export default function Modal({
   isShowing,
@@ -11,15 +19,17 @@ export default function Modal({
   closeable = true,
   screen = true,
   children,
-}) {
+}: ModalPropsType) {
   const [active, setActive] = useState(false);
-  const wrapper = useRef();
+  const wrapper = useRef<HTMLDivElement | null>(null);
 
   // console.log({ isShowing });
   // console.log({ children });
-  useEffect(() => isShowing && setActive(true), []);
+  useEffect(() => {
+    if (isShowing) setActive(true);
+  }, []);
 
-  const closeModal = e => {
+  const closeModal = () => {
     document.body.classList.toggle("modal-lock");
     setActive(false);
   };
@@ -27,10 +37,10 @@ export default function Modal({
   return isShowing
     ? createPortal(
         <>
-          <div className={`modal-overlay ${screen ? "screen" : "clear"}`} />
+          <div className={`${styles.overlay} ${screen ? "screen" : "clear"}`} />
           <div
-            className={`modal-wrapper flex col ${
-              active ? "active" : ""
+            className={`${styles.wrapper} flex col ${
+              active ? "active" : "inactive"
             } ${className}`}
             ref={wrapper}
             aria-modal
@@ -38,10 +48,10 @@ export default function Modal({
             tabIndex={-1}
             role="dialog"
           >
-            <div className="modal flex col center">
+            <div className={`${styles.modal} flex col center`}>
               {!auto && closeable && (
                 <div
-                  className="modal-close flex center"
+                  className={`${styles.close} flex center`}
                   data-dismiss="modal"
                   aria-label="close"
                   onClick={() => !auto && closeModal()}

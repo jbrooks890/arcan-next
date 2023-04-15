@@ -27,13 +27,15 @@
       border-radius: var(--inside);
     }
 
-    .legend {
-      --spacing: 0.1em;
-      padding-inline: calc(var(--spacing) + 0.5em) 0.5em;
-      font-size: small;
-      text-transform: uppercase;
-      letter-spacing: var(--spacing);
-      line-height: 1;
+    & > fieldset {
+      & > legend {
+        --spacing: 0.1em;
+        padding-inline: calc(var(--spacing) + 0.5em) 0.5em;
+        font-size: small;
+        text-transform: uppercase;
+        letter-spacing: var(--spacing);
+        line-height: 1;
+      }
     }
 
     /* --------- COLLECTION SELECTOR --------- */

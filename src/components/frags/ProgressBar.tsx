@@ -18,7 +18,7 @@ export default function ProgressBar({
     // <div
     //   className={`${styles.outer} progress-bar outer ${
     //     progress >= 100 ? "complete" : "in-progress"
-    //   } ${className ?? ""}`}
+    //   } ${className ?? "exo"}`}
     //   data-progress-txt={progress >= 100 ? "Complete" : `${progress}%`}
     //   style={{ ["--progress"]: `${progress}px` } as CustomCSSVar}
     // >

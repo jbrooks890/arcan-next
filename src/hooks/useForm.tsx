@@ -81,7 +81,7 @@ export type FormMasterType = {
 };
 
 export type FormType = {
-  name: string;
+  name?: string;
   fields: FieldType[];
   validate?: boolean;
   submitTxt?: string;

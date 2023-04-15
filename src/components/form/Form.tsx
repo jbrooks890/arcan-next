@@ -2,7 +2,7 @@ import styles from "@/styles/Form.module.scss";
 import { FormEventHandler, MouseEvent, ReactElement } from "react";
 
 type PropsType = {
-  name: string;
+  name?: string;
   children: ReactElement | ReactElement[];
   handleSubmit: FormEventHandler<HTMLFormElement>;
   handleReset?: FormEventHandler<HTMLFormElement>;
@@ -31,16 +31,16 @@ const Form = ({
 }: PropsType) => {
   return (
     <form
-      name={name}
+      name={name ?? "anonymous"}
       id={id}
-      className={`${styles.form} ${className ?? ""} ${
+      className={`${styles.form} ${className ?? "exo"} ${
         validate ? "validate" : "no-validate"
       }`}
       onSubmit={handleSubmit}
       autoComplete={autoComplete ? "on" : "off"}
       spellCheck={spellCheck}
     >
-      <h2 className={`${styles.title}`}>{name}</h2>
+      {name && <h2 className={`${styles.title}`}>{name}</h2>}
       {children}
       <button
         type="submit"

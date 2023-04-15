@@ -9,7 +9,7 @@ export default function Section({
   return (
     <section
       id={`${name}-section ${name} ${id ?? ""}`.trim()}
-      className={`section ${className ?? ""}`.trim()}
+      className={`section ${className ?? "exo"}`.trim()}
     >
       {children}
     </section>

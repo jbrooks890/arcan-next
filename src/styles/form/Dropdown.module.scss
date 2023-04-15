@@ -16,7 +16,7 @@
     .display {
       cursor: pointer;
       position: relative;
-      line-height: 1em;
+      line-height: 1;
       z-index: 2;
 
       &:global {
@@ -33,11 +33,12 @@
       &::after {
         content: var(--plus);
         display: block;
+        // background-color: red;
         color: inherit;
+        // font-family: var(--symbols);
         font-size: smaller;
-        // line-height: 1;
         transform-origin: center;
-        opacity: 0.25;
+        // opacity: 0.25;
         transition: 0.1s ease-out;
         box-sizing: border-box;
       }

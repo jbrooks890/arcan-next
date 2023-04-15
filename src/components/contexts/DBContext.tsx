@@ -9,7 +9,7 @@ import {
 } from "react";
 // import axios from "@/interfaces/axios";
 
-type ArcanDataType = {
+export type ArcanDataType = {
   collections: object;
   models: object;
   references: object;

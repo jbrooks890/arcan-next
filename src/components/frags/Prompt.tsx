@@ -50,7 +50,7 @@ export default function Prompt({
 
   return (
     <>
-      <button className={`modal-btn ${className ?? ""}`} onClick={toggle}>
+      <button className={`modal-btn ${className ?? "exo"}`} onClick={toggle}>
         {btnTxt}
       </button>
       {modal(createDialogBox())}

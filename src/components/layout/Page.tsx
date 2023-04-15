@@ -26,7 +26,7 @@ export default function Page({
     <div
       id={`${id}-page ${id ?? ""}`}
       className={`${styles.page} page ${type}-type flex col middle ${
-        className ?? ""
+        className ?? "exo"
       }`}
       data-page-name={name}
       {...props}

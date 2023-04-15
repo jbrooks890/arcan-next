@@ -29,7 +29,7 @@ export default function Label({
         required ? "required" : "not-required"
       } ${criteria ? "has-criteria" : "no-criteria"} ${
         inline ? "flex inline middle" : "block"
-      } ${className ?? ""}`}
+      } ${className ?? "exo"}`}
     >
       <Markdown
         className={`${styles["label-text"]} label-text ${

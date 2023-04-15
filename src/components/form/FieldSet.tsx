@@ -19,7 +19,7 @@ export default function FieldSet({
     <fieldset
       ref={fieldset}
       id={id ?? ""}
-      className={`${styles.fieldset} ${className ?? ""} ${
+      className={`${styles.fieldset} ${className ?? "exo"} ${
         field ? `${field}-section` : ""
       } group flex ${inline ? "inline" : "col"} ${open ? "open" : "closed"}`}
     >

@@ -28,7 +28,7 @@ export default function Section({
       data-section-name={name}
       className={`${styles.section} ${size}-width ${
         banner ? "has-banner" : "no-banner"
-      } ${className ?? ""}`}
+      } ${className ?? "exo"}`}
       {...props}
     >
       {children}

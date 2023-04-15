@@ -7,7 +7,7 @@ import Dropdown from "@/components/form/Dropdown";
 import Menu from "@/components/form/Menu";
 import Accordion from "@/components/form/Accordion";
 import DatabaseDraft from "@/components/pages/admin/DatabaseDraft";
-import { useDBMaster } from "@/components/contexts/DBContext";
+import { ArcanDataType, useDBMaster } from "@/components/contexts/DBContext";
 import DBDraftProvider from "@/components/contexts/DBDraftContext";
 import ObjectNest from "@/components/form/ObjectNest";
 import Prompt from "@/components/frags/Prompt";
@@ -22,6 +22,12 @@ type reducerActionType =
   | "changeRecord"
   | "toggleDraftMode";
 
+type DraftModeParams = {
+  record?: string;
+  schemaName: string;
+  update: any; // TODO
+};
+
 const reducer = (
   state,
   action: { type: reducerActionType; payload: any }
@@ -31,11 +37,13 @@ export default function Database({ params }) {
   const { arcanData, updateArcanData } = useDBMaster();
   const [selection, setSelection] = useState(Object.keys(arcanData?.models)[0]);
   const [entrySelection, setEntrySelection] = useState();
-  const [draftMode, setDraftMode] = useState(false);
+  const [draftMode, setDraftMode] = useState<DraftModeParams | undefined>(
+    undefined
+  );
   const [state, dispatch] = useReducer(reducer, {
-    collection: {},
-    record: {},
-    draftMode: false,
+    collection: {}, // SELECTION
+    record: {}, // ENTRY SELECTION
+    draftMode: undefined,
   });
 
   const { models, references, collections } = arcanData;
@@ -146,7 +154,7 @@ export default function Database({ params }) {
 
   // :::::::::::::\ SELECT COLLECTION /:::::::::::::
 
-  const selectCollection = name => {
+  const selectCollection = (name: string) => {
     console.clear();
     draftMode && cancelDraft();
     setSelection(name);
@@ -183,8 +191,7 @@ export default function Database({ params }) {
     setEntrySelection(null);
     setDraftMode({
       schemaName: selection,
-      arcanData,
-      updateMaster,
+      update: updateMaster,
     });
   };
 
@@ -253,7 +260,7 @@ export default function Database({ params }) {
             <div className={`${styles.home} grid`}>
               {/* ------- COLLECTION SELECTOR ------- */}
               <fieldset className={`${styles.selector} flex middle`}>
-                <legend className={styles.legend}>Collection</legend>
+                <legend>Collection</legend>
                 <Dropdown
                   options={Object.keys(models)}
                   value={selection}
@@ -264,7 +271,7 @@ export default function Database({ params }) {
 
               {/* ------- COLLECTION DATA ------- */}
               <fieldset className={`${styles["collection-data"]} flex middle`}>
-                <legend className={styles.legend}>Collection Data</legend>
+                <legend>Collection Data</legend>
                 <div className={`${styles.cache} flex middle`}>
                   <div>
                     Entries: {Object.keys(references[selection]).length}

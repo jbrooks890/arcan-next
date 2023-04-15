@@ -53,7 +53,7 @@ const FormPreview = ({
   // const handleSubmit = e => e.preventDefault();
 
   return (
-    <fieldset id={id} className={`form-preview flex col ${className ?? ""}`}>
+    <fieldset id={id} className={`form-preview flex col ${className ?? "exo"}`}>
       <legend>{legend}</legend>
       <h3>{heading}</h3>
       {/* <div className={`wrapper flex col`}>{buildList(form)}</div> */}

@@ -14,7 +14,7 @@ export default function Search({
 }: PropsType) {
   return (
     <div
-      className={`${styles.search} flex middle ${className ?? ""}`}
+      className={`${styles.search} flex middle ${className ?? "exo"}`}
       {...props}
     >
       <div className={`${styles.icon} flex middle`}>

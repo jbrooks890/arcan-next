@@ -1,18 +1,16 @@
 import { Fragment, useState } from "react";
-import "../../styles/form/SelectMenu.css";
+import styles from "@/styles/form/Menu.module.scss";
 import Search from "./Search";
 
 type PropsType = {
   options: string[];
   display?: { [key: string]: string };
   label?: string;
-  id?: string;
-  className?: string;
   field?: string;
   value?: any;
   searchable?: boolean;
   handleChange: Function;
-};
+} & Passthrough;
 
 const Menu = ({
   options,
@@ -31,7 +29,7 @@ const Menu = ({
   return (
     <fieldset
       id={id}
-      className={`select-menu ${className ? className : ""} flex`}
+      className={`${styles.menu} flex ${className ?? "exo"}`}
       {...props}
     >
       {label && <legend>{label}</legend>}

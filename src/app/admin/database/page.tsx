@@ -241,7 +241,7 @@ export default function Database({ params }) {
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
 
-  console.log(references[selection]);
+  // console.log(references[selection]);
 
   return (
     <DBDraftProvider

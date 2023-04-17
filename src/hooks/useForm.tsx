@@ -1,13 +1,10 @@
 "use client";
-import { makeHTMLSafe } from "@/lib/utility";
-import Form from "@/components/form/Form";
 import {
   ChangeEvent,
   ChangeEventHandler,
   createElement,
   Dispatch,
   FormEventHandler,
-  Fragment,
   MouseEvent,
   MouseEventHandler,
   ReactElement,
@@ -15,6 +12,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import Form from "@/components/form/Form";
 import Label from "@/components/form/Label";
 import TextField from "@/components/form/TextField";
 import NumField from "@/components/form/NumField";
@@ -28,20 +26,23 @@ import ChoiceBox from "@/components/form/ChoiceBox";
 import SelectMaster from "@/components/form/SelectMaster";
 import { capitalize } from "@/utility/helperFns";
 import Checkbox from "@/components/form/Checkbox";
+import useFormInputs from "./useFormInputs";
+import type { FormType } from "@/components/form/Form";
 
-export type FieldTypeEnum =
-  | "string"
-  | "number"
-  | "float"
-  | "boolean"
-  | "checkbox"
-  | "date"
-  | "email"
-  | "password"
-  | "set"
-  | "modifier"
-  | "select";
-
+export enum FieldTypeEnum {
+  string,
+  number,
+  float,
+  boolean,
+  checkbox,
+  date,
+  email,
+  password,
+  set,
+  modifier,
+  select,
+  symbol,
+}
 type validatorFn = (v: any, source?: object) => boolean | Promise<boolean>;
 
 type validatorObj = {
@@ -50,27 +51,30 @@ type validatorObj = {
   error?: string;
 };
 
-export type FieldType = {
+export type FieldType<T = string> = {
   name: string;
   field: string;
-  type: FieldTypeEnum;
+  type: keyof typeof FieldTypeEnum;
   value?: any;
   placeholder?: string;
   required?: boolean;
   confirm?: boolean;
-  choices?: (string | object)[];
-  children?: FieldType[];
+  choices?: (T | object)[] | { [key: string]: T };
+  children?: FieldType<T>[];
   validation?: validatorFn | validatorObj[];
   labelize?: boolean;
   aux?: boolean;
+  handleChange?: ChangeEventHandler<
+    HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement
+  >;
   options?: {
+    Element?: JSX.Element | ReactElement;
     block?: boolean;
     inline?: boolean;
     min?: number;
     max?: number;
     multi?: boolean;
     step?: number;
-    Element?: JSX.Element | ReactElement;
   };
 };
 
@@ -78,17 +82,8 @@ export type FormMasterType = {
   [key: string]: any;
 };
 
-export type FormType = {
-  name?: string;
+type UseFormType = Omit<FormType<FormMasterType>, "children"> & {
   fields: FieldType[];
-  validate?: boolean;
-  autoComplete?: boolean;
-  spellCheck?: boolean;
-  submitTxt?: string;
-  resetTxt?: string;
-  handleReset?: MouseEventHandler<HTMLButtonElement>;
-  handleSubmit: (v?: any) => void;
-  postMessage?: (v: FormMasterType) => string;
 };
 
 // =================================================
@@ -99,279 +94,10 @@ export default function useForm() {
   const [formMaster, setFormMaster] = useState<FormMasterType>();
   const [formData, setFormData] = useState();
   // const [submitted, setSubmitted] = useState(false);
+  const INPUTS = useFormInputs();
 
   useEffect(() => console.log({ formData }), [formData]);
   useEffect(() => formMaster && console.log({ formMaster }), [formMaster]);
-
-  // <><><><><><><><>\ LABELIZE /<><><><><><><><>
-
-  const labelize = (str: string, isArray = false) => {
-    let label = str;
-    if (/[a-z]/.test(label.charAt(0)))
-      label = label.replace(/([A-Z])/g, " $1").toLowerCase();
-
-    if (label.startsWith("_")) label = label.slice(1);
-
-    const shorthands = {
-      pref: "preference",
-      ref: "reference",
-      attr: "attribute",
-      org: "organization",
-      diffr: "differential",
-      intro: "introduction",
-      avg: "average",
-      dob: "date of birth",
-      abbr: "abbreviation",
-      msg: "message",
-      qty: "quantity",
-    };
-
-    const nonPlurals = ["s", "y"];
-
-    Object.entries(shorthands).forEach(([short, long]) => {
-      const regex = new RegExp(`\\b${short}\\b`);
-      if (label.match(regex)) label = label.replace(regex, long);
-    });
-    if (isArray && !nonPlurals.includes(label.charAt(label.length - 1)))
-      label += "(s)";
-    if (label.startsWith("is ")) label = label.slice(2) + "?";
-    return label;
-  };
-
-  // <><><><><><><><>\ PARSE LABEL /<><><><><><><><>
-
-  type ParseLabelType = [name: string, field: string, required?: boolean];
-
-  const parseLabel = (label: string): ParseLabelType => {
-    const required = label.endsWith("*") ?? undefined;
-    if (required) label = label.slice(0, -1);
-
-    const output: [name: string, field: string] = label.startsWith("$")
-      ? [labelize(label.slice(1)), label.slice(1)]
-      : [label, makeHTMLSafe(label)];
-
-    return [...output, required];
-  };
-
-  // <><><><><><><><>\ SHORTHAND /<><><><><><><><>
-
-  const shorthand = (label: string) => {};
-
-  // <><><><><><><><>\ FIELD /<><><><><><><><>
-
-  const field = ({
-    name,
-    field,
-    type,
-    value,
-    required = false,
-    confirm = false,
-  }: FieldType): FieldType => {
-    // value !== undefined && console.log({ field, value });
-    return {
-      name,
-      field: field ?? makeHTMLSafe(name),
-      type: type ?? "string",
-      value,
-      required,
-      confirm,
-    };
-  };
-
-  // <><><><><><><><>\ TEXT /<><><><><><><><>
-
-  const text = (
-    label: string,
-    block?: false,
-    options?: Partial<Omit<FieldType, "type">>
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-
-    return {
-      name,
-      field,
-      required,
-      ...options,
-      type: "string",
-      options: {
-        ...options?.options,
-        block,
-      },
-    };
-  };
-
-  // <><><><><><><><>\ NUMBER /<><><><><><><><>
-
-  const number = (
-    label: string,
-    float = false,
-    range?: { min?: number; max?: number },
-    options?: Partial<Omit<FieldType, "type">>
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-
-    return {
-      name,
-      field,
-      required,
-      ...options,
-      type: float ? "float" : "number",
-      options: {
-        ...options?.options,
-        ...range,
-      },
-    };
-  };
-
-  // <><><><><><><><>\ FLOAT /<><><><><><><><>
-
-  const float = (
-    label: string,
-    step?: number,
-    range?: { min?: number; max?: number },
-    options?: Partial<Omit<FieldType, "type">>
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-
-    return {
-      name,
-      field,
-      required,
-      ...options,
-      type: "float",
-      options: {
-        ...options?.options,
-        ...range,
-        step,
-      },
-    };
-  };
-
-  // <><><><><><><><>\ PASSWORD /<><><><><><><><>
-
-  const password = (
-    confirm = false,
-    options?: Partial<Omit<FieldType, "confirm" | "type">>
-  ): FieldType => ({
-    name: "Password",
-    field: "password",
-    type: "password",
-    required: true,
-    confirm,
-    ...options,
-  });
-
-  // <><><><><><><><>\ EMAIL /<><><><><><><><>
-
-  const email = (options: Partial<Omit<FieldType, "type">>): FieldType => ({
-    name: "Email",
-    field: "email",
-    type: "email",
-    required: false,
-    ...options,
-  });
-
-  // <><><><><><><><>\ DATE /<><><><><><><><>
-
-  const date = (
-    label: string,
-    options?: Partial<Omit<FieldType, "type">>
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-
-    return {
-      name,
-      field,
-      required,
-      type: "date",
-      ...options,
-    };
-  };
-
-  // <><><><><><><><>\ BOOLEAN /<><><><><><><><>
-
-  const boolean = (
-    label: string,
-    checkbox = false,
-    options?: Partial<Omit<FieldType, "type">>
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-
-    return {
-      name,
-      field,
-      required,
-      type: checkbox ? "checkbox" : "boolean",
-      ...options,
-      options: {
-        ...options?.options,
-        inline: true,
-      },
-    };
-  };
-
-  // const checkbox = (...args:<Parameters<typeof boolean>>) => {
-  //   return boolean(...args)
-  // }
-
-  // <><><><><><><><>\ SELECT /<><><><><><><><>
-
-  const select = (
-    label: string,
-    choices: (string | object)[],
-    multi = false,
-    options?: Omit<FieldType, "type" | "choices">
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-    return {
-      name,
-      field,
-      type: "select",
-      required,
-      choices,
-      ...options,
-      options: {
-        multi,
-        ...options?.options,
-      },
-    };
-  };
-
-  // <><><><><><><><>\ GROUP /<><><><><><><><>
-
-  const group = (
-    label: string,
-    children: FieldType[],
-    options?: Partial<Omit<FieldType, "type" | "children">>
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-    return {
-      name,
-      field,
-      required,
-      children,
-      type: "set",
-      ...options,
-    };
-  };
-
-  // <><><><><><><><>\ CONDITION /<><><><><><><><>
-
-  // NOT RENDERED AS PART OF THE OUTPUT BUT EFFECTS THE VALUE OF PARENT
-  const condition = (
-    label: string,
-    operation: Function,
-    options?: Omit<FieldType, "type">
-  ): FieldType => {
-    const [name, field, required] = parseLabel(label);
-    return {
-      name,
-      field,
-      required,
-      type: "modifier",
-      ...options,
-    };
-  };
 
   // <><><><><><><><>\ (GET) VALUE /<><><><><><><><>
 
@@ -438,6 +164,8 @@ export default function useForm() {
       placeholder,
       validation,
       // confirm,
+      options: entry_options,
+      handleChange,
     } = entry;
 
     const PATH = [...ancestors, field];
@@ -491,11 +219,13 @@ export default function useForm() {
       updater($STATE => updateNestedValue($STATE, value));
     };
 
+    // const { Element } = entry_options;
+
     let element = () => {
       if (type === "select") {
         return (
           <SelectMaster
-            options={Array.isArray(entry.choices) ? entry.choices : []}
+            options={entry.choices}
             field={CHAIN}
             multi={entry.options?.multi}
             value={value}
@@ -767,10 +497,13 @@ export default function useForm() {
     spellCheck = false,
     resetTxt,
     submitTxt,
+    id,
+    className,
+    useSummary = false,
     handleReset,
     handleSubmit,
     postMessage,
-  }: FormType) => {
+  }: UseFormType) => {
     const newForm: FormMasterType = getFieldData(expand(fields));
 
     !formMaster &&
@@ -808,13 +541,15 @@ export default function useForm() {
       <Form
         name={name}
         validate={validate}
-        className="flex col"
+        id={id}
+        className={className}
         autoComplete={autoComplete}
         spellCheck={spellCheck}
         handleSubmit={submitForm}
         handleReset={resetForm}
         submitTxt={submitTxt}
         resetTxt={resetTxt}
+        useSummary={useSummary}
       >
         {Object.values(newForm.elements)}
       </Form>
@@ -827,17 +562,9 @@ export default function useForm() {
 
   return {
     form,
-    field,
-    text,
-    number,
-    float,
-    boolean,
-    password,
-    email,
-    date,
-    group,
-    select,
     isSubmitted,
     getValue,
+    render: renderField,
+    ...INPUTS,
   };
 }

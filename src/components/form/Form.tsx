@@ -1,22 +1,27 @@
 import styles from "@/styles/Form.module.scss";
-import { FormEventHandler, MouseEvent, ReactElement } from "react";
+import {
+  FormEventHandler,
+  MouseEvent,
+  MouseEventHandler,
+  ReactElement,
+} from "react";
 
-type PropsType = {
+export type FormType<Data> = {
   name?: string;
-  children: ReactElement | ReactElement[];
-  handleSubmit: FormEventHandler<HTMLFormElement>;
-  handleReset?: FormEventHandler<HTMLFormElement>;
-  id?: string;
-  className?: string;
-  submitTxt?: string;
-  resetTxt?: string;
+  children: ReactElement | ReactElement[] | JSX.Element;
+  validate?: boolean;
   autoComplete?: boolean;
   spellCheck?: boolean;
-  validate?: boolean;
-  postSubmitMsg?: string;
-};
+  submitTxt?: string;
+  resetTxt?: string;
+  useSummary?: boolean;
+  handleReset?: MouseEventHandler<HTMLButtonElement>;
+  handleCancel?: MouseEventHandler<HTMLButtonElement>;
+  handleSubmit: (v?: Data) => void;
+  postMessage?: (v: Data) => string;
+} & Passthrough;
 
-const Form = ({
+export default function Form({
   name,
   children,
   handleSubmit = e => e.preventDefault(),
@@ -27,20 +32,21 @@ const Form = ({
   resetTxt = "Reset",
   autoComplete = false,
   spellCheck = false,
+  useSummary = false,
   validate = false,
-}: PropsType) => {
+}: FormType) {
   return (
     <form
       name={name ?? "anonymous"}
       id={id}
-      className={`${styles.form} ${className ?? "exo"} ${
+      className={`${styles.form} flex col ${className ?? "exo"} ${
         validate ? "validate" : "no-validate"
       }`}
       onSubmit={handleSubmit}
       autoComplete={autoComplete ? "on" : "off"}
       spellCheck={spellCheck}
     >
-      {name && <h2 className={`${styles.title}`}>{name}</h2>}
+      {name && !useSummary && <h2 className={`${styles.title}`}>{name}</h2>}
       {children}
       <button
         type="submit"
@@ -53,6 +59,4 @@ const Form = ({
       </button>
     </form>
   );
-};
-
-export default Form;
+}

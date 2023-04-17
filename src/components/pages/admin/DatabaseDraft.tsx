@@ -1,8 +1,7 @@
 "use client";
 import styles from "@/styles/DBEntryDraft.module.scss";
 import axios from "@/interfaces/axios";
-import { useState, useEffect } from "react";
-// import { useParams, useLocation } from "react-router-dom";
+import { useState, useEffect, MouseEventHandler } from "react";
 import Dropdown from "@/components/form/Dropdown";
 import Form from "@/components/form/Form";
 import TextField from "@/components/form/TextField";
@@ -18,12 +17,13 @@ import FormPreview from "@/components/form/FormPreview";
 import DBDraftProvider from "@/components/contexts/DBDraftContext";
 import { useDBMaster } from "@/components/contexts/DBContext";
 import useForm, { FieldType } from "@/hooks/useForm";
+import Mixed from "@/components/form/database/Mixed";
 
 type DBDraftType = {
   record: object;
   schemaName: string;
   updateMaster: Function;
-  cancel: Function;
+  cancel: MouseEventHandler<HTMLButtonElement>;
 };
 
 export default function DatabaseDraft({
@@ -35,11 +35,21 @@ export default function DatabaseDraft({
   const [entryMaster, setEntryMaster] = useState();
   const [entryData, setEntryData] = useState();
 
-  const { arcanData } = useDBMaster();
+  const { arcanData, omittedFields } = useDBMaster();
   const { models, references } = arcanData;
   const SCHEMA = models[schemaName];
 
-  const { form, select, field: formField } = useForm();
+  const {
+    form,
+    text,
+    number,
+    float,
+    boolean,
+    date,
+    select,
+    group,
+    field: formField,
+  } = useForm();
 
   // useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
 
@@ -52,16 +62,14 @@ export default function DatabaseDraft({
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
 
   function createFields(
-    paths,
-    ancestors = [],
+    paths: object,
+    ancestors: string[] = [],
     source = entryData ?? record,
     updateFn = setEntryData
-  ) {
+  ): FieldType[] {
     return Object.entries(paths)
       .filter(
-        ([path]) =>
-          !["_id", "createdAt", "updatedAt", "__v"].includes(path) &&
-          !path.endsWith(".$*")
+        ([path]) => !omittedFields.includes(path) && !path.endsWith(".$*")
       )
       .map(([path, data], key) => {
         const {
@@ -77,7 +85,8 @@ export default function DatabaseDraft({
 
         const recordValue = record ? getNestedValue(record) : null;
 
-        let label, element;
+        let label: string, element: FieldType;
+
         let field =
           recordValue?.[path] ??
           defaultValue ??
@@ -128,8 +137,8 @@ export default function DatabaseDraft({
         const value = set?.[path] ?? field;
 
         let props: Partial<FieldType> = {
-          name: label,
-          field: path,
+          // name: label,
+          // field: path,
           value,
           required,
         };
@@ -152,28 +161,23 @@ export default function DatabaseDraft({
 
         // ---------| CREATE OBJECT ID BOX |---------
 
-        const createObjIdBox = ({ ref, refPath }, multi = false) => {
+        type ObjIDType = {
+          ref?: string; // SCHEMA NAME
+          refPath?: keyof typeof paths; // KEYOF CURRENT SCHEMA
+        };
+
+        const createObjIdBox = (
+          { ref, refPath }: ObjIDType,
+          multi = false
+        ): FieldType => {
           const reference = refPath
             ? set?.[refPath] || paths[refPath].enumValues[0]
             : ref;
           const dependency = references[reference];
 
-          return select("", dependency, multi);
+          // console.log({ path, dependency });
 
-          return (
-            <ChoiceBox
-              {...{
-                ...props,
-                value: multi
-                  ? value?.map(entry => entry._id ?? entry)
-                  : value?._id ?? value,
-              }}
-              multi={multi}
-              options={Object.keys(dependency)}
-              display={dependency}
-              handleChange={entry => handleChange(entry)}
-            />
-          );
+          return select("$" + path, dependency, multi, { ...props });
         };
 
         // =====================| SELECT/CHOICES |=====================
@@ -186,7 +190,7 @@ export default function DatabaseDraft({
           ? enumValues
           : suggestions?.length
           ? [...suggestions, "other"]
-          : enumRef && srcPath;
+          : srcPath;
 
         // enumRef && console.log({ path, choices });
 
@@ -199,161 +203,135 @@ export default function DatabaseDraft({
             });
           }
 
-          // srcPath && console.log({ choices });
-
-          const display = Object.fromEntries(
-            choices
-              .map(choice => {
-                const value = set?.[choice];
-                return [choice, srcPath && value ? value : createLabel(choice)];
-              })
-              .sort((a, b) => {
-                // console.log({ previous: a[1], current: b[1] });
-                return b[1] > a[1];
-              })
-          );
-
-          // console.log({ display });
-
-          const choiceProps = {
-            ...props,
-            options: required ? choices : ["", ...choices],
-            display,
-            handleChange: entry => handleChange(entry),
-          };
-
-          // selfRef && console.log({ display: choiceProps.display });
-
-          element = select({ ...choiceProps });
+          element = select("$" + path, choices, false, { ...props });
         } else {
+          // --------------------------------------------
+          // %%%%%%%%%%%%%%| SIMPLE TYPES |%%%%%%%%%%%%%%
+          // --------------------------------------------
           if (instance) {
+            const label = "$" + path;
             switch (instance) {
               case "String":
-                props = {
-                  ...props,
-                  type: "string",
-                  options: {
-                    block: path === "description",
-                  },
-                };
+                element = text(label, path === "description", { ...props });
                 break;
               case "Number":
-                props = {
-                  ...props,
-                  type: "number",
-                  options: {
+                element = number(
+                  label,
+                  false,
+                  {
                     min: data.options?.min,
                     max: data.options?.max,
                   },
-                };
+                  { ...props }
+                );
                 break;
               case "Decimal128":
-                props = {
-                  ...props,
-                  type: "number",
-                  options: {
+                element = float(
+                  label,
+                  data.options?.step ?? 0.01,
+                  {
                     min: data.options?.min,
                     max: data.options?.max,
-                    step: data.options?.step ?? 0.01,
                   },
-                };
+                  { ...props }
+                );
                 break;
               case "Boolean":
-                props = { ...props, type: "boolean" };
+                element = boolean(label, false, { ...props });
                 break;
               case "Date":
                 // console.log("DATE:", set[path] instanceof Date);
-                props = {
-                  ...props,
-                  type: "date",
-                  options: {
-                    min: data.options?.min,
-                    max: data.options?.max,
+                element = date(
+                  label,
+                  {
+                    options: { min: data.options?.min, max: data.options?.max },
                   },
-                };
-                break;
-              case "Array":
-                const { schema, caster } = data;
-                if (caster) {
-                  const { instance, options } = caster;
-                  if (instance === "String")
-                    element = (
-                      <WordBank
-                        {...props}
-                        terms={set?.[path] ?? recordValue?.[path] ?? []}
-                        update={entry => handleChange(entry)}
-                      />
-                    );
-                  if (instance === "ObjectID")
-                    element = createObjIdBox(caster.options, true);
-                }
-                if (schema) {
-                  const { paths } = schema;
-
-                  element = (
-                    <ArraySet
-                      {...props}
-                      ancestry={[...ancestors, path]}
-                      createNewEntry={(source, update) =>
-                        createFields(paths, [], source, update)
-                      }
-                      handleChange={handleChange}
-                    />
-                  );
-                }
-
-                break;
-              case "Map":
-                const $data = paths[path + ".$*"];
-                if ($data?.options?.type?.paths) {
-                  element = createDataSetEntry(
-                    $data.options.type.paths,
-                    options.enum
-                  );
-                } else {
-                  element = NO_ELEMENT;
-                  element = (
-                    <FieldSet {...props}>
-                      <TextField />
-                    </FieldSet>
-                  );
-                }
-
+                  { ...props }
+                );
                 break;
               case "ObjectID":
                 // console.log({ data });
                 element = createObjIdBox(options);
                 break;
-              case "Mixed":
+                // ----------------↓---------------↓----------------
+                // %%%%%%%%%%%%%%| ↓ COMPLEX TYPES ↓ |%%%%%%%%%%%%%%
+                // ----------------↓---------------↓----------------
+                // case "Array":
+                //   const { schema, caster } = data;
+                //   if (caster) {
+                //     const { instance, options } = caster;
+                //     if (instance === "String")
+                //       element = (
+                //         <WordBank
+                //           {...props}
+                //           terms={set?.[path] ?? recordValue?.[path] ?? []}
+                //           update={entry => handleChange(entry)}
+                //         />
+                //       );
+                //     if (instance === "ObjectID")
+                //       element = createObjIdBox(caster.options, true);
+                //   }
+                //   if (schema) {
+                //     const { paths } = schema;
+
+                //     element = (
+                //       <ArraySet
+                //         {...props}
+                //         ancestry={[...ancestors, path]}
+                //         createNewEntry={(source, update) =>
+                //           createFields(paths, [], source, update)
+                //         }
+                //         handleChange={handleChange}
+                //       />
+                //     );
+                //   }
+
+                //   break;
+                // case "Map":
+                //   const $data = paths[path + ".$*"];
+                //   if ($data?.options?.type?.paths) {
+                //     element = createDataSetEntry(
+                //       $data.options.type.paths,
+                //       options.enum
+                //     );
+                //   } else {
+                //     // element = NO_ELEMENT;
+                //     element = (
+                //       <FieldSet {...props}>
+                //         <TextField />
+                //       </FieldSet>
+                //     );
+                //   }
+
+                //   break;
+                // case "Mixed":
                 if (pathRef) {
                   const pathChain = pathRef?.split(".");
                   console.log({ pathChain, source });
-                } else {
                 }
-                element = <div>MIXED</div>;
+                props = { ...props, type: "set", options: { Element: Mixed } };
                 break;
+              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+              // -----------------| DEFAULT |-----------------
+              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
               default:
                 console.warn(
                   `${path.toUpperCase()}: No handler for ${instance}`
                 );
-                element = NO_ELEMENT;
+                element = text(label + "NoElement");
             }
 
-            element = formField(props);
+            // element = formField(props);
           } else {
             if (options) {
               if (options.type?.paths) {
                 const elements = createFields(options.type.paths, [
                   ...ancestors,
                   path,
-                ]).map(entry => entry[1].element);
+                ]);
                 // console.log({ path, elements });
 
-                element = (
-                  <FieldSet {...props} className="col">
-                    {elements}
-                  </FieldSet>
-                );
+                element = group(label, elements);
               } else {
                 console.log({ path });
               }
@@ -431,7 +409,7 @@ export default function DatabaseDraft({
     if (success) {
       console.log({ success });
       updateMaster(success);
-      cancel();
+      cancel(e);
     }
   };
 
@@ -439,30 +417,14 @@ export default function DatabaseDraft({
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
 
-  return (
-    <div id="database-entry" className="flex">
-      <Form className="flex col" autoComplete={false}>
-        <div className="form-wrapper flex col">
-          {buildForm()}
-          <ButtonCache>
-            <button type="submit" onClick={e => handleSubmit(e)}>
-              Save
-            </button>
-            <button type="reset" onClick={e => handleReset(e)}>
-              Reset
-            </button>
-          </ButtonCache>
-        </div>
-      </Form>
-      {/* {form({validate:true,fields:createFields(SCHEMA.paths),handleSubmit})} */}
-      <FormPreview
-        form={entryData}
-        collection={schemaName}
-        buttonText={record ? "Update" : "Submit"}
-        legend={record ? "Edit" : "New"}
-        handleSubmit={e => handleSubmit(e)}
-        cancel={cancel}
-      />
-    </div>
-  );
+  return form({
+    name: record ? "Edit" : "New",
+    submitTxt: record ? "Update" : "Submit",
+    fields: createFields(SCHEMA.paths),
+    validate: true,
+    useSummary: true,
+    handleSubmit,
+    handleCancel: cancel,
+    className: styles.record,
+  });
 }

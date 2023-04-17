@@ -23,8 +23,8 @@ type InputWrapperType = {
 };
 
 type SelectType = {
-  options: string[];
-  display?: { [key: string]: string };
+  options: string[] | { [key: string]: string | number };
+  // display?: { [key: string]: string };
   field: string;
   value?: any | any[];
   other?: boolean;

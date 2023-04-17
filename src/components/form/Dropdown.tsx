@@ -3,7 +3,7 @@ import styles from "@/styles/form/Dropdown.module.scss";
 
 export default function Dropdown({
   options,
-  display,
+  // display,
   field,
   handleChange,
   value,
@@ -16,7 +16,10 @@ export default function Dropdown({
 
   const NO_CHOICE = "--";
 
-  const selectOption = (selection: string) => {
+  const display = !Array.isArray(options);
+  const $options = Object.entries(options);
+
+  const selectOption = (selection: string | number) => {
     handleChange(selection);
     setSelected(selection);
     setOpen(false);
@@ -27,7 +30,7 @@ export default function Dropdown({
   return (
     <label className={`${styles.dropdown} dropdown-ext ${className ?? "exo"}`}>
       <select name={field} style={{ display: "none" }} defaultValue={selected}>
-        {options.map((option, i) => (
+        {$options.map(([_, option], i) => (
           <option key={i} value={option}>
             {option}
           </option>
@@ -40,7 +43,7 @@ export default function Dropdown({
           }`}
           onClick={toggle}
         >
-          {(selected && String(selected)) ?? (display?.[selected] || NO_CHOICE)}
+          {(selected && String(selected)) ?? NO_CHOICE}
         </div>
         <ul
           className={`${styles.cache} ${open ? "open" : "closed"}`}
@@ -50,12 +53,12 @@ export default function Dropdown({
           }}
           onMouseLeave={() => open && toggle()}
         >
-          {options.map((option, i) => (
+          {$options.map(([index, option], i) => (
             <li
               key={i}
               className={display ? "display" : "plain"}
               data-choice={option}
-              data-choice-display={display?.[option]}
+              data-choice-display={display ? index : undefined}
               onClick={() => selectOption(option)}
             >
               {!option ? (
@@ -63,7 +66,7 @@ export default function Dropdown({
               ) : option === "other" ? (
                 <i>{option}</i>
               ) : display ? (
-                display[option]
+                index
               ) : (
                 option
               )}

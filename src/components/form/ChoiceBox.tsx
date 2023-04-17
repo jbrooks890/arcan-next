@@ -14,7 +14,7 @@ type PropsType = SelectType & {
 
 export default function ChoiceBox({
   options,
-  display,
+  // display,
   field,
   multi = false,
   inline = options.length < 3,
@@ -22,6 +22,10 @@ export default function ChoiceBox({
   handleChange,
 }: PropsType) {
   const inputs = useRef<HTMLInputElement[]>([]);
+  const display = !Array.isArray(options) && typeof options === "object";
+  options = Object.entries(options);
+
+  console.log({ field, value, options });
 
   return (
     <div
@@ -30,8 +34,10 @@ export default function ChoiceBox({
       }`}
     >
       {options.length ? (
-        options.map((option, i) => {
+        options.map(([index, option], i) => {
           const id = `${field}-${option}`;
+          // console.log({ field, option });
+
           return (
             <label
               key={i}
@@ -49,8 +55,12 @@ export default function ChoiceBox({
                 id={id}
                 name={id}
                 type={multi ? "checkbox" : "radio"}
-                value={option}
-                checked={multi ? value.includes(option) : option === value}
+                value={display ? index : option}
+                checked={
+                  multi
+                    ? value.includes(display ? index : option)
+                    : value === (display ? index : option)
+                }
                 onChange={() =>
                   handleChange(
                     multi
@@ -64,7 +74,7 @@ export default function ChoiceBox({
               <div
                 className={`${styles.ticker} ${multi ? "checkbox" : "radio"}`}
               />
-              <div>{display ? display[option] : option}</div>
+              <div>{option}</div>
             </label>
           );
         })

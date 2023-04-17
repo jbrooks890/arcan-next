@@ -25,14 +25,9 @@ export default function SelectMaster({
   dropdown = !multi && options?.length > 4;
   const Selector = dropdown ? Dropdown : ChoiceBox;
   if (!dropdown) Object.assign(props, { inline, multi });
+  // console.log({ field, options });
 
-  const OUTPUT = (
-    <Selector
-      {...props}
-      // inline={(!dropdown && inline) ?? false}
-      // multi={(!dropdown && multi) ?? false}
-    />
-  );
+  const OUTPUT = <Selector {...props} />;
 
   return other ? (
     <>

@@ -6,9 +6,9 @@ import ArraySetNew from "./ArraySetNew";
 import Table from "./Table";
 import { useDBMaster } from "../contexts/DBContext";
 import TableEntry from "./TableEntry";
-import useTableElement from "../../hooks/useTableElement";
+import useTableElement from "@/hooks/useTableElement";
 import ObjectNest from "./ObjectNest";
-import useOpsCache from "../../hooks/useOpsCache";
+import useOpsCache from "@/hooks/useOpsCache";
 
 export default function ArraySet({
   field,

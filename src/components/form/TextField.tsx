@@ -1,19 +1,12 @@
 import { ChangeEventHandler } from "react";
 
-type PropsType = {
-  field: string;
-  placeholder?: string;
-  handleChange: ChangeEventHandler<HTMLInputElement>;
-  value: any;
-};
-
 const TextField = ({
   field,
   placeholder,
   handleChange,
   value,
   ...props
-}: PropsType) => {
+}: Omit<InputPropsType, "min" | "max">) => {
   return (
     <input
       name={field}

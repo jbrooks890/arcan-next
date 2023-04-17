@@ -1,57 +1,37 @@
-.flex #database-entry {
-  flex-grow: 1;
-  overflow: hidden;
-}
-
-#database-entry {
+.record {
   position: relative;
+  // flex-grow: 1;
+  width: calc(var(--chunk) / 2);
+  overflow: hidden scroll;
 
-  &:global {
-    .flex {
-      justify-content: center;
-    }
-  }
-
-  & > *:not(:last-child) {
-    margin-right: 1rem;
-    /* overflow-y: scroll; */
-  }
-
-  form {
+  .form-wrapper {
     position: relative;
-    max-width: 50%;
-    flex-grow: 1;
-    overflow: hidden scroll;
+    border-color: var(--pop);
 
-    .form-wrapper {
-      position: relative;
-      border-color: var(--pop);
-
-      & > * {
-        display: block;
-        margin-bottom: 1em;
-        text-align: left;
-      }
-
-      h3 {
-        align-self: stretch;
-        position: sticky;
-        top: 0;
-        margin: 0;
-        padding-block: 1.5em;
-        background-color: var(--dark);
-        text-align: center;
-        z-index: 1000;
-      }
+    & > * {
+      display: block;
+      margin-bottom: 1em;
+      text-align: left;
     }
 
-    label span {
-      text-transform: uppercase;
-      font-size: small;
+    h3 {
+      align-self: stretch;
+      position: sticky;
+      top: 0;
+      margin: 0;
+      padding-block: 1.5em;
+      background-color: var(--dark);
+      text-align: center;
+      z-index: 1000;
+    }
+  }
 
-      & + * {
-        margin-top: 2px;
-      }
+  label span {
+    text-transform: uppercase;
+    font-size: small;
+
+    & + * {
+      margin-top: 2px;
     }
   }
 }

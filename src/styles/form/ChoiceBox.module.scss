@@ -3,7 +3,8 @@
 .choice-box {
   // width: calc(var(--chunk) / 2);
   padding: 0.5rem;
-  border: 2px solid var(--green);
+  border: var(--input);
+  max-height: 240px; // TODO
   border-radius: var(--outside);
   overflow-y: scroll;
 

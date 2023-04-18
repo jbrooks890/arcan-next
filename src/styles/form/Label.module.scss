@@ -5,6 +5,14 @@
   &:global {
     &.inline {
       cursor: pointer;
+
+      .label-text {
+        order: 1;
+        margin: {
+          bottom: 0;
+          left: 1ch;
+        }
+      }
     }
   }
 

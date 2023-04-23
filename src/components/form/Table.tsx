@@ -42,7 +42,7 @@ export default function Table({
             <input type="checkbox" />
           </th>
           {headers.map((col, i) => (
-            <th key={i} className="header">
+            <th key={i} className={styles.header}>
               {col}
             </th>
           ))}

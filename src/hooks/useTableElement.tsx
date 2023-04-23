@@ -2,18 +2,18 @@ import { ReactElement } from "react";
 import Table from "@/components/form/Table";
 import TableEntry from "@/components/form/TableEntry";
 
-type tableType = (
-  data: object,
+type TableAPIType<Data> = (
+  data: Data,
   options: {
     omittedFields: string[];
-    headers: string[];
+    headers: keyof Data;
     ancestors: string[];
     contents?: Function;
   }
-) => ReactElement;
+) => ReactElement<HTMLTableElement>;
 
 export default function useTableElement() {
-  const table: tableType = (data, options) => {
+  const table: TableAPIType = (data, options) => {
     const {
       omittedFields = [],
       headers = Object.keys(Object.values(data)[0]).filter(

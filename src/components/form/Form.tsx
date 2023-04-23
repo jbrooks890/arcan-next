@@ -5,6 +5,7 @@ import {
   MouseEventHandler,
   ReactElement,
 } from "react";
+import FieldSet from "./FieldSet";
 
 export type FormType<Data> = {
   name?: string;
@@ -15,6 +16,7 @@ export type FormType<Data> = {
   submitTxt?: string;
   resetTxt?: string;
   useSummary?: boolean;
+  subForm?: boolean;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
   handleCancel?: MouseEventHandler<HTMLButtonElement>;
   handleSubmit: (v?: Data) => void;
@@ -33,30 +35,39 @@ export default function Form({
   autoComplete = false,
   spellCheck = false,
   useSummary = false,
+  subForm = false,
   validate = false,
 }: FormType) {
+  // console.log({ name, subForm });
+  const Element = subForm ? FieldSet : "form";
+  // const Title = subForm ? "legend" : "h2";
+
   return (
-    <form
+    <Element
       name={name ?? "anonymous"}
       id={id}
-      className={`${styles.form} flex col ${className ?? "exo"} ${
+      className={`${subForm ? styles["sub-form"] : styles.form} flex col ${
         validate ? "validate" : "no-validate"
-      }`}
+      } ${className ?? "exo"}`}
       onSubmit={handleSubmit}
       autoComplete={autoComplete ? "on" : "off"}
       spellCheck={spellCheck}
     >
-      {name && !useSummary && <h2 className={`${styles.title}`}>{name}</h2>}
+      {name && !subForm && <h2 className={`${styles.title}`}>{name}</h2>}
       {children}
-      <button
-        type="submit"
-        onClick={(e: MouseEvent<HTMLButtonElement>) => handleSubmit(e)}
-      >
-        {submitTxt ?? "Submit"}
-      </button>
-      <button type="reset" onClick={handleReset}>
-        {resetTxt ?? "Reset"}
-      </button>
-    </form>
+      {!useSummary && (
+        <>
+          <button
+            type="submit"
+            onClick={(e: MouseEvent<HTMLButtonElement>) => handleSubmit(e)}
+          >
+            {submitTxt ?? "Submit"}
+          </button>
+          <button type="reset" onClick={handleReset}>
+            {resetTxt ?? "Reset"}
+          </button>
+        </>
+      )}
+    </Element>
   );
 }

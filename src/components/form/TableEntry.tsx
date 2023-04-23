@@ -1,6 +1,7 @@
 import { ReactElement, useRef, useState } from "react";
 import { useDBMaster } from "../contexts/DBContext";
 import { useDBDraft } from "../contexts/DBDraftContext";
+import styles from "@/styles/form/Table.module.scss";
 
 type PropsType = {
   entry: object;
@@ -50,6 +51,7 @@ export default function TableEntry({
     if (instance === "ObjectID") {
       const ref = options?.ref ?? options?.refPath;
       // console.log({ ref, [display]: references[ref][display] });
+      console.log({ ref });
 
       return <span data-oid={display}>{references[ref][display]}</span>;
     }
@@ -60,12 +62,7 @@ export default function TableEntry({
   return (
     <>
       <tr onClick={toggle}>
-        {
-          <td className="entry-index ">
-            {/* <input type="checkbox" className="entry-selector" /> */}
-            {index}
-          </td>
-        }
+        <td className={styles.index}>{index}</td>
         {headers.map((field, i) => (
           <td key={i}>{renderEntry([...ancestors, field])}</td>
         ))}
@@ -74,7 +71,7 @@ export default function TableEntry({
       {children && (
         <tr
           ref={dataList}
-          className={`data-list ${open ? "open" : "closed"}`}
+          className={`${styles["data-list"]} ${open ? "open" : "closed"}`}
           style={{
             maxHeight: open ? dataList.current?.scrollHeight + "px" : undefined,
           }}

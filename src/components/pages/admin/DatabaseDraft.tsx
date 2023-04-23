@@ -278,20 +278,21 @@ export default function DatabaseDraft({
                 // >>>>>>> ARRAY OF SUBDOCS <<<<<<<<
                 if (schema) {
                   const { paths } = schema;
-                  const newEntry = renderEach(createFields(paths));
+                  const entryFields = createFields(paths);
 
-                  console.log({ newEntry });
+                  // console.log({ newEntry });
+                  // console.log({ path, ...props });
 
                   element = component(
                     label,
-                    [ArraySet, { newEntry }],
+                    [ArraySet, { entryFields, value }],
                     // <ArraySet
                     //   ancestors={[...ancestors, path]}
                     //   createNewEntry={(source, update) =>
                     //     createFields(paths, [], source, update)
                     //   }
                     // />,
-                    "set",
+                    "string",
                     { ...props, children: createFields(paths) }
                   );
                 }

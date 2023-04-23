@@ -1,5 +1,5 @@
 import "@/styles/form/ArraySet.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import ArraySetEntry from "./ArraySetEntry";
 import ArraySetNew from "./ArraySetNew";
 import { useDBMaster } from "../contexts/DBContext";
@@ -11,7 +11,7 @@ import useForm, { FieldType } from "@/hooks/useForm";
 type PropsType = {
   ancestors: string[];
   // createNewEntry: Function;
-  newEntry: FieldType[];
+  entryFields: FieldType[];
   cache?: string[];
 };
 
@@ -21,23 +21,65 @@ export default function ArraySet({
   value = [],
   cache = value,
   ancestors,
-  createNewEntry,
-  newEntry,
+  entryFields,
 }: PropsType & InputPropsType) {
+  // ===================================================
+
+  // console.log({ entryFields });
+
+  const initialState = {
+    draft: value,
+    expandNew: false,
+    output: "",
+  };
+
+  type Action =
+    | { type: "update"; payload: string }
+    | { type: "expand"; payload: boolean }
+    | { type: "toggle" | "reset"; payload?: undefined };
+
+  const reducer = (state: typeof initialState, action: Action) => {
+    const { type, payload } = action;
+    switch (type) {
+      case "update":
+        return {
+          ...state,
+          draft: payload,
+        };
+      case "expand":
+        return {
+          ...state,
+          expandNew: payload,
+        };
+      case "toggle":
+        return {
+          ...state,
+          expandNew: !state.expandNew,
+        };
+      case "reset":
+        return initialState;
+      default:
+        return state;
+    }
+  };
+  // ===================================================
   const [entryDraft, setEntryDraft] = useState();
-  // const newEntry = useMemo(
-  //   () => createNewEntry(entryDraft, setEntryDraft),
-  //   [entryDraft]
-  // );
-  // const [selectedEntries, setSelectedEntries] = useState([]);
-  const [expandNew, setExpandNew] = useState(false);
+  // const [expandNew, setExpandNew] = useState(false);
   const [submitDraft, setSubmitDraft] = useState();
+  // {{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}
+  const [state, dispatch] = useReducer<typeof reducer>(reducer, initialState);
+  const { draft, expandNew, output } = state;
+  // {{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}
   const { omittedFields } = useDBMaster();
   const { table } = useTableElement();
   const { createButtons } = useOpsCache();
-  const { render } = useForm();
+  const { form } = useForm();
+  // const newEntry = renderEach("New", entryFields, [], {
+  //   source: state,
+  //   updater: dispatch,
+  // });
 
-  console.log({ value, newEntry });
+  // console.log({ value, cache });
 
   // console.log({ entryDraft, submitDraft });
 
@@ -59,8 +101,9 @@ export default function ArraySet({
   // ---------- ADD ----------
 
   function addEntry() {
-    handleChange([...cache, entryDraft]);
-    resetDraft();
+    handleChange([...cache, draft]);
+    // resetDraft();
+    dispatch({ type: "reset" });
   }
 
   // ---------- REMOVE ----------
@@ -88,17 +131,31 @@ export default function ArraySet({
 
   // ---------- CANCEL ----------
 
-  const cancel = () => {
-    resetDraft();
-    setExpandNew(false);
-    setSubmitDraft(undefined);
-  };
+  const cancel = () => dispatch({ type: "reset" });
+
+  // const cancel = () => {
+  //   resetDraft();
+  //   setExpandNew(false);
+  //   setSubmitDraft(undefined);
+  // };
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // _________ NEW ENTRY _________
+  const newEntry = form({
+    name: "New",
+    fields: entryFields,
+    subForm: true,
+    submitTxt: "Add",
+    resetTxt: "Clear",
+    handleSubmit: addEntry,
+    handleReset: () => dispatch({ type: "reset" }),
+  });
 
   // ============================================
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
 
-  return entryDraft ? (
+  return draft ? (
     <>
       {
         newEntry

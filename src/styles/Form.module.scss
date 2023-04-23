@@ -28,7 +28,7 @@
   font-size: 1rem;
   box-sizing: border-box;
   outline: inherit;
-  border: 2px solid var(--green);
+  border: var(--input);
   border-radius: var(--inside);
 }
 
@@ -75,7 +75,7 @@
   font-family: var(--bodyFont);
   color: inherit;
   font-size: 1rem;
-  border: 2px solid var(--green);
+  border: var(--input);
   border-radius: var(--inside);
   outline: inherit;
   box-sizing: border-box;

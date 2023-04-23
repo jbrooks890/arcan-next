@@ -84,7 +84,7 @@ export type FormMasterType = {
   [key: string]: any;
 };
 
-type UseFormType = Omit<FormType<FormMasterType>, "children"> & {
+type FormAPIType = Omit<FormType<FormMasterType>, "children"> & {
   fields: FieldType[];
 };
 
@@ -374,12 +374,13 @@ export default function useForm() {
 
   // %%%%%%%%%%%%%%\ RENDER EACH (FIELD) /%%%%%%%%%%%%%%
   const renderEach = (
+    field: string,
     fields: FieldType[],
     ancestors = [],
     options?: Parameters<typeof renderField>[2]
   ) => {
     return (
-      <FieldSet {...options}>
+      <FieldSet name={field} {...options}>
         {fields.map(field =>
           field.children ? renderEach(field.children) : renderField(field)
         )}
@@ -536,10 +537,11 @@ export default function useForm() {
     id,
     className,
     useSummary = false,
+    subForm = false,
     handleReset,
     handleSubmit,
     postMessage,
-  }: UseFormType) => {
+  }: FormAPIType) => {
     const newForm: FormMasterType = getFieldData(expand(fields));
 
     !formMaster &&
@@ -586,6 +588,7 @@ export default function useForm() {
         submitTxt={submitTxt}
         resetTxt={resetTxt}
         useSummary={useSummary}
+        subForm={subForm}
       >
         {Object.values(newForm.elements)}
       </Form>

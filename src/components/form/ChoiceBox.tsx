@@ -59,7 +59,7 @@ export default function ChoiceBox({
                 checked={
                   multi
                     ? value.includes(display ? index : option)
-                    : value === (display ? index : option)
+                    : value === option
                 }
                 onChange={() =>
                   handleChange(

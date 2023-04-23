@@ -18,7 +18,7 @@ export default function FieldSet({
   return (
     <fieldset
       ref={fieldset}
-      id={id ?? ""}
+      id={id}
       className={`${styles.fieldset} ${className ?? "exo"} ${
         field ? `${field}-section` : ""
       } group flex ${inline ? "inline" : "col"} ${open ? "open" : "closed"}`}

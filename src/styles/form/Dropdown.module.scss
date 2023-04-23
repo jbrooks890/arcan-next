@@ -58,7 +58,7 @@
       bottom: 0;
       inset-inline: 0;
       transform: translateY(100%);
-      background-color: var(--dark);
+      background-color: var(--darkest);
       list-style-type: none;
       margin: 0;
       padding: {
@@ -100,7 +100,7 @@
 @media (hover: hover) {
   .cache li:hover {
     background-color: var(--green);
-    color: var(--dark);
+    color: var(--darkest);
   }
 
   .display:hover::after {

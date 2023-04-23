@@ -1,5 +1,6 @@
 import { makeHTMLSafe } from "@/lib/utility";
 import type { FieldType } from "./useForm";
+import useForm from "./useForm";
 
 export default function useFormInputs() {
   // <><><><><><><><>\ LABELIZE /<><><><><><><><>
@@ -61,12 +62,12 @@ export default function useFormInputs() {
     value,
     required = false,
     confirm = false,
-  }: FieldType): FieldType => {
+  }: FieldType): FieldType<typeof type> => {
     // value !== undefined && console.log({ field, value });
     return {
-      name,
+      name: name ?? labelize(field),
       field: field ?? makeHTMLSafe(name),
-      type: type ?? "string",
+      type,
       value,
       required,
       confirm,
@@ -250,6 +251,27 @@ export default function useFormInputs() {
     };
   };
 
+  // <><><><><><><><>\ ELEMENT /<><><><><><><><>
+  const component = (
+    label: string,
+    component: NonNullable<FieldType["options"]>["Element"],
+    type: FieldType["type"],
+    options?: Partial<Omit<FieldType, "type">>
+  ): FieldType => {
+    const [name, field, required] = parseLabel(label);
+    // console.log({ name, component });
+    return {
+      name,
+      field,
+      required,
+      type,
+      options: {
+        ...options,
+        Element: component!,
+      },
+    };
+  };
+
   // <><><><><><><><>\ SYMBOL /<><><><><><><><>
 
   const symbol = () => {};
@@ -283,5 +305,6 @@ export default function useFormInputs() {
     boolean,
     select,
     group,
+    component,
   };
 }

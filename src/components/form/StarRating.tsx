@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/styles/StarRating.module.css";
+import styles from "@/styles/StarRating.module.scss";
 import { useEffect, useRef, useState, MutableRefObject } from "react";
 import STAR from "../../../public/assets/svg/star.svg";
 

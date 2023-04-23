@@ -3,8 +3,10 @@ import {
   ChangeEvent,
   ChangeEventHandler,
   createElement,
+  DetailedHTMLProps,
   Dispatch,
   FormEventHandler,
+  HTMLAttributes,
   MouseEvent,
   MouseEventHandler,
   ReactElement,
@@ -68,7 +70,7 @@ export type FieldType<T = string> = {
     HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement
   >;
   options?: {
-    Element?: JSX.Element | ReactElement;
+    Element?: [JSX.Element, object | undefined];
     block?: boolean;
     inline?: boolean;
     min?: number;
@@ -219,9 +221,22 @@ export default function useForm() {
       updater($STATE => updateNestedValue($STATE, value));
     };
 
-    // const { Element } = entry_options;
+    // ~~~~~~~~~~~\ ELEMENT /~~~~~~~~~~~
 
     let element = () => {
+      if (entry_options?.Element) {
+        const { Element } = entry_options;
+        const [component, elementProps] = Element;
+        // const { props: elementProps } = Element;
+        // console.log({ Element });
+        const handleChange = entry => updateValue(entry);
+        return createElement(component, {
+          ...props,
+          ...elementProps,
+          handleChange,
+        });
+      }
+
       if (type === "select") {
         return (
           <SelectMaster
@@ -319,14 +334,20 @@ export default function useForm() {
 
     const parentName = ancestors?.length && [...ancestors].pop();
     const junior = parentName && name.match(new RegExp(parentName, "i"));
+    const criteriaList = Array.isArray(validation)
+      ? validation
+          .filter(validator => validator.criteria)
+          .map(validator => validator.criteria)
+      : undefined;
 
-    const wrapperProps = {
+    // criteriaList && console.log({ field, criteriaList });
+    // console.log({ field, validation });
+
+    const wrapperProps: InputWrapperType = {
       name: junior ? name!.replace(parentName, "").trim() : name!,
       field,
       required,
-      criteria: Array.isArray(validation)
-        ? validation.map(validator => validator.criteria).filter(Boolean)
-        : "",
+      criteria: criteriaList?.length ? criteriaList : "",
       validated: !!formMaster?.validation,
       inline: entry.options?.inline,
     };
@@ -348,6 +369,21 @@ export default function useForm() {
       <Label key={CHAIN} {...wrapperProps}>
         {element()}
       </Label>
+    );
+  };
+
+  // %%%%%%%%%%%%%%\ RENDER EACH (FIELD) /%%%%%%%%%%%%%%
+  const renderEach = (
+    fields: FieldType[],
+    ancestors = [],
+    options?: Parameters<typeof renderField>[2]
+  ) => {
+    return (
+      <FieldSet {...options}>
+        {fields.map(field =>
+          field.children ? renderEach(field.children) : renderField(field)
+        )}
+      </FieldSet>
     );
   };
 
@@ -565,6 +601,7 @@ export default function useForm() {
     isSubmitted,
     getValue,
     render: renderField,
+    renderEach,
     ...INPUTS,
   };
 }

@@ -54,9 +54,6 @@
       weight: 600;
     }
     letter-spacing: 0.1em;
-    // line-height: 1;
-    // border: 1px solid purple;
-    // overflow: visible;
 
     strong > em,
     em > strong {
@@ -84,11 +81,7 @@
               weight: normal;
             }
             text-transform: none;
-            // text-align: right;
-            // line-height: 1;
             letter-spacing: normal;
-            // border: 1px solid red;
-            // vertical-align: text-top;
           }
 
           &.no-error {
@@ -104,18 +97,6 @@
               // font-size: smaller;
             }
           }
-
-          // &::after {
-          //   content: "* " attr(data-error) !important;
-          //   // display: flex;
-          //   color: coral !important;
-          //   font: {
-          //     family: var(--bodyFont);
-          //     weight: normal;
-          //   }
-          //   letter-spacing: normal;
-          //   text-transform: none;
-          // }
         }
       }
     }

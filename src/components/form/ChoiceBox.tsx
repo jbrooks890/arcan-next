@@ -25,7 +25,7 @@ export default function ChoiceBox({
   const display = !Array.isArray(options) && typeof options === "object";
   options = Object.entries(options);
 
-  console.log({ field, value, options });
+  // console.log({ field, value, options });
 
   return (
     <div

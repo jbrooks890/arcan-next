@@ -1,49 +1,53 @@
 import "@/styles/form/ArraySet.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ArraySetEntry from "./ArraySetEntry";
-import FieldSet from "./FieldSet";
 import ArraySetNew from "./ArraySetNew";
-import Table from "./Table";
 import { useDBMaster } from "../contexts/DBContext";
-import TableEntry from "./TableEntry";
 import useTableElement from "@/hooks/useTableElement";
 import ObjectNest from "./ObjectNest";
 import useOpsCache from "@/hooks/useOpsCache";
+import useForm, { FieldType } from "@/hooks/useForm";
+
+type PropsType = {
+  ancestors: string[];
+  // createNewEntry: Function;
+  newEntry: FieldType[];
+  cache?: string[];
+};
 
 export default function ArraySet({
   field,
-  fieldPath,
-  schemaName,
-  label,
-  required,
-  className,
-  ancestry,
-  createNewEntry,
+  handleChange,
   value = [],
   cache = value,
-  handleChange,
-}) {
+  ancestors,
+  createNewEntry,
+  newEntry,
+}: PropsType & InputPropsType) {
   const [entryDraft, setEntryDraft] = useState();
-  const newEntry = useMemo(
-    () => createNewEntry(entryDraft, setEntryDraft),
-    [entryDraft]
-  );
+  // const newEntry = useMemo(
+  //   () => createNewEntry(entryDraft, setEntryDraft),
+  //   [entryDraft]
+  // );
   // const [selectedEntries, setSelectedEntries] = useState([]);
   const [expandNew, setExpandNew] = useState(false);
   const [submitDraft, setSubmitDraft] = useState();
-  const { omittedFields, models } = useDBMaster();
+  const { omittedFields } = useDBMaster();
   const { table } = useTableElement();
   const { createButtons } = useOpsCache();
+  const { render } = useForm();
+
+  console.log({ value, newEntry });
 
   // console.log({ entryDraft, submitDraft });
 
-  useEffect(
-    () =>
-      setEntryDraft(
-        Object.fromEntries(newEntry.map(([path, data]) => [path, data.field]))
-      ),
-    []
-  );
+  // useEffect(
+  //   () =>
+  //     setEntryDraft(
+  //       Object.fromEntries(newEntry.map(([path, data]) => [path, data.field]))
+  //     ),
+  //   []
+  // );
 
   // ---------- RESET ----------
 
@@ -95,33 +99,32 @@ export default function ArraySet({
   // ============================================
 
   return entryDraft ? (
-    <FieldSet
-      {...{ field, label, className: `array-set col ${className}`, required }}
-    >
+    <>
       {
-        <ArraySetNew
-          elements={newEntry.map(field => field[1].element)}
-          expanded={expandNew}
-          setExpanded={setExpandNew}
-          submit={() => (submitDraft ? submitDraft(entryDraft) : addEntry())}
-          cancel={cancel}
-        />
+        newEntry
+        // <ArraySetNew
+        //   elements={newEntry.map(field => field[1].element)}
+        //   expanded={expandNew}
+        //   setExpanded={setExpandNew}
+        //   submit={() => (submitDraft ? submitDraft(entryDraft) : addEntry())}
+        //   cancel={cancel}
+        // />
       }
       {cache.length ? (
         table(cache, {
           omittedFields,
-          ancestry,
+          ancestors,
           headers: Object.keys(Object.values(cache)[0]).filter(
             entry => !omittedFields.includes(entry)
           ),
-          entryContents: entry => {
+          contents: entry => {
             return (
               <>
                 {createButtons({
                   Edit: () => editEntry(entry),
                   Delete: () => removeEntry(entry),
                 })}
-                {<ObjectNest dataObj={entry} ancestry={ancestry} />}
+                {<ObjectNest dataObj={entry} ancestors={ancestors} />}
               </>
             );
           },
@@ -129,7 +132,7 @@ export default function ArraySet({
       ) : (
         <span className="fade">No entries</span>
       )}
-    </FieldSet>
+    </>
   ) : (
     "No entry"
   );

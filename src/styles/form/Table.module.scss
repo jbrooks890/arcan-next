@@ -68,12 +68,12 @@
       }
 
       th.header {
-        color: var(--dark);
+        color: var(--darkest);
       }
     }
   }
   // thead tr th.header {
-  //   color: var(--dark);
+  //   color: var(--darkest);
   // }
   // tbody tr:not(.data-list) {
   //   height: 2em;
@@ -88,7 +88,7 @@
 // }
 
 // .table thead tr th.header {
-//   color: var(--dark);
+//   color: var(--darkest);
 // }
 
 // .table tbody tr:not(.data-list) {
@@ -130,7 +130,7 @@
 
 /* .table thead > tr {
   background-color: var(--pop);
-  color: var(--dark);
+  color: var(--darkest);
 } */
 
 /* .table thead>tr {

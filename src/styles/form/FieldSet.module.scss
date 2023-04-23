@@ -46,6 +46,7 @@
   }
 
   & > label {
+    position: relative;
     display: flex;
 
     &:global {
@@ -58,9 +59,19 @@
       }
 
       &:not(.inline) {
-        flex-direction: column-reverse;
+        flex-direction: column;
       }
     }
+
+    // &:focus-within::before {
+    //   content: "";
+    //   display: block;
+    //   position: absolute;
+    //   inset: 0;
+    //   background-color: var(--pop);
+    //   opacity: 0.05;
+    //   z-index: 0;
+    // }
 
     & > span {
       margin-top: 0.25em;

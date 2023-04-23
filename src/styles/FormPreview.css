@@ -2,7 +2,7 @@
   position: relative;
   /* top:1rem; */
   /* background-color: var(--green);
-  color: var(--dark); */
+  color: var(--darkest); */
   /* margin-top: .5em; */
   width: 480px;
   overflow: hidden;
@@ -11,7 +11,7 @@
   padding-bottom: 2em;
   text-align: left;
   box-sizing: border-box;
-  transition: .2s ease-out;
+  transition: 0.2s ease-out;
 }
 
 /* .flex .form-preview {
@@ -48,11 +48,11 @@
 }
 
 .form-preview .wrapper ul li.dropdown > label > strong::before {
-  --size: .5em;
-  --border: 2px solid var(--dark);
+  --size: 0.5em;
+  --border: 2px solid var(--darkest);
   content: "";
   position: absolute;
-  top: .5em;
+  top: 0.5em;
   left: -2ch;
   display: block;
   width: var(--size);
@@ -63,18 +63,17 @@
   border-right: var(--border);
   border-top-right-radius: 3px;
   box-sizing: border-box;
-  transition: .1s ease-out;
+  transition: 0.1s ease-out;
 }
 
-
-.form-preview .wrapper input:checked~strong::before{
+.form-preview .wrapper input:checked ~ strong::before {
   transform: rotate(135deg);
 }
 
 .form-preview .wrapper ul li strong {
   /* color: var(--mint);
   text-shadow: 1px 1px 1px var(--shadow); */
-  font-size: .9rem;
+  font-size: 0.9rem;
   font-weight: normal;
   font-variant: small-caps;
   /* opacity: .75; */
@@ -86,12 +85,12 @@
   margin-right: 1ch;
 }
 
-.form-preview .wrapper input:not(:checked)+ul{
+.form-preview .wrapper input:not(:checked) + ul {
   max-height: 0;
   overflow: hidden;
 }
 
-.form-preview button[type="submit"]{
+.form-preview button[type="submit"] {
   cursor: pointer;
   align-self: center;
   padding: 1em;
@@ -100,7 +99,7 @@
   font-weight: bold;
   border: 2px solid transparent;
   border-radius: var(--inside);
-  transition: .1s ease-out;
+  transition: 0.1s ease-out;
 }
 
 #addNew .form-preview .form-preview-entry:not(.fade) {
@@ -114,17 +113,17 @@
   /* font-size: small; */
   text-transform: lowercase;
   font-variant: small-caps;
-  opacity: .25;
-  transition: .1s ease-out;
+  opacity: 0.25;
+  transition: 0.1s ease-out;
 }
 
 .flex .form-preview button.cancel-button {
   align-self: center;
 }
 
-@media(hover:hover){
-  .form-preview button[type="submit"]:hover{
-    /* background-color: var(--dark);
+@media (hover: hover) {
+  .form-preview button[type="submit"]:hover {
+    /* background-color: var(--darkest);
     color: var(--green); */
     border-color: var(--green);
   }

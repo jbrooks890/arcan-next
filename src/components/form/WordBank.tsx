@@ -1,52 +1,51 @@
-import { useRef, useState } from "react";
+import { MouseEventHandler, useRef, useState } from "react";
 import styles from "@/styles/form/WordBank.module.scss";
+import TextField from "./TextField";
 
-const WordBank = ({
-  value = [],
-  terms = [...value],
+export default function WordBank({
   field,
+  value = [],
   handleChange,
-}: InputPropsType & { terms: string[] }) => {
+}: InputPropsType & { terms: string[] }) {
   const [entry, setEntry] = useState("");
   const placeholder = field.replace(/([A-Z])/g, " $1");
   const submit = useRef<HTMLButtonElement | null>(null);
 
-  // console.log("VALUE:", { value });
-
-  const addTerm = () => {
-    if (entry.length && !terms.includes(entry)) {
+  const addTerm: MouseEventHandler = e => {
+    e.preventDefault();
+    if (entry.length && !value.includes(entry)) {
       setEntry("");
-      handleChange([...terms, entry]);
+      handleChange([...value, entry]);
     }
   };
 
   const removeTerm = (term: string) =>
-    handleChange(terms.filter(entry => entry !== term));
+    handleChange(value.filter(entry => entry !== term));
 
   return (
     <>
-      <div className={`${styles["new-wrap"]} flex middle`}>
+      <div className={`${styles.wrapper} flex middle`}>
         <input
-          type="text"
           className={styles.new}
-          placeholder={`New ${placeholder}`}
           value={entry}
+          placeholder={`New ${placeholder}`}
           onChange={e => setEntry(e.currentTarget.value)}
-          onKeyDown={e => e.key === "Enter" && submit.current!.click()}
+          // onKeyDown={e => e.key === "Enter" && submit.current!.click()}
         />
         <button
           ref={submit}
-          className="add-word flex center"
-          onClick={addTerm}
+          type="button"
+          className={`${styles["add-word"]} flex center`}
+          onClick={e => addTerm(e)}
         />
       </div>
       <ul className={`${styles.cache} flex wrap`}>
-        {terms.length ? (
-          terms.map((term, i) => (
+        {value.length ? (
+          value.map((term, i) => (
             <li key={i} className={`${styles.entry} flex middle`}>
               {term}
               <button
-                className="delete-entry"
+                className={styles.delete}
                 onClick={() => removeTerm(term)}
               />
             </li>
@@ -57,6 +56,4 @@ const WordBank = ({
       </ul>
     </>
   );
-};
-
-export default WordBank;
+}

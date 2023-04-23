@@ -8,11 +8,16 @@
 
   &::selection {
     background-color: var(--pop);
-    color: var(--dark);
+    color: var(--darkest);
   }
 
   &::placeholder {
     opacity: 0.5;
+  }
+
+  svg {
+    fill: var(--pop);
+    stroke: var(--pop);
   }
 
   // ::-webkit-datetime-edit {

@@ -48,6 +48,8 @@ export default function DatabaseDraft({
     date,
     select,
     group,
+    component,
+    renderEach,
     field: formField,
   } = useForm();
 
@@ -136,12 +138,14 @@ export default function DatabaseDraft({
         const set = getNestedValue(source);
         const value = set?.[path] ?? field;
 
+        // console.log({ path, value });
+
         let props: Partial<FieldType> = {
-          // name: label,
-          // field: path,
           value,
           required,
         };
+
+        const NO_ELEMENT = text(label + "NoElement");
 
         // ---------| CREATE DATASET ENTRY |---------
 
@@ -184,7 +188,7 @@ export default function DatabaseDraft({
         const { suggestions, selfRef, enumRef, pathRef } = options;
         const srcPath = enumRef ? set?.[enumRef] : undefined;
 
-        pathRef && console.log({ pathRef });
+        // pathRef && console.log({ pathRef });
 
         let choices = enumValues?.length
           ? enumValues
@@ -253,40 +257,46 @@ export default function DatabaseDraft({
                 // console.log({ data });
                 element = createObjIdBox(options);
                 break;
-                // ----------------↓---------------↓----------------
-                // %%%%%%%%%%%%%%| ↓ COMPLEX TYPES ↓ |%%%%%%%%%%%%%%
-                // ----------------↓---------------↓----------------
-                // case "Array":
-                //   const { schema, caster } = data;
-                //   if (caster) {
-                //     const { instance, options } = caster;
-                //     if (instance === "String")
-                //       element = (
-                //         <WordBank
-                //           {...props}
-                //           terms={set?.[path] ?? recordValue?.[path] ?? []}
-                //           update={entry => handleChange(entry)}
-                //         />
-                //       );
-                //     if (instance === "ObjectID")
-                //       element = createObjIdBox(caster.options, true);
-                //   }
-                //   if (schema) {
-                //     const { paths } = schema;
+              // --------------| ↓---------------↓ |--------------
+              // %%%%%%%%%%%%%%| ↓ COMPLEX TYPES ↓ |%%%%%%%%%%%%%%
+              // --------------| ↓---------------↓ |--------------
+              case "Array":
+                const { schema, caster } = data;
+                // >>>>>>> ARRAY OF SIMPLE TYPES <<<<<<<<
+                if (caster) {
+                  const { instance } = caster;
+                  if (instance === "String") {
+                    // console.log({ path, value });
+                    element = component(label, [WordBank, {}], "string", {
+                      ...props,
+                    });
+                  }
 
-                //     element = (
-                //       <ArraySet
-                //         {...props}
-                //         ancestry={[...ancestors, path]}
-                //         createNewEntry={(source, update) =>
-                //           createFields(paths, [], source, update)
-                //         }
-                //         handleChange={handleChange}
-                //       />
-                //     );
-                //   }
+                  if (instance === "ObjectID")
+                    element = createObjIdBox(caster.options, true);
+                }
+                // >>>>>>> ARRAY OF SUBDOCS <<<<<<<<
+                if (schema) {
+                  const { paths } = schema;
+                  const newEntry = renderEach(createFields(paths));
 
-                //   break;
+                  console.log({ newEntry });
+
+                  element = component(
+                    label,
+                    [ArraySet, { newEntry }],
+                    // <ArraySet
+                    //   ancestors={[...ancestors, path]}
+                    //   createNewEntry={(source, update) =>
+                    //     createFields(paths, [], source, update)
+                    //   }
+                    // />,
+                    "set",
+                    { ...props, children: createFields(paths) }
+                  );
+                }
+
+                break;
                 // case "Map":
                 //   const $data = paths[path + ".$*"];
                 //   if ($data?.options?.type?.paths) {
@@ -339,7 +349,7 @@ export default function DatabaseDraft({
           }
         }
 
-        return element;
+        return element ?? text(label + "NoElement");
       });
   }
 

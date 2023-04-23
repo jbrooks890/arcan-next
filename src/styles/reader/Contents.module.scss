@@ -69,7 +69,7 @@
         content: attr(data-chapter-progress) "%";
         padding-left: 1em;
         background-color: var(--pop);
-        color: var(--dark);
+        color: var(--darkest);
         position: absolute;
         right: 1ch;
         font-size: small;
@@ -86,7 +86,7 @@
       &:not(.unavailable) {
         &:hover {
           background-color: var(--pop);
-          color: var(--dark);
+          color: var(--darkest);
 
           &::after {
             opacity: 1;

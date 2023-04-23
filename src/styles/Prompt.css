@@ -6,11 +6,11 @@
   margin: 2rem;
   margin-bottom: 10rem;
   padding: 1rem 2rem;
-  background-color: var(--dark);
+  background-color: var(--darkest);
   color: var(--pop);
   border: 2px solid var(--pop);
   border-radius: var(--outside);
-  transition: .1s ease-out;
+  transition: 0.1s ease-out;
 }
 
 .prompt-query {

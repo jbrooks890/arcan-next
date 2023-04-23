@@ -31,7 +31,7 @@
 .array-set-entry {
   padding: 0.5em;
   /* background-color: var(--pop);
-  color: var(--dark); */
+  color: var(--darkest); */
   border: 1px solid var(--pop);
   border-radius: 2px;
 }
@@ -42,7 +42,7 @@
 
 .array-set-entry strong {
   /* color: var(--mint); */
-  /* color: var(--dark) !important; */
+  /* color: var(--darkest) !important; */
   text-transform: lowercase;
   font-weight: 400;
   font-variant: small-caps;
@@ -58,14 +58,14 @@
   .form-item-new.closed:hover {
     background-color: var(--pop);
     border-style: solid;
-    color: var(--dark);
+    color: var(--darkest);
   }
 
   .add-btn:not(.closed .add-btn):hover {
     position: relative;
     padding: 0.5em 1em;
     background-color: var(--pop);
-    color: var(--dark);
+    color: var(--darkest);
     text-transform: uppercase;
     border-radius: 2px;
   }

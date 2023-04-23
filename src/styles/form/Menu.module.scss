@@ -34,7 +34,7 @@
 
     &:checked + label {
       background-color: var(--green);
-      color: var(--dark);
+      color: var(--darkest);
     }
   }
 }
@@ -46,6 +46,6 @@
 @media (hover: hover) {
   .menu input[type="radio"]:hover + label {
     background-color: var(--green);
-    color: var(--dark);
+    color: var(--darkest);
   }
 }

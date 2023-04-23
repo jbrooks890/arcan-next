@@ -1,42 +1,39 @@
-// .word-bank {
-//   border: var(--input);
-//   border-radius: var(--outside);
-
-//   legend {
-//     font-size: small;
-//     text-transform: uppercase;
-//   }
-// }
-
-.new-wrap {
+.wrapper {
   margin-bottom: 1em;
   padding: {
     block: 0.5em;
     inline: 0.5em 0;
   }
-  border: var(--input);
-  border-radius: var(--inside);
+  border: var(--input) {
+    radius: var(--inside);
+  }
 
   .new {
     position: relative;
-    border: none !important;
+    // border: none !important;
+  }
 
-    button {
-      --size: 2em;
-      cursor: pointer;
-      width: var(--size);
-      height: var(--size);
-      margin-inline: 0.5em;
-      border-radius: 50%;
-      border: var(--input);
-      transition: 0.1s ease-out;
+  .add-word {
+    --size: 2rem;
+    cursor: pointer;
+    width: var(--size);
+    height: var(--size);
+    margin-inline: 0.5em;
+    flex-shrink: 0;
+    padding: 0;
+    font-family: var(--bodyFont);
+    text-align: center;
+    line-height: 1;
+    border: var(--input) {
+      radius: 50%;
+    }
+    transition: 0.1s ease-out;
 
-      &::before {
-        content: var(--plus);
-        font: {
-          size: smaller;
-          weight: bold;
-        }
+    &::before {
+      content: var(--plus);
+      font: {
+        size: smaller;
+        // weight: bold;
       }
     }
   }
@@ -50,11 +47,11 @@
     margin: 0 0.5em 0.5em 0;
     padding: 0.25em;
     background-color: var(--pop);
-    color: var(--dark);
-    line-height: 1em;
+    color: var(--darkest);
+    line-height: 1;
     border-radius: 2px;
 
-    .delete-entry {
+    .delete {
       cursor: pointer;
       display: inline-block;
       font: {
@@ -64,11 +61,11 @@
       width: 0;
       overflow: hidden;
       opacity: 0;
+      transform: scale(0.5);
       transition: 0.1s ease-out;
-      /* border: 1px solid red; */
 
       &::after {
-        content: var(--cancel);
+        content: var(--cancel-alt);
       }
     }
   }
@@ -81,14 +78,21 @@
 @media (hover: hover) {
   // .word-bank {}
 
-  .new-entry-wrap button:hover {
+  .wrapper button:hover {
     background-color: var(--green);
-    color: var(--dark);
+    color: var(--darkest);
   }
 
-  .entry-cache .entry:hover .delete-entry {
-    width: auto;
-    padding-left: 1em;
-    opacity: 0.5;
+  .entry:hover {
+    .delete {
+      width: auto;
+      padding-left: 1em;
+      opacity: 0.5;
+      transform: scale(1);
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 }

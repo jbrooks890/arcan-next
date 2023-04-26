@@ -53,7 +53,9 @@ export default function Form({
       autoComplete={autoComplete ? "on" : "off"}
       spellCheck={spellCheck}
     >
-      {name && !subForm && <h2 className={`${styles.title}`}>{name}</h2>}
+      {name && !subForm && !useSummary && (
+        <h2 className={styles.title}>{name}</h2>
+      )}
       {children}
       {!useSummary && (
         <>

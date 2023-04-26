@@ -216,6 +216,7 @@ export default function useFormInputs() {
     label: string,
     choices: (T | object)[] | { [key: string]: T },
     multi = false,
+    other = false,
     options?: Partial<Omit<FieldType<T>, "type" | "choices">>
   ): FieldType<T> => {
     const [name, field, required] = parseLabel(label);
@@ -227,8 +228,9 @@ export default function useFormInputs() {
       choices,
       ...options,
       options: {
-        multi,
         ...options?.options,
+        multi,
+        other,
       },
     };
   };

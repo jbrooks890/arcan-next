@@ -61,17 +61,14 @@ export default function Dropdown({
               data-choice-display={display ? index : undefined}
               onClick={() => selectOption(option)}
             >
-              {!option ? (
-                NO_CHOICE
-              ) : option === "other" ? (
-                <i>{option}</i>
-              ) : display ? (
-                index
-              ) : (
-                option
-              )}
+              {!option ? NO_CHOICE : display ? index : option}
             </li>
           ))}
+          {other && (
+            <li data-choice={"other"} onClick={() => selectOption(undefined)}>
+              <em>other</em>
+            </li>
+          )}
         </ul>
       </div>
     </label>

@@ -181,7 +181,7 @@ export default function DatabaseDraft({
 
           // console.log({ path, dependency });
 
-          return select("$" + path, dependency, multi, { ...props });
+          return select("$" + path, dependency, multi, false, { ...props });
         };
 
         // =====================| SELECT/CHOICES |=====================
@@ -193,7 +193,7 @@ export default function DatabaseDraft({
         let choices = enumValues?.length
           ? enumValues
           : suggestions?.length
-          ? [...suggestions, "other"]
+          ? suggestions
           : srcPath;
 
         // enumRef && console.log({ path, choices });
@@ -207,7 +207,9 @@ export default function DatabaseDraft({
             });
           }
 
-          element = select("$" + path, choices, false, { ...props });
+          element = select("$" + path, choices, false, !!suggestions, {
+            ...props,
+          });
         } else {
           // --------------------------------------------
           // %%%%%%%%%%%%%%| SIMPLE TYPES |%%%%%%%%%%%%%%

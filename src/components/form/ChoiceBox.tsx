@@ -17,6 +17,7 @@ export default function ChoiceBox({
   // display,
   field,
   multi = false,
+  other = false,
   inline = options.length < 3,
   value = multi ? [] : undefined,
   handleChange,

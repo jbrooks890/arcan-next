@@ -3,11 +3,12 @@ import Dropdown from "./Dropdown";
 import Label from "./Label";
 import TextField from "./TextField";
 
-type PropsType = SelectType & {
-  multi?: boolean;
-  inline?: boolean;
-  dropdown?: boolean;
-};
+type PropsType = SelectType &
+  InputWrapperType & {
+    multi?: boolean;
+    inline?: boolean;
+    dropdown?: boolean;
+  };
 
 export default function SelectMaster({
   dropdown = false,
@@ -32,13 +33,15 @@ export default function SelectMaster({
   return other ? (
     <>
       {OUTPUT}
-      <Label name="other" field={`${field}-other`}>
-        <TextField
-          field={field}
-          value={""}
-          handleChange={e => handleChange(e.target.value)}
-        />
-      </Label>
+      {value === undefined && (
+        <Label name="other" field={`${field}-other`}>
+          <TextField
+            field={field}
+            value={""}
+            handleChange={e => handleChange(e.target.value)}
+          />
+        </Label>
+      )}
     </>
   ) : (
     OUTPUT

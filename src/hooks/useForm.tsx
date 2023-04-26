@@ -77,6 +77,7 @@ export type FieldType<T = string> = {
     max?: number;
     multi?: boolean;
     step?: number;
+    other?: boolean;
   };
 };
 
@@ -243,6 +244,7 @@ export default function useForm() {
             options={entry.choices}
             field={CHAIN}
             multi={entry.options?.multi}
+            other={entry.options?.other}
             value={value}
             handleChange={updateValue}
           />

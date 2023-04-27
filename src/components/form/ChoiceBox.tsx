@@ -1,10 +1,4 @@
-import {
-  DetailedHTMLProps,
-  InputHTMLAttributes,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useRef } from "react";
 import styles from "@/styles/form/ChoiceBox.module.scss";
 
 type PropsType = SelectType & {
@@ -39,14 +33,19 @@ export default function ChoiceBox({
           const id = `${field}-${option}`;
           // console.log({ field, option });
 
+          const $value = display ? index : option;
+          const isActive: boolean = multi
+            ? value.includes($value)
+            : value === $value;
+
+          // console.log({ isActive });
+
           return (
             <label
               key={i}
               htmlFor={id}
               className={`flex start middle ${
-                (multi ? value.includes(option) : option === value)
-                  ? "selected"
-                  : "not-selected"
+                isActive ? "selected" : "not-selected"
               }`}
             >
               <input
@@ -56,19 +55,15 @@ export default function ChoiceBox({
                 id={id}
                 name={id}
                 type={multi ? "checkbox" : "radio"}
-                value={display ? index : option}
-                checked={
-                  multi
-                    ? value.includes(display ? index : option)
-                    : value === option
-                }
+                value={$value}
+                checked={isActive}
                 onChange={() =>
                   handleChange(
                     multi
                       ? inputs.current
                           .filter(input => input?.checked)
                           .map(input => input.value)
-                      : option
+                      : $value
                   )
                 }
               />

@@ -7,7 +7,7 @@
   }
 
   &::selection {
-    background-color: var(--pop);
+    background-color: var(--mid);
     color: var(--darkest);
   }
 
@@ -16,8 +16,8 @@
   }
 
   svg {
-    fill: var(--pop);
-    stroke: var(--pop);
+    fill: var(--mid);
+    stroke: var(--mid);
   }
 
   // ::-webkit-datetime-edit {

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import styles from "@/styles/form/Dropdown.module.scss";
 
-export default function Dropdown({
+export default function Dropdown<Choices>({
   options,
   // display,
   field,
@@ -9,17 +9,17 @@ export default function Dropdown({
   value,
   other,
   className,
-}: SelectType & Passthrough) {
+}: SelectType<Choices> & Passthrough) {
   const [selected, setSelected] = useState(value);
   const [open, setOpen] = useState(false);
   const list = useRef<HTMLUListElement | null>(null);
 
-  const NO_CHOICE = "--";
+  const BLANK = "--";
 
   const display = !Array.isArray(options);
   const $options = Object.entries(options);
 
-  const selectOption = (selection: string | number) => {
+  const selectOption = (selection: any) => {
     handleChange(selection);
     setSelected(selection);
     setOpen(false);
@@ -29,22 +29,24 @@ export default function Dropdown({
 
   return (
     <label className={`${styles.dropdown} dropdown-ext ${className ?? "exo"}`}>
-      <select name={field} style={{ display: "none" }} defaultValue={selected}>
+      {/* <select name={field} style={{ display: "none" }} defaultValue={selected}>
         {$options.map(([_, option], i) => (
           <option key={i} value={option}>
             {option}
           </option>
         ))}
-      </select>
+      </select> */}
       <div className={`${styles.wrapper} wrapper-ext`}>
+        {/* ----------| DISPLAY |---------- */}
         <div
           className={`${styles.display} flex middle ${
             open ? "open" : "closed"
           }`}
           onClick={toggle}
         >
-          {(selected && String(selected)) ?? NO_CHOICE}
+          {(selected && String(selected)) ?? BLANK}
         </div>
+        {/* ----------| MENU |---------- */}
         <ul
           className={`${styles.cache} ${open ? "open" : "closed"}`}
           ref={list}
@@ -53,6 +55,9 @@ export default function Dropdown({
           }}
           onMouseLeave={() => open && toggle()}
         >
+          <li className="no-selection" onClick={() => selectOption(undefined)}>
+            {BLANK}
+          </li>
           {$options.map(([index, option], i) => (
             <li
               key={i}
@@ -61,11 +66,11 @@ export default function Dropdown({
               data-choice-display={display ? index : undefined}
               onClick={() => selectOption(option)}
             >
-              {!option ? NO_CHOICE : display ? index : option}
+              {display ? index : option}
             </li>
           ))}
           {other && (
-            <li data-choice={"other"} onClick={() => selectOption(undefined)}>
+            <li data-choice={"other"} onClick={() => selectOption("other")}>
               <em>other</em>
             </li>
           )}

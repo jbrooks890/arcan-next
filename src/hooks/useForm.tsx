@@ -30,6 +30,7 @@ import { capitalize } from "@/utility/helperFns";
 import Checkbox from "@/components/form/Checkbox";
 import useFormInputs from "./useFormInputs";
 import type { FormType } from "@/components/form/Form";
+import Input from "@/components/form/Input";
 
 export enum FieldTypeEnum {
   string,
@@ -146,7 +147,9 @@ export default function useForm() {
     return expanded;
   };
 
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // %%%%%%%%%%%%%%\ RENDER FIELD /%%%%%%%%%%%%%%
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   const renderField = (
     entry: FieldType,
@@ -228,14 +231,15 @@ export default function useForm() {
       if (entry_options?.Element) {
         const { Element } = entry_options;
         const [component, elementProps] = Element;
-        // const { props: elementProps } = Element;
-        // console.log({ Element });
         const handleChange = entry => updateValue(entry);
-        return createElement(component, {
+        const $props = {
           ...props,
           ...elementProps,
           handleChange,
-        });
+        };
+
+        // console.log({ $props });
+        return createElement(component, $props);
       }
 
       if (type === "select") {
@@ -260,6 +264,13 @@ export default function useForm() {
                 updateValue(e.target.value)
               }
             />
+            // <Input
+            //   type="text"
+            //   {...props}
+            //   handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+            //     updateValue(e.target.value)
+            //   }
+            // />
           );
         case "number":
           return (
@@ -353,6 +364,25 @@ export default function useForm() {
       validated: !!formMaster?.validation,
       inline: entry.options?.inline,
     };
+
+    const EXTERNAL = () => {
+      if (entry_options?.Element) {
+        const { Element } = entry_options;
+        const [component, elementProps] = Element;
+        const handleChange = entry => updateValue(entry);
+        const $props = {
+          ...props,
+          ...wrapperProps,
+          ...elementProps,
+          handleChange,
+        };
+
+        // console.log({ $props });
+        return createElement(component, $props);
+      }
+      return undefined;
+    };
+
     const error = ancestors.reduce(
       (parent, child) => parent?.[child],
       formMaster?.validation
@@ -369,7 +399,7 @@ export default function useForm() {
       />
     ) : (
       <Label key={CHAIN} {...wrapperProps}>
-        {element()}
+        {EXTERNAL() ?? element()}
       </Label>
     );
   };

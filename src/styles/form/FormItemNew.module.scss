@@ -21,7 +21,7 @@
     position: relative;
     align-self: center;
     padding: 0.5em 1em;
-    border: 1px solid var(--pop);
+    border: 1px solid var(--mid);
     text-transform: uppercase;
     border-radius: 2px;
     transition: 0.1s ease-out;
@@ -30,9 +30,9 @@
 
 .array-set-entry {
   padding: 0.5em;
-  /* background-color: var(--pop);
+  /* background-color: var(--mid);
   color: var(--darkest); */
-  border: 1px solid var(--pop);
+  border: 1px solid var(--mid);
   border-radius: 2px;
 }
 
@@ -56,7 +56,7 @@
 
 @media (hover: hover) {
   .form-item-new.closed:hover {
-    background-color: var(--pop);
+    background-color: var(--mid);
     border-style: solid;
     color: var(--darkest);
   }
@@ -64,7 +64,7 @@
   .add-btn:not(.closed .add-btn):hover {
     position: relative;
     padding: 0.5em 1em;
-    background-color: var(--pop);
+    background-color: var(--mid);
     color: var(--darkest);
     text-transform: uppercase;
     border-radius: 2px;

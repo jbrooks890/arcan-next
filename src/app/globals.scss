@@ -20,7 +20,7 @@
   --darkerGreen: #00181c;
   --mint: #adebe2;
   /* ---------------------------- */
-  --pop: var(--green);
+  --pop: coral;
   --pop-alt: coral;
   --lite: white;
   --brite: var(--mint);
@@ -49,7 +49,7 @@
   /* ========== BORDERS ========== */
   --inside: 5px;
   --outside: 10px;
-  --input: 2px solid var(--pop);
+  --input: 2px solid var(--mid);
   /* ========== SHAPES ========== */
   /* STAR CLIP SOURCE: https://www.cssportal.com/css-clip-path-generator/ */
   --star: polygon(
@@ -71,22 +71,30 @@
 }
 
 /* ::::::::::\ SITE /:::::::::: */
+
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
 * {
   box-sizing: border-box;
 }
 
 ::selection {
-  background-color: var(--pop);
+  background-color: var(--mid);
   color: var(--darkest);
 }
 
 body {
   margin: 0;
   padding: 0;
-  color: var(--pop);
+  color: var(--mid);
   font-family: var(--bodyFont);
   text-align: center;
-  fill: var(--pop);
+  fill: var(--mid);
 
   &.modal-lock {
     overflow: hidden;
@@ -270,6 +278,15 @@ label {
   }
 }
 
+.select-other {
+  &.inactive {
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+}
+
 /* ::::::::::\ FLEX /:::::::::: */
 .flex {
   display: flex;
@@ -334,7 +351,7 @@ label {
 @media (hover: hover) {
   button:not(.symbol-font):not(.brands-font):hover {
     &[type="submit"] {
-      border-color: var(--pop);
+      border-color: var(--mid);
     }
 
     &[type="reset"] {

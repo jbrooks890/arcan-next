@@ -68,7 +68,7 @@
     //   display: block;
     //   position: absolute;
     //   inset: 0;
-    //   background-color: var(--pop);
+    //   background-color: var(--mid);
     //   opacity: 0.05;
     //   z-index: 0;
     // }
@@ -76,7 +76,7 @@
     & > span {
       margin-top: 0.25em;
       // color: red !important;
-      color: var(--pop) !important;
+      color: var(--mid) !important;
       font: {
         family: var(--bodyFont) !important;
         weight: normal !important;
@@ -87,7 +87,7 @@
       padding: 0;
       padding-bottom: 0.25em;
       border: none;
-      border-bottom: 1px solid var(--pop);
+      border-bottom: 1px solid var(--mid);
       border-radius: 0;
     }
   }

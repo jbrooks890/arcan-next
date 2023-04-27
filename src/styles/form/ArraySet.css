@@ -1,5 +1,5 @@
 /* .array-set-new.closed {
-  background-color: var(--pop);
+  background-color: var(--mid);
   color: var(--darkest);
 } */
 
@@ -19,9 +19,9 @@
 .add-btn {
   position: relative;
   padding: 0.5em 1em;
-  /* background-color: var(--pop);
+  /* background-color: var(--mid);
   color: var(--darkest); */
-  border: 1px solid var(--pop);
+  border: 1px solid var(--mid);
   text-transform: uppercase;
   border-radius: 2px;
   transition: 0.1s ease-out;
@@ -33,9 +33,9 @@
 
 .array-set-entry {
   padding: 0.5em;
-  /* background-color: var(--pop);
+  /* background-color: var(--mid);
   color: var(--darkest); */
-  border: 1px solid var(--pop);
+  border: 1px solid var(--mid);
   box-sizing: border-box;
   border-radius: 2px;
 }
@@ -60,7 +60,7 @@
 
 @media (hover: hover) {
   .array-set-new.closed:hover {
-    background-color: var(--pop);
+    background-color: var(--mid);
     border-style: solid;
     color: var(--darkest);
   }
@@ -68,7 +68,7 @@
   .add-btn:not(.closed .add-btn):hover {
     position: relative;
     padding: 0.5em 1em;
-    background-color: var(--pop);
+    background-color: var(--mid);
     color: var(--darkest);
     text-transform: uppercase;
     border-radius: 2px;

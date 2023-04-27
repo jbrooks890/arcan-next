@@ -7,8 +7,8 @@
   margin-bottom: 10rem;
   padding: 1rem 2rem;
   background-color: var(--darkest);
-  color: var(--pop);
-  border: 2px solid var(--pop);
+  color: var(--mid);
+  border: 2px solid var(--mid);
   border-radius: var(--outside);
   transition: 0.1s ease-out;
 }

@@ -57,14 +57,14 @@
 
     strong > em,
     em > strong {
-      color: var(--pop);
+      color: var(--mid);
     }
 
     &:global {
       &.required {
         &::after {
           content: "*";
-          // color: var(--pop-alt);
+          // color: var(--pop);
           font-weight: normal;
         }
 
@@ -87,13 +87,13 @@
           &.no-error {
             &::before {
               content: "B";
-              color: var(--pop);
+              color: var(--mid);
             }
           }
           &.has-error {
             &::before {
               content: "X";
-              color: var(--pop-alt);
+              color: var(--pop);
               // font-size: smaller;
             }
           }

@@ -28,7 +28,7 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--pop);
+    background-color: var(--mid);
     border-radius: 100px;
   }
 
@@ -63,7 +63,7 @@
 
   thead {
     tr {
-      background-color: var(--pop);
+      background-color: var(--mid);
       border-radius: var(--inside);
 
       &:global {
@@ -128,7 +128,7 @@
             --size: 60%;
             content: "";
             display: block;
-            background-color: var(--pop);
+            background-color: var(--mid);
             width: var(--size);
             height: var(--size);
             border-radius: 1px;

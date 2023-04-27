@@ -1,3 +1,5 @@
+// import type { ChangeEvent } from "react";
+
 type InputPropsType = {
   field: string;
   value: any;
@@ -22,13 +24,14 @@ type InputWrapperType = {
   children: ReactElement | ReactElement[];
 };
 
-type SelectType = {
+type SelectType<Options> = {
   options: string[] | { [key: string]: string | number };
   // display?: { [key: string]: string };
   field: string;
-  value?: any | any[];
+  value?: Options | Options[];
   other?: boolean;
-  handleChange: Function;
+  handleChange: ChangeEvent;
+  handleOther?: Function;
 };
 
 type Passthrough = {

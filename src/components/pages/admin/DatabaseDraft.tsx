@@ -269,9 +269,14 @@ export default function DatabaseDraft({
                   const { instance } = caster;
                   if (instance === "String") {
                     // console.log({ path, value });
-                    element = component(label, [WordBank, {}], "string", {
-                      ...props,
-                    });
+                    element = component(
+                      label,
+                      [WordBank, { value }],
+                      "string",
+                      {
+                        ...props,
+                      }
+                    );
                   }
 
                   if (instance === "ObjectID")

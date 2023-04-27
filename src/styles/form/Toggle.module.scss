@@ -9,7 +9,7 @@
   --size: 1.25rem;
   cursor: pointer;
   position: relative;
-  border: 2px solid var(--pop);
+  border: 2px solid var(--mid);
   padding: 3px;
   width: calc(var(--size) * 2);
   height: var(--size);
@@ -24,13 +24,13 @@
     width: var(--size);
     height: var(--size);
     transition: inherit;
-    background-color: var(--pop);
+    background-color: var(--mid);
     border-radius: 50%;
   }
 }
 
 .input:checked + .toggle {
-  background-color: var(--pop);
+  background-color: var(--mid);
 
   &::before {
     --size: inherit;

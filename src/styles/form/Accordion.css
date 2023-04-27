@@ -11,20 +11,20 @@
 .accordion strong .arrow {
   --size: 1em;
   position: absolute;
-  left: calc(var(--size)*-1);
+  left: calc(var(--size) * -1);
   top: 0;
   bottom: 0;
   transform: rotate(45deg);
-  transition: .1s ease-out
+  transition: 0.1s ease-out;
 }
 
 .accordion.open > strong > .arrow {
   transform: rotate(135deg);
 }
 
-.accordion strong .arrow::before{
-  --size: .5em;
-  --border: 2px solid var(--pop);
+.accordion strong .arrow::before {
+  --size: 0.5em;
+  --border: 2px solid var(--mid);
   content: "";
   display: block;
   width: var(--size);

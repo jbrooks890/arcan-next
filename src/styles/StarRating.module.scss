@@ -16,7 +16,7 @@
       &:global {
         &.shine {
           svg {
-            fill: var(--pop);
+            fill: var(--mid);
             stroke: transparent;
           }
 
@@ -37,7 +37,7 @@
       svg {
         /* fill: var(--brite); */
         fill: none;
-        stroke: var(--pop);
+        stroke: var(--mid);
         stroke: {
           width: 4px;
           linecap: round;

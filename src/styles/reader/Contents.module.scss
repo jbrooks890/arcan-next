@@ -4,7 +4,7 @@
   max-height: 100vh;
   text-align: left;
   padding: 1em;
-  border: 1px solid var(--pop);
+  border: 1px solid var(--mid);
   border-radius: var(--inside);
 
   &:global {
@@ -24,7 +24,7 @@
     margin-bottom: 1rem;
     padding-bottom: 0.5em;
     line-height: 1em;
-    border-bottom: 1px solid var(--pop);
+    border-bottom: 1px solid var(--mid);
   }
 }
 
@@ -68,7 +68,7 @@
       &:not(.complete)::after {
         content: attr(data-chapter-progress) "%";
         padding-left: 1em;
-        background-color: var(--pop);
+        background-color: var(--mid);
         color: var(--darkest);
         position: absolute;
         right: 1ch;
@@ -85,7 +85,7 @@
     &:global {
       &:not(.unavailable) {
         &:hover {
-          background-color: var(--pop);
+          background-color: var(--mid);
           color: var(--darkest);
 
           &::after {

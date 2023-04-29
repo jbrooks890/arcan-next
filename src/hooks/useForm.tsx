@@ -54,7 +54,15 @@ type validatorObj = {
   error?: string;
 };
 
-export type FieldType<T = string> = {
+enum SimpleTypes {
+  string,
+  number,
+  boolean,
+  Date,
+  email,
+}
+
+export type FieldType<T = SimpleTypes> = {
   name: string;
   field: string;
   type: keyof typeof FieldTypeEnum;

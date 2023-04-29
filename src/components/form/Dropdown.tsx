@@ -6,6 +6,7 @@ export default function Dropdown<Choices>({
   // display,
   field,
   handleChange,
+  handleOther,
   value,
   other,
   className,
@@ -20,6 +21,7 @@ export default function Dropdown<Choices>({
   const $options = Object.entries(options);
 
   const selectOption = (selection: any) => {
+    other && handleOther!(false);
     handleChange(selection);
     setSelected(selection);
     setOpen(false);
@@ -70,7 +72,13 @@ export default function Dropdown<Choices>({
             </li>
           ))}
           {other && (
-            <li data-choice={"other"} onClick={() => selectOption("other")}>
+            <li
+              data-choice={"other"}
+              onClick={() => {
+                handleOther!(true);
+                setOpen(false);
+              }}
+            >
               <em>other</em>
             </li>
           )}

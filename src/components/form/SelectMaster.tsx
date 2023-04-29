@@ -1,15 +1,15 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState, useRef, createElement } from "react";
 import ChoiceBox from "./ChoiceBox";
 import Dropdown from "./Dropdown";
+import Input from "./Input";
 import Label from "./Label";
 import TextField from "./TextField";
 
-type PropsType = SelectType &
-  InputWrapperType & {
-    multi?: boolean;
-    inline?: boolean;
-    dropdown?: boolean;
-  };
+type PropsType = InputWrapperType & {
+  multi?: boolean;
+  inline?: boolean;
+  dropdown?: boolean;
+};
 
 export default function SelectMaster<Choices>({
   dropdown = false,
@@ -17,7 +17,7 @@ export default function SelectMaster<Choices>({
   multi,
   name,
   ...props
-}: PropsType) {
+}: PropsType & SelectType<Choices>) {
   const {
     options,
     required,
@@ -28,10 +28,11 @@ export default function SelectMaster<Choices>({
   } = props;
 
   const [otherMode, setOtherMode] = useState(false);
+  const otherRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    setOtherMode(multi ? value.includes("other") : value === "other");
-  }, [value]);
+    otherMode && handleChange(otherRef.current!.value);
+  }, [otherMode]);
 
   dropdown = !multi && options?.length > 4;
 
@@ -42,24 +43,31 @@ export default function SelectMaster<Choices>({
 
   // console.log({ field, options });
   const OUTPUT = <Selector {...props} />;
+  const otherLabelProps = {
+    name: `${name} (other)`,
+    field,
+    className: `select-other ${otherMode ? "active" : "inactive"}`,
+    children: [],
+  };
+
+  useEffect(() => {
+    console.log({ OTHER: otherRef.current });
+  }, [otherRef.current]);
 
   return other ? (
     <>
       {OUTPUT}
       {other && (
-        <Label
-          name={`${name} (other)`}
+        <Input
+          ref={otherRef}
+          type={"string"}
           field={field}
-          className={`select-other ${otherMode ? "active" : "inactive"}`}
-        >
-          <TextField
-            field={field}
-            value={""}
-            handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-              handleChange(e.target.value)
-            }
-          />
-        </Label>
+          value={""}
+          handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+            handleChange(e.target.value)
+          }
+          Wrapper={[Label, otherLabelProps]}
+        />
       )}
     </>
   ) : (

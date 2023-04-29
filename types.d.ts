@@ -21,10 +21,10 @@ type InputWrapperType = {
   className?: string;
   open?: boolean;
   inline?: boolean;
-  children: ReactElement | ReactElement[];
+  children?: ReactElement | ReactElement[];
 };
 
-type SelectType<Options> = {
+type SelectType<Options = [Options]> = {
   options: string[] | { [key: string]: string | number };
   // display?: { [key: string]: string };
   field: string;

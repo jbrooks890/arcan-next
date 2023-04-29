@@ -1,26 +1,28 @@
-import { HTMLInputTypeAttribute, ReactElement } from "react";
+import {
+  HTMLInputTypeAttribute,
+  ReactElement,
+  forwardRef,
+  MutableRefObject,
+  ComponentType,
+} from "react";
 import styles from "@/styles/form/Input.module.scss";
 
 type Props = {
   // type: InputHTMLAttributes<HTMLInputElement>.type?: HTMLInputTypeAttribute | undefined
   type: HTMLInputTypeAttribute;
-  Wrapper?: ReactElement<InputWrapperType>;
+  // Wrapper?: ReactElement<InputWrapperType>;
+  Wrapper?: [ComponentType<InputWrapperType>, InputWrapperType];
 } & InputPropsType &
   Passthrough;
 
-export default function Input({
-  type,
-  field,
-  placeholder,
-  handleChange,
-  value,
-  Wrapper,
-  id,
-  className,
-}: Props) {
+export default forwardRef<HTMLInputElement, Props>(function Input(
+  { type, field, placeholder, handleChange, value, Wrapper, id, className },
+  ref
+) {
   const CONTENT = (
     <div className={`${styles.wrap}`}>
       <input
+        ref={ref}
         name={field}
         type={type}
         placeholder={placeholder}
@@ -29,5 +31,11 @@ export default function Input({
       />
     </div>
   );
-  return Wrapper ? <Wrapper>{CONTENT}</Wrapper> : CONTENT;
-}
+
+  if (Wrapper) {
+    const [Wrap, props] = Wrapper;
+    return <Wrap {...props}>{CONTENT}</Wrap>;
+  } else {
+    return CONTENT;
+  }
+});

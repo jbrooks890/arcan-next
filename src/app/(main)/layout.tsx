@@ -1,4 +1,4 @@
-import "./globals.scss";
+import "../globals.scss";
 import Layout from "@/components/shared/Layout";
 
 export const metadata = {

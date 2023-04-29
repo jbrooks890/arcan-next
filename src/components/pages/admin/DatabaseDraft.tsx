@@ -2,22 +2,13 @@
 import styles from "@/styles/DBEntryDraft.module.scss";
 import axios from "@/interfaces/axios";
 import { useState, useEffect, MouseEventHandler } from "react";
-import Dropdown from "@/components/form/Dropdown";
-import Form from "@/components/form/Form";
-import TextField from "@/components/form/TextField";
-import Toggle from "@/components/form/Toggle";
 import WordBank from "@/components/form/WordBank";
-import ButtonCache from "@/components/form/ButtonCache";
-import ChoiceBox from "@/components/form/ChoiceBox";
-import FieldSet from "@/components/form/FieldSet";
 import DataSetEntry from "@/components/form/DataSetEntry";
-import NumField from "@/components/form/NumField";
 import ArraySet from "@/components/form/ArraySet";
-import FormPreview from "@/components/form/FormPreview";
-import DBDraftProvider from "@/components/contexts/DBDraftContext";
 import { useDBMaster } from "@/components/contexts/DBContext";
 import useForm, { FieldType } from "@/hooks/useForm";
 import Mixed from "@/components/form/database/Mixed";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 type DBDraftType = {
   record: object;
@@ -38,6 +29,12 @@ export default function DatabaseDraft({
   const { arcanData, omittedFields } = useDBMaster();
   const { models, references } = arcanData;
   const SCHEMA = models[schemaName];
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const CURRENT = pathname.split("/").pop();
+
+  console.log("TEST", { CURRENT });
 
   const {
     form,
@@ -99,7 +96,7 @@ export default function DatabaseDraft({
 
         const createLabel = (str = path) => {
           let label = str;
-          if (/[a-z]/.test(label.charAt()))
+          if (/[a-z]/.test(label.charAt(0)))
             label = label.replace(/([A-Z])/g, " $1").toLowerCase();
 
           if (label.startsWith("_")) label = label.slice(1);
@@ -333,9 +330,9 @@ export default function DatabaseDraft({
               // -----------------| DEFAULT |-----------------
               // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
               default:
-                console.warn(
-                  `${path.toUpperCase()}: No handler for ${instance}`
-                );
+                // console.warn(
+                //   `${path.toUpperCase()}: No handler for ${instance}`
+                // );
                 element = text(label + "NoElement");
             }
 

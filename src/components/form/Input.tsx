@@ -20,11 +20,12 @@ export default forwardRef<HTMLInputElement, Props>(function Input(
   ref
 ) {
   const CONTENT = (
-    <div className={`${styles.wrap}`}>
+    <div className={`${styles.wrap} flex middle ${className ?? "exo"}`}>
       <input
         ref={ref}
         name={field}
         type={type}
+        className={styles.input}
         placeholder={placeholder}
         value={value ?? ""}
         onChange={handleChange}

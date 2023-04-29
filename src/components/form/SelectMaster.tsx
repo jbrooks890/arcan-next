@@ -62,7 +62,7 @@ export default function SelectMaster<Choices>({
           ref={otherRef}
           type={"string"}
           field={field}
-          value={""}
+          value={otherMode ? value : ""}
           handleChange={(e: ChangeEvent<HTMLInputElement>) =>
             handleChange(e.target.value)
           }

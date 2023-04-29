@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/admin/database"
+    "src/app/(admin)/admin/database"
   ],
   "exclude": ["node_modules"]
 }

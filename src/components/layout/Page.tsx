@@ -23,7 +23,7 @@ export default function Page({
   ...props
 }: PropsType) {
   return (
-    <div
+    <main
       id={`${id}-page ${id ?? ""}`}
       className={`${styles.page} page ${type}-type flex col middle ${
         className ?? "exo"
@@ -32,6 +32,6 @@ export default function Page({
       {...props}
     >
       {children}
-    </div>
+    </main>
   );
 }

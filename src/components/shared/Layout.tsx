@@ -8,12 +8,10 @@ type ChildrenType = {
 
 export default function Layout({ children }: ChildrenType) {
   return (
-    <>
-      <main id="siteWrapper" className="flex col middle">
-        <Header />
-        {children}
-      </main>
+    <div id="siteWrapper" className="flex col middle">
+      <Header />
+      {children}
       <Footer />
-    </>
+    </div>
   );
 }

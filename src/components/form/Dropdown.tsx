@@ -11,9 +11,10 @@ export default function Dropdown<Choices>({
   other,
   className,
 }: SelectType<Choices> & Passthrough) {
-  const [selected, setSelected] = useState(value);
+  const [selected, setSelected] = useState<typeof value | "other">(value);
   const [open, setOpen] = useState(false);
   const list = useRef<HTMLUListElement | null>(null);
+  const $OTHER = "other";
 
   const BLANK = "--";
 
@@ -73,9 +74,10 @@ export default function Dropdown<Choices>({
           ))}
           {other && (
             <li
-              data-choice={"other"}
+              data-choice={$OTHER}
               onClick={() => {
                 handleOther!(true);
+                setSelected($OTHER);
                 setOpen(false);
               }}
             >

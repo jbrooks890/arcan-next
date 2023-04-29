@@ -240,9 +240,10 @@ input {
     size: 1rem;
   }
   outline: inherit;
-  border: var(--input) {
-    radius: var(--inside);
-  }
+  // border: var(--input) {
+  //   radius: var(--inside);
+  // }
+  border: none;
 
   &::placeholder {
     color: inherit;

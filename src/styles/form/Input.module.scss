@@ -1,2 +1,12 @@
 .wrap {
+  position: relative;
+  width: 100%;
+
+  &:global {
+    &.exo {
+      border: var(--input) {
+        radius: var(--inside);
+      }
+    }
+  }
 }

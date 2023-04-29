@@ -234,6 +234,13 @@ export default function useForm() {
     };
 
     // ~~~~~~~~~~~\ ELEMENT /~~~~~~~~~~~
+    const SIMPLE_TYPES = {
+      string: "text",
+      number: "number",
+      float: "number",
+      email: "email",
+      date: "date",
+    };
 
     let element = () => {
       if (entry_options?.Element) {
@@ -262,6 +269,10 @@ export default function useForm() {
           />
         );
       }
+
+      // if (Object.keys(SIMPLE_TYPES).includes(type)){
+      //   return <Input type={SIMPLE_TYPES[type]} {...props}/>
+      // }
 
       switch (type) {
         case "string":

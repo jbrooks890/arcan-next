@@ -271,20 +271,23 @@ export default function useForm() {
     if (children) wrapperProps.group = true;
 
     let ELEMENT = () => {
+      // =========> EXTERNAL <=========
       if (entry_options?.Element) {
         const { Element } = entry_options;
         const [component, elementProps] = Element;
         const handleChange = entry => updateValue(entry);
         const $props = {
           ...props,
-          ...wrapperProps,
+          // ...wrapperProps,
           ...elementProps,
+          wrapper: wrapperProps,
           handleChange,
         };
 
         return createElement(component, $props);
       }
 
+      // =========> SELECT <=========
       if (type === "select") {
         return (
           <SelectMaster

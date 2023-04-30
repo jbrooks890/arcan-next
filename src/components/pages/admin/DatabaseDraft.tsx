@@ -46,7 +46,6 @@ export default function DatabaseDraft({
     select,
     group,
     component,
-    renderEach,
     field: formField,
   } = useForm();
 
@@ -290,42 +289,37 @@ export default function DatabaseDraft({
                   element = component(
                     label,
                     [ArraySet, { entryFields, value }],
-                    // <ArraySet
-                    //   ancestors={[...ancestors, path]}
-                    //   createNewEntry={(source, update) =>
-                    //     createFields(paths, [], source, update)
-                    //   }
-                    // />,
-                    "string",
+                    undefined,
                     { ...props, children: createFields(paths) }
                   );
                 }
 
                 break;
-                // case "Map":
-                //   const $data = paths[path + ".$*"];
-                //   if ($data?.options?.type?.paths) {
-                //     element = createDataSetEntry(
-                //       $data.options.type.paths,
-                //       options.enum
-                //     );
-                //   } else {
-                //     // element = NO_ELEMENT;
-                //     element = (
-                //       <FieldSet {...props}>
-                //         <TextField />
-                //       </FieldSet>
-                //     );
-                //   }
+              // case "Map":
+              //   const $data = paths[path + ".$*"];
+              //   if ($data?.options?.type?.paths) {
+              //     element = createDataSetEntry(
+              //       $data.options.type.paths,
+              //       options.enum
+              //     );
+              //   } else {
+              //     // element = NO_ELEMENT;
+              //     element = (
+              //       <FieldSet {...props}>
+              //         <TextField />
+              //       </FieldSet>
+              //     );
+              //   }
 
-                //   break;
-                // case "Mixed":
-                if (pathRef) {
-                  const pathChain = pathRef?.split(".");
-                  console.log({ pathChain, source });
-                }
-                props = { ...props, type: "set", options: { Element: Mixed } };
-                break;
+              //   break;
+              // case "Mixed":
+              //   if (pathRef) {
+              //     const pathChain = pathRef?.split(".");
+              //     // console.log({ pathChain, source });
+              //   }
+              //   // props = { ...props, type: "set", options: { Element: Mixed } };
+              //   element = component(label, [Mixed]);
+              //   break;
               // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
               // -----------------| DEFAULT |-----------------
               // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -6,6 +6,7 @@ import {
   ReactElement,
 } from "react";
 import FieldSet from "./FieldSet";
+import InputWrapper from "./InputWrapper";
 
 export type FormType<Data> = {
   name?: string;
@@ -39,19 +40,20 @@ export default function Form({
   validate = false,
 }: FormType) {
   // console.log({ name, subForm });
-  const Element = subForm ? FieldSet : "form";
+  const Element = subForm ? InputWrapper : "form";
   // const Title = subForm ? "legend" : "h2";
 
   return (
     <Element
       name={name ?? "anonymous"}
       id={id}
-      className={`${subForm ? styles["sub-form"] : styles.form} flex col ${
+      className={`${subForm ? "sub-form" : styles.form} flex col ${
         validate ? "validate" : "no-validate"
       } ${className ?? "exo"}`}
       onSubmit={handleSubmit}
       autoComplete={autoComplete ? "on" : "off"}
       spellCheck={spellCheck}
+      group={subForm ? true : undefined}
     >
       {name && !subForm && !useSummary && (
         <h2 className={styles.title}>{name}</h2>

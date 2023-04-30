@@ -22,6 +22,7 @@ export default function ArraySet({
   cache = value,
   ancestors,
   entryFields,
+  wrapper,
 }: PropsType & InputPropsType) {
   // ===================================================
 
@@ -74,22 +75,6 @@ export default function ArraySet({
   const { table } = useTableElement();
   const { createButtons } = useOpsCache();
   const { form } = useForm();
-  // const newEntry = renderEach("New", entryFields, [], {
-  //   source: state,
-  //   updater: dispatch,
-  // });
-
-  // console.log({ value, cache });
-
-  // console.log({ entryDraft, submitDraft });
-
-  // useEffect(
-  //   () =>
-  //     setEntryDraft(
-  //       Object.fromEntries(newEntry.map(([path, data]) => [path, data.field]))
-  //     ),
-  //   []
-  // );
 
   // ---------- RESET ----------
 
@@ -102,7 +87,6 @@ export default function ArraySet({
 
   function addEntry() {
     handleChange([...cache, draft]);
-    // resetDraft();
     dispatch({ type: "reset" });
   }
 
@@ -133,12 +117,6 @@ export default function ArraySet({
 
   const cancel = () => dispatch({ type: "reset" });
 
-  // const cancel = () => {
-  //   resetDraft();
-  //   setExpandNew(false);
-  //   setSubmitDraft(undefined);
-  // };
-
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // _________ NEW ENTRY _________
   const newEntry = form({
@@ -148,7 +126,7 @@ export default function ArraySet({
     submitTxt: "Add",
     resetTxt: "Clear",
     handleSubmit: addEntry,
-    handleReset: () => dispatch({ type: "reset" }),
+    handleReset: cancel,
   });
 
   // ============================================
@@ -157,16 +135,7 @@ export default function ArraySet({
 
   return draft ? (
     <>
-      {
-        newEntry
-        // <ArraySetNew
-        //   elements={newEntry.map(field => field[1].element)}
-        //   expanded={expandNew}
-        //   setExpanded={setExpandNew}
-        //   submit={() => (submitDraft ? submitDraft(entryDraft) : addEntry())}
-        //   cancel={cancel}
-        // />
-      }
+      {newEntry}
       {cache.length ? (
         table(cache, {
           omittedFields,

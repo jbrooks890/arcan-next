@@ -34,7 +34,7 @@ export default function DatabaseDraft({
   const pathname = usePathname();
   const CURRENT = pathname.split("/").pop();
 
-  console.log("TEST", { CURRENT });
+  // console.log("TEST", { CURRENT });
 
   const {
     form,

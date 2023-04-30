@@ -7,6 +7,7 @@ import {
   Dispatch,
   FormEventHandler,
   HTMLAttributes,
+  HTMLInputTypeAttribute,
   MouseEvent,
   MouseEventHandler,
   ReactElement,
@@ -31,6 +32,7 @@ import Checkbox from "@/components/form/Checkbox";
 import useFormInputs from "./useFormInputs";
 import type { FormType } from "@/components/form/Form";
 import Input from "@/components/form/Input";
+import InputWrapper from "@/components/form/InputWrapper";
 
 export enum FieldTypeEnum {
   string,
@@ -242,128 +244,6 @@ export default function useForm() {
       date: "date",
     };
 
-    let element = () => {
-      if (entry_options?.Element) {
-        const { Element } = entry_options;
-        const [component, elementProps] = Element;
-        const handleChange = entry => updateValue(entry);
-        const $props = {
-          ...props,
-          ...elementProps,
-          handleChange,
-        };
-
-        // console.log({ $props });
-        return createElement(component, $props);
-      }
-
-      if (type === "select") {
-        return (
-          <SelectMaster
-            options={entry.choices}
-            field={CHAIN}
-            multi={entry.options?.multi}
-            other={entry.options?.other}
-            value={value}
-            handleChange={updateValue}
-          />
-        );
-      }
-
-      // if (Object.keys(SIMPLE_TYPES).includes(type)){
-      //   return <Input type={SIMPLE_TYPES[type]} {...props}/>
-      // }
-
-      switch (type) {
-        case "string":
-          return (
-            <TextField
-              {...props}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.value)
-              }
-            />
-            // <Input
-            //   type="text"
-            //   {...props}
-            //   handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-            //     updateValue(e.target.value)
-            //   }
-            // />
-          );
-        case "number":
-          return (
-            <NumField
-              {...props}
-              min={entry.options?.min}
-              max={entry.options?.max}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.value)
-              }
-            />
-          );
-        case "float":
-          return (
-            <NumField
-              {...props}
-              min={entry.options?.min}
-              max={entry.options?.max}
-              step={entry.options?.step ?? 0.1}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.value)
-              }
-            />
-          );
-        case "boolean":
-          return (
-            <Toggle
-              {...props}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.checked)
-              }
-            />
-          );
-        case "checkbox":
-          return (
-            <Checkbox
-              {...props}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.checked)
-              }
-            />
-          );
-        case "date":
-          return (
-            <DateField
-              {...props}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.value)
-              }
-            />
-          );
-        case "email":
-          return (
-            <EmailField
-              {...props}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.value)
-              }
-            />
-          );
-        case "password":
-          return (
-            <Password
-              {...props}
-              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.value)
-              }
-            />
-          );
-        default:
-          return <div>{`${field}...?`}</div>;
-      }
-    };
-
     const parentName = ancestors?.length && [...ancestors].pop();
     const junior = parentName && name.match(new RegExp(parentName, "i"));
     const criteriaList = Array.isArray(validation)
@@ -371,9 +251,6 @@ export default function useForm() {
           .filter(validator => validator.criteria)
           .map(validator => validator.criteria)
       : undefined;
-
-    // criteriaList && console.log({ field, criteriaList });
-    // console.log({ field, validation });
 
     const wrapperProps: InputWrapperType = {
       name: junior ? name!.replace(parentName, "").trim() : name!,
@@ -384,7 +261,15 @@ export default function useForm() {
       inline: entry.options?.inline,
     };
 
-    const EXTERNAL = () => {
+    const error = ancestors.reduce(
+      (parent, child) => parent?.[child],
+      formMaster?.validation
+    )?.[field];
+
+    if (error) wrapperProps.error = error;
+    if (children) wrapperProps.group = true;
+
+    let ELEMENT = () => {
       if (entry_options?.Element) {
         const { Element } = entry_options;
         const [component, elementProps] = Element;
@@ -396,30 +281,87 @@ export default function useForm() {
           handleChange,
         };
 
-        // console.log({ $props });
         return createElement(component, $props);
       }
-      return undefined;
+
+      if (type === "select") {
+        return (
+          <SelectMaster
+            options={entry.choices}
+            // field={CHAIN}
+            multi={entry.options?.multi}
+            other={entry.options?.other}
+            value={value}
+            handleChange={updateValue}
+            wrapper={wrapperProps}
+          />
+        );
+      }
+
+      if (Object.keys(SIMPLE_TYPES).includes(type)) {
+        return (
+          <Input
+            type={SIMPLE_TYPES[type]}
+            handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+              updateValue(e.target.value)
+            }
+            min={entry.options?.min}
+            max={entry.options?.max}
+            step={entry.options?.step ?? 0.1}
+            wrapper={wrapperProps}
+            {...props}
+          />
+        );
+      }
+
+      switch (type) {
+        case "boolean":
+          return (
+            <InputWrapper {...wrapperProps}>
+              <Toggle
+                {...props}
+                handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  updateValue(e.target.checked)
+                }
+              />
+            </InputWrapper>
+          );
+        case "checkbox":
+          return (
+            <InputWrapper {...wrapperProps}>
+              <Checkbox
+                {...props}
+                handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  updateValue(e.target.checked)
+                }
+              />
+            </InputWrapper>
+          );
+        case "password":
+          return (
+            <InputWrapper {...wrapperProps}>
+              <Password
+                {...props}
+                handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  updateValue(e.target.value)
+                }
+              />
+            </InputWrapper>
+          );
+        default:
+          return <div>{`${field}...?`}</div>;
+      }
     };
 
-    const error = ancestors.reduce(
-      (parent, child) => parent?.[child],
-      formMaster?.validation
-    )?.[field];
-
-    if (error) wrapperProps.error = error;
-
     return children ? (
-      <FieldSet
+      <InputWrapper
         key={CHAIN}
         {...wrapperProps}
         inline={!entry.options?.block && children?.length < 3}
         children={[]}
       />
     ) : (
-      <Label key={CHAIN} {...wrapperProps}>
-        {EXTERNAL() ?? element()}
-      </Label>
+      ELEMENT()
     );
   };
 

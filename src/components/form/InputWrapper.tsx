@@ -1,10 +1,9 @@
-"use client";
-import { useState, ReactElement } from "react";
-import Criteria from "./Criteria";
-import styles from "@/styles/form/Label.module.scss";
+import styles from "@/styles/form/InputWrapper.module.scss";
 import Markdown from "markdown-to-jsx";
+import { useRef, useState } from "react";
+import Criteria from "./Criteria";
 
-export default function Label({
+export default function InputWrapper({
   name,
   field,
   required = false,
@@ -13,41 +12,44 @@ export default function Label({
   validated = false,
   inline = false,
   error,
-  // id,
+  group = false,
+  open = true,
+  id = field,
   className,
 }: InputWrapperType) {
   const [showCriteria, setShowCriteria] = useState(false);
 
   const toggleCriteria = () => setShowCriteria(prev => !prev);
-  // console.log({ showCriteria });
-
-  console.log({ field, className });
+  const Wrapper = group ? "fieldset" : "label";
+  const Label = group ? "legend" : Markdown;
+  const wrapRef = useRef<HTMLLabelElement | HTMLFieldSetElement | null>(null);
+  const labelRef = useRef<
+    HTMLLegendElement | HTMLSpanElement | HTMLDivElement | null
+  >(null);
 
   return (
-    <label
+    <Wrapper
+      ref={wrapRef}
       htmlFor={field}
       data-label={name}
-      className={`${styles.label} label_ ${
+      id={id}
+      className={`${group ? styles.fieldset : styles.label} ${
         required ? "required" : "not-required"
       } ${criteria ? "has-criteria" : "no-criteria"} ${
         inline ? "flex inline middle" : "block"
-      } ${className ?? "exo"}`}
+      } ${open ? "open" : "closed"} ${className ?? "exo"}`}
     >
-      <Markdown
+      <Label
+        ref={labelRef}
         className={`${styles["label-text"]} label-text ${
           required ? "required" : "not-required"
         } ${validated ? "validated" : "not-validated"} ${
           error ? "has-error" : "no-error"
         }`}
-        // options={{ forceBlock: true }}
         onClick={() => criteria && toggleCriteria()}
-        // data-error={error ?? undefined}
       >
         {name}
-      </Markdown>
-      {required || criteria ? (
-        <span className={`${styles.error}`}>{error ?? ""}</span>
-      ) : undefined}
+      </Label>
       {criteria ? (
         <Criteria
           content={criteria}
@@ -56,6 +58,6 @@ export default function Label({
         />
       ) : undefined}
       {children}
-    </label>
+    </Wrapper>
   );
 }

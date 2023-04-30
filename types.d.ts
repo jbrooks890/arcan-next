@@ -19,6 +19,7 @@ type InputWrapperType = {
   error?: string;
   id?: string;
   className?: string;
+  group?: boolean;
   open?: boolean;
   inline?: boolean;
   children?: ReactElement | ReactElement[];

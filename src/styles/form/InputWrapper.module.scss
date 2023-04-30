@@ -1,0 +1,230 @@
+// =======================================
+// %%%%%%%%%%%%%%%\ LABEL /%%%%%%%%%%%%%%%
+// =======================================
+.label {
+  position: relative;
+  text-align: left;
+
+  &:global {
+    &.block {
+      display: block;
+    }
+
+    &.inline {
+      cursor: pointer;
+
+      .label-text {
+        order: 1;
+        margin: {
+          bottom: 0;
+          left: 1ch;
+        }
+      }
+    }
+  }
+
+  .validate & {
+    color: red;
+  }
+
+  .error {
+    display: inline-block;
+    margin-left: 1ch;
+    color: coral !important;
+    font: {
+      family: var(--bodyFont);
+      weight: normal;
+      size: smaller;
+    }
+    text: {
+      align: left;
+      transform: none;
+    }
+    letter-spacing: normal;
+    line-height: 1;
+    // border: 1px solid red;
+  }
+
+  .label-text {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0.5em;
+    -webkit-font-smoothing: antialiased;
+    color: var(--mint);
+    text: {
+      align: left;
+      transform: uppercase;
+    }
+    font: {
+      family: var(--keyFont2);
+      size: small;
+      weight: 600;
+    }
+    letter-spacing: 0.1em;
+
+    strong > em,
+    em > strong {
+      color: var(--mid);
+    }
+
+    &:global {
+      &.required {
+        &::after {
+          content: "*";
+          // color: var(--pop);
+          font-weight: normal;
+        }
+
+        &.validated {
+          &::before {
+            position: absolute;
+            display: inline;
+            align-items: center;
+            // height: 100%;
+            transform: translateX(calc(-100% - 0.5ch));
+            // transform: translateX(-100%);
+            font: {
+              family: var(--symbols);
+              weight: normal;
+            }
+            text-transform: none;
+            letter-spacing: normal;
+          }
+
+          &.no-error {
+            &::before {
+              content: "B";
+              color: var(--mid);
+            }
+          }
+          &.has-error {
+            &::before {
+              content: "X";
+              color: var(--pop);
+              // font-size: smaller;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+// ======================================
+// %%%%%%%%%%%%%\ FIELDSET /%%%%%%%%%%%%%
+// ======================================
+
+.fieldset {
+  resize: vertical;
+  padding: 1rem;
+  border: var(--input);
+  border-radius: var(--outside);
+
+  &:global {
+    &.closed {
+      & > legend {
+        max-width: 0;
+        overflow: hidden;
+        opacity: 0;
+        padding: 0;
+      }
+    }
+  }
+
+  & > *:not(legend) {
+    margin-bottom: 0.5em;
+  }
+
+  & > legend {
+    position: relative;
+    padding-inline: 1em;
+    color: var(--mint);
+    font: {
+      family: var(--keyFont2);
+      size: small;
+      weight: bold;
+    }
+    text: {
+      align: left;
+      transform: uppercase;
+    }
+    letter-spacing: 0.1em;
+    line-height: 1;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 25% 0;
+      border-inline: var(--input);
+    }
+  }
+
+  & > label {
+    position: relative;
+    display: flex;
+
+    &:global {
+      &.inline {
+        // flex-direction: row-reverse;
+        .label-text {
+          order: 2;
+          margin: 0;
+        }
+      }
+
+      &:not(.inline) {
+        flex-direction: column;
+      }
+    }
+
+    // &:focus-within::before {
+    //   content: "";
+    //   display: block;
+    //   position: absolute;
+    //   inset: 0;
+    //   background-color: var(--mid);
+    //   opacity: 0.05;
+    //   z-index: 0;
+    // }
+
+    & > span {
+      margin-top: 0.25em;
+      // color: red !important;
+      color: var(--mid) !important;
+      font: {
+        family: var(--bodyFont) !important;
+        weight: normal !important;
+      }
+    }
+
+    & > input {
+      padding: 0;
+      padding-bottom: 0.25em;
+      border: none;
+      border-bottom: 1px solid var(--mid);
+      border-radius: 0;
+    }
+  }
+
+  & > & {
+    margin-block: 1rem;
+    padding-inline: 0;
+    border: none;
+    border-top: var(--input);
+    border-radius: 0;
+
+    & > legend {
+      text-align: center;
+    }
+  }
+}
+
+// .fieldset.wrapper > *:not(legend) {
+//   margin-bottom: 0.5em;
+// }
+
+// .fieldset.closed > legend {
+//   max-width: 0;
+//   overflow: hidden;
+//   opacity: 0;
+//   padding: 0;
+// }

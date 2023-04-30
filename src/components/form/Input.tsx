@@ -6,17 +6,16 @@ import {
   ComponentType,
 } from "react";
 import styles from "@/styles/form/Input.module.scss";
+import InputWrapper from "./InputWrapper";
 
 type Props = {
-  // type: InputHTMLAttributes<HTMLInputElement>.type?: HTMLInputTypeAttribute | undefined
   type: HTMLInputTypeAttribute;
-  // Wrapper?: ReactElement<InputWrapperType>;
-  Wrapper?: [ComponentType<InputWrapperType>, InputWrapperType];
+  wrapper?: InputWrapperType;
 } & InputPropsType &
   Passthrough;
 
 export default forwardRef<HTMLInputElement, Props>(function Input(
-  { type, field, placeholder, handleChange, value, Wrapper, id, className },
+  { type, field, placeholder, handleChange, value, wrapper, id, className },
   ref
 ) {
   const CONTENT = (
@@ -24,8 +23,9 @@ export default forwardRef<HTMLInputElement, Props>(function Input(
       <input
         ref={ref}
         name={field}
-        type={type}
+        // id={id}
         className={styles.input}
+        type={type}
         placeholder={placeholder}
         value={value ?? ""}
         onChange={handleChange}
@@ -33,10 +33,9 @@ export default forwardRef<HTMLInputElement, Props>(function Input(
     </div>
   );
 
-  if (Wrapper) {
-    const [Wrap, props] = Wrapper;
-    return <Wrap {...props}>{CONTENT}</Wrap>;
-  } else {
-    return CONTENT;
-  }
+  return wrapper ? (
+    <InputWrapper {...wrapper}>{CONTENT}</InputWrapper>
+  ) : (
+    CONTENT
+  );
 });

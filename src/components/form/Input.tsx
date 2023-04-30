@@ -19,7 +19,11 @@ export default forwardRef<HTMLInputElement, Props>(function Input(
   ref
 ) {
   const CONTENT = (
-    <div className={`${styles.wrap} flex middle ${className ?? "exo"}`}>
+    <div
+      className={`${styles.wrap} ${
+        wrapper ? "wrapped" : "not-wrapped"
+      } input-container flex middle ${className ?? "exo"}`}
+    >
       <input
         ref={ref}
         name={field}

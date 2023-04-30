@@ -1,4 +1,11 @@
-import { ChangeEvent, useEffect, useState, useRef, createElement } from "react";
+import {
+  ChangeEvent,
+  useEffect,
+  useState,
+  useRef,
+  createElement,
+  useReducer,
+} from "react";
 import ChoiceBox from "./ChoiceBox";
 import Dropdown from "./Dropdown";
 import Input from "./Input";
@@ -28,6 +35,35 @@ export default function SelectMaster<Choices>({
     handleChange,
   } = props;
 
+  const defaultOther = {
+    active: false,
+    value: "",
+  };
+
+  type Action =
+    | { type: "update"; payload: string }
+    | { type: "switch"; payload: boolean }
+    | { type: "toggle"; payload: undefined };
+
+  const reducer = (state: typeof defaultOther, action: Action) => {
+    const { type, payload } = action;
+    switch (type) {
+      case "switch":
+        return { ...state, active: payload };
+      case "toggle":
+        return {
+          ...state,
+          active: !state.active,
+        };
+      case "update":
+        return {
+          ...state,
+          value: payload,
+        };
+    }
+  };
+
+  const [$other, dispatch] = useReducer(reducer, defaultOther);
   const [otherMode, setOtherMode] = useState(false);
   const otherRef = useRef<HTMLInputElement | null>(null);
   const { name, required } = wrapper;

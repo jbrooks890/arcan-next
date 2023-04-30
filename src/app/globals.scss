@@ -113,7 +113,27 @@ body {
 /* ::::::::::\ SCROLLBAR /:::::::::: */
 
 ::-webkit-scrollbar {
-  display: none;
+  --size: 10px;
+  width: var(--size);
+  height: var(--size);
+
+  &-track {
+    background: transparent;
+    // width: 5px;
+    // margin: {
+    //   block: 0.5em;
+    // }
+  }
+
+  &-thumb {
+    cursor: grab;
+    background: var(--mid);
+    border-radius: 100px;
+  }
+
+  &-corner {
+    background: transparent;
+  }
 }
 
 /* ::::::::::\ HEADER, FOOTER /:::::::::: */
@@ -163,8 +183,9 @@ h2 {
   color: var(--mint);
 }
 
-/* ::::::::::\ FORM ELEMENTS /:::::::::: */
+// ::::::::::\ FORM ELEMENTS /::::::::::
 
+// :-------------| BUTTON |-------------
 button {
   cursor: pointer;
   appearance: none;
@@ -229,6 +250,8 @@ button {
   }
 }
 
+// :-------------| INPUT |-------------
+
 input {
   appearance: none;
   display: block;
@@ -240,9 +263,6 @@ input {
     size: 1rem;
   }
   outline: inherit;
-  // border: var(--input) {
-  //   radius: var(--inside);
-  // }
   border: none;
 
   &::placeholder {
@@ -271,6 +291,19 @@ input[type="email"] {
   align-self: stretch;
 }
 
+// fieldset > label > .input-container {
+//   input {
+//     padding: 0 {
+//       bottom: 0.25em;
+//     }
+//   }
+
+//   border: none !important   {
+//     bottom: 1px solid var(--mid) !important;
+//     radius: 0 !important;
+//   }
+// }
+
 label {
   .validate & {
     &.has-criteria {
@@ -280,11 +313,18 @@ label {
 }
 
 .select-other {
+  transition: 0.1s ease-out;
+
   &.inactive {
     opacity: 0;
     max-height: 0;
+    margin: 0;
     padding: 0;
     overflow: hidden;
+  }
+
+  &.active {
+    opacity: 1;
   }
 }
 

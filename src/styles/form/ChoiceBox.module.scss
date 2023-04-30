@@ -6,12 +6,16 @@
   border: var(--input);
   max-height: 240px; // TODO
   border-radius: var(--outside);
-  overflow-y: scroll;
+  overflow-y: auto;
+
+  // &::-webkit-scrollbar {
+  //   // display:;
+  // }
 
   &:global {
     &.scroll {
       max-height: 10em;
-      overflow-y: scroll;
+      overflow-y: auto;
     }
 
     &.inline {

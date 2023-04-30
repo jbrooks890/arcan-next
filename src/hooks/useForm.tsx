@@ -2,6 +2,7 @@
 import {
   ChangeEvent,
   ChangeEventHandler,
+  ComponentType,
   createElement,
   DetailedHTMLProps,
   Dispatch,
@@ -81,7 +82,7 @@ export type FieldType<T = SimpleTypes> = {
     HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement
   >;
   options?: {
-    Element?: [JSX.Element, object | undefined];
+    Element?: [ComponentType, object | undefined];
     block?: boolean;
     inline?: boolean;
     min?: number;
@@ -484,8 +485,8 @@ export default function useForm() {
             field,
             children
               ? createElement(
-                  FieldSet,
-                  { ...element.props, key: element.key },
+                  InputWrapper,
+                  { ...element.props, key: element.key, group: true },
                   Object.values(data.children.elements)
                 )
               : element,

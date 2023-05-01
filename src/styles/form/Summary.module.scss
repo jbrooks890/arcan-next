@@ -1,0 +1,211 @@
+.flex .summary h3 {
+  text-align: center;
+}
+
+.summary {
+  position: relative;
+  width: 480px;
+  overflow: hidden;
+  border: var(--input) {
+    radius: var(--outside);
+  }
+  padding-bottom: 2em;
+  text-align: left;
+  transition: 0.2s ease-out;
+
+  legend {
+    text-align: center;
+  }
+
+  .wrapper {
+    flex-grow: 1;
+    padding: 1em 1.5em 1em 2em;
+    overflow-y: scroll;
+
+    ul {
+      margin: 0;
+
+      & > ul {
+        padding-left: 1em;
+      }
+
+      li {
+        &.dropdown > label > strong {
+          cursor: pointer;
+          position: relative;
+
+          &::before {
+            --size: 0.5em;
+            --border: 2px solid var(--darkest);
+            content: "";
+            position: absolute;
+            top: 0.5em;
+            left: -2ch;
+            display: block;
+            width: var(--size);
+            height: var(--size);
+            /* background-color: silver; */
+            transform: rotate(45deg);
+            border-top: var(--border);
+            border-top-right-radius: 3px;
+            border-right: var(--border);
+            transition: 0.1s ease-out;
+          }
+        }
+
+        strong {
+          font: {
+            size: 0.9rem;
+            weight: normal;
+            variant: small-caps;
+          }
+          letter-spacing: normal;
+
+          &::after {
+            content: ":";
+            margin-right: 1ch;
+          }
+        }
+      }
+    }
+
+    input {
+      &:checked ~ strong::before {
+        transform: rotate(135deg);
+      }
+
+      &:not(:checked) + ul {
+        max-height: 0;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .submit {
+    cursor: pointer;
+    align-self: center;
+    padding: 1em;
+    text-transform: uppercase;
+    font-family: var(--keyFont2);
+    font-weight: bold;
+    border: 2px solid transparent;
+    border-radius: var(--inside);
+    transition: 0.1s ease-out;
+  }
+
+  .cancel {
+    /* font-size: small; */
+    text-transform: lowercase;
+    font-variant: small-caps;
+    opacity: 0.25;
+    transition: 0.1s ease-out;
+  }
+}
+
+// .summary legend {
+//   text-align: center;
+// }
+
+// .summary .wrapper {
+//   flex-grow: 1;
+//   padding: 1em 1.5em 1em 2em;
+//   overflow-y: scroll;
+// }
+
+// .summary .wrapper ul {
+//   margin: 0;
+// }
+
+// .summary .wrapper ul ul {
+//   padding-left: 1em;
+// }
+
+// .summary .wrapper ul li.dropdown > label > strong {
+//   cursor: pointer;
+//   position: relative;
+// }
+
+// .summary .wrapper ul li.dropdown > label > strong::before {
+//   --size: 0.5em;
+//   --border: 2px solid var(--darkest);
+//   content: "";
+//   position: absolute;
+//   top: 0.5em;
+//   left: -2ch;
+//   display: block;
+//   width: var(--size);
+//   height: var(--size);
+//   /* background-color: silver; */
+//   transform: rotate(45deg);
+//   border-top: var(--border);
+//   border-right: var(--border);
+//   border-top-right-radius: 3px;
+//   transition: 0.1s ease-out;
+// }
+
+// .summary .wrapper input:checked ~ strong::before {
+//   transform: rotate(135deg);
+// }
+
+// .summary .wrapper ul li strong {
+//   /* color: var(--mint);
+//     text-shadow: 1px 1px 1px var(--shadow); */
+//   font-size: 0.9rem;
+//   font-weight: normal;
+//   font-variant: small-caps;
+//   /* opacity: .75; */
+//   letter-spacing: normal;
+// }
+
+// .summary .wrapper ul li strong::after {
+//   content: ":";
+//   margin-right: 1ch;
+// }
+
+// .summary .wrapper input:not(:checked) + ul {
+//   max-height: 0;
+//   overflow: hidden;
+// }
+
+// .summary .submit {
+//   cursor: pointer;
+//   align-self: center;
+//   padding: 1em;
+//   text-transform: uppercase;
+//   font-family: var(--keyFont2);
+//   font-weight: bold;
+//   border: 2px solid transparent;
+//   border-radius: var(--inside);
+//   transition: 0.1s ease-out;
+// }
+
+#addNew .summary .summary-entry:not(.fade) {
+  color: var(--mint);
+  text-transform: none;
+  font-size: 1rem;
+  text-shadow: 1px 1px 1px var(--shadow);
+}
+
+// .summary button.cancel {
+//   /* font-size: small; */
+//   text-transform: lowercase;
+//   font-variant: small-caps;
+//   opacity: 0.25;
+//   transition: 0.1s ease-out;
+// }
+
+// .flex .summary button.cancel {
+//   align-self: center;
+// }
+
+@media (hover: hover) {
+  .summary {
+    .submit:hover {
+      border-color: var(--green);
+    }
+
+    .cancel:hover {
+      opacity: 1;
+    }
+  }
+}

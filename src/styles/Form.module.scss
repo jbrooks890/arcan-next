@@ -1,4 +1,8 @@
 .form {
+  flex-grow: 1;
+  overflow: hidden;
+  // border: 1px solid red;
+
   &:global {
     &.exo {
       padding-inline: 2rem;
@@ -6,6 +10,16 @@
   }
 
   .body {
+    overflow-y: scroll;
+    min-width: 50%;
+
+    &:global {
+      &.summary {
+        margin-right: 1rem;
+        padding-right: 1rem;
+      }
+    }
+
     & > *:not(button) {
       margin-bottom: 1rem;
     }

@@ -9,6 +9,7 @@ import {
 } from "react";
 import FieldSet from "./FieldSet";
 import InputWrapper from "./InputWrapper";
+import Summary from "./Summary";
 
 export type FormType<Data> = {
   name?: string;
@@ -18,7 +19,7 @@ export type FormType<Data> = {
   spellCheck?: boolean;
   submitTxt?: string;
   resetTxt?: string;
-  summary?: SummaryType;
+  summary?: object;
   subForm?: boolean;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
   handleCancel?: MouseEventHandler<HTMLButtonElement>;
@@ -50,20 +51,33 @@ export default function Form({
       name={name ?? "anonymous"}
       id={id}
       className={`${subForm ? "sub-form" : styles.form} flex ${
-        validate ? "validate" : "no-validate"
+        summary ? "inline" : "col"
+      } ${validate ? "validate" : "no-validate"} ${
+        summary ? "summary" : "no-summary"
       } ${className ?? "exo"}`}
       onSubmit={handleSubmit}
       autoComplete={autoComplete ? "on" : "off"}
       spellCheck={spellCheck}
       group={subForm ? true : undefined}
     >
-      <div className={`${styles.body} flex col`}>
+      <div
+        className={`${styles.body} ${
+          summary ? "summary" : "no-summary"
+        } flex col`}
+      >
         {name && !subForm && !summary && (
           <h2 className={styles.title}>{name}</h2>
         )}
         {children}
       </div>
-      {!summary && (
+      {summary ? (
+        <Summary
+          data={summary}
+          name={name}
+          handleCancel={handleReset}
+          handleSubmit={handleSubmit}
+        />
+      ) : (
         <>
           <button
             type="submit"

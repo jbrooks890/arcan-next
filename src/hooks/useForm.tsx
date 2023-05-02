@@ -536,7 +536,7 @@ export default function useForm() {
     handleReset,
     handleSubmit,
     postMessage,
-  }: FormAPIType) => {
+  }: FormAPIType & { useSummary?: boolean }) => {
     const newForm: FormMasterType = getFieldData(expand(fields));
 
     !formMaster &&
@@ -582,7 +582,7 @@ export default function useForm() {
         handleReset={resetForm}
         submitTxt={submitTxt}
         resetTxt={resetTxt}
-        useSummary={useSummary}
+        summary={useSummary ? formData : undefined}
         subForm={subForm}
       >
         {Object.values(newForm.elements)}

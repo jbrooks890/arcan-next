@@ -3,8 +3,7 @@ import { MouseEventHandler } from "react";
 import ObjectNest from "./ObjectNest";
 
 export type SummaryType = {
-  form: {};
-  collection: {};
+  data: {};
   legend?: string;
   name?: string;
   submitTxt?: string;
@@ -14,8 +13,7 @@ export type SummaryType = {
 } & Passthrough;
 
 export default function Summary({
-  form,
-  collection,
+  data,
   id,
   className,
   legend = "Summary",
@@ -25,7 +23,7 @@ export default function Summary({
   handleSubmit,
   handleCancel,
 }: SummaryType) {
-  // console.log({ name, form });
+  // console.log({ name, data });
 
   return (
     <fieldset
@@ -35,9 +33,9 @@ export default function Summary({
       <legend>{legend}</legend>
       <h3>{name}</h3>
       <ObjectNest
-        dataObj={form}
-        collectionName={collection}
-        className="wrapper flex col"
+        dataObj={data}
+        // collectionName={collection}
+        className={`${styles.wrapper} flex col`}
       />
       <button type="submit" className={styles.submit} onClick={handleSubmit}>
         {submitTxt}

@@ -431,7 +431,7 @@ export default function DatabaseDraft({
     submitTxt: record ? "Update" : "Submit",
     fields: createFields(SCHEMA.paths),
     validate: true,
-    summary: {},
+    useSummary: true,
     handleSubmit,
     handleCancel: cancel,
     className: styles.record,

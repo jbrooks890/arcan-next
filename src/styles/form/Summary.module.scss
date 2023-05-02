@@ -4,17 +4,35 @@
 
 .summary {
   position: relative;
-  width: 480px;
-  overflow: hidden;
-  border: var(--input) {
-    radius: var(--outside);
+  flex: {
+    shrink: 1;
+    basis: 480px;
   }
+  overflow: hidden;
   padding-bottom: 2em;
   text-align: left;
   transition: 0.2s ease-out;
+  // border: none;
+  border: var(--input) {
+    radius: var(--outside);
+  }
 
   legend {
+    padding-inline: 1em;
+    color: var(--brite);
+    font-size: small;
+    text: {
+      align: center;
+      transform: uppercase;
+    }
+  }
+
+  h3 {
+    color: var(--brite);
     text-align: center;
+    margin: 0 {
+      block: 1em;
+    }
   }
 
   .wrapper {
@@ -54,6 +72,7 @@
         }
 
         strong {
+          color: var(--brite);
           font: {
             size: 0.9rem;
             weight: normal;

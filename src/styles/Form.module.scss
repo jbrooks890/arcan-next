@@ -5,15 +5,17 @@
     }
   }
 
-  & > *:not(button) {
-    margin-bottom: 1rem;
-  }
+  .body {
+    & > *:not(button) {
+      margin-bottom: 1rem;
+    }
 
-  button {
-    outline: none;
+    button {
+      outline: none;
 
-    &[type="submit"] {
-      margin-bottom: 0.5rem;
+      &[type="submit"] {
+        margin-bottom: 0.5rem;
+      }
     }
   }
 }

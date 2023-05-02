@@ -22,14 +22,14 @@ export default function InputWrapper({
   const toggleCriteria = () => setShowCriteria(prev => !prev);
   const Wrapper = group ? "fieldset" : "label";
   const Label = group ? "legend" : Markdown;
-  const wrapRef = useRef<HTMLLabelElement | HTMLFieldSetElement | null>(null);
-  const labelRef = useRef<
-    HTMLLegendElement | HTMLSpanElement | HTMLDivElement | null
-  >(null);
+  // const wrapRef = useRef<HTMLLabelElement | HTMLFieldSetElement | null>(null);
+  // const labelRef = useRef<
+  //   HTMLLegendElement | HTMLSpanElement | HTMLDivElement | null
+  // >(null);
 
   return (
     <Wrapper
-      ref={wrapRef}
+      // ref={wrapRef}
       htmlFor={field}
       data-label={name}
       id={id}
@@ -40,7 +40,7 @@ export default function InputWrapper({
       } ${open ? "open" : "closed"} ${className ?? "exo"}`}
     >
       <Label
-        ref={labelRef}
+        // ref={labelRef}
         className={`${styles["label-text"]} label-text ${
           required ? "required" : "not-required"
         } ${validated ? "validated" : "not-validated"} ${

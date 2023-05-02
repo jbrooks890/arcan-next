@@ -7,6 +7,7 @@ import useTableElement from "@/hooks/useTableElement";
 import ObjectNest from "./ObjectNest";
 import useOpsCache from "@/hooks/useOpsCache";
 import useForm, { FieldType } from "@/hooks/useForm";
+import InputWrapper from "./InputWrapper";
 
 type PropsType = {
   ancestors: string[];
@@ -120,7 +121,9 @@ export default function ArraySet({
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // _________ NEW ENTRY _________
   const newEntry = form({
-    name: "New",
+    name: `New ${
+      wrapper?.name?.endsWith("s") ? wrapper.name.slice(0, -1) : "entry"
+    }`,
     fields: entryFields,
     subForm: true,
     submitTxt: "Add",
@@ -129,11 +132,7 @@ export default function ArraySet({
     handleReset: cancel,
   });
 
-  // ============================================
-  // :::::::::::::::::\ RENDER /:::::::::::::::::
-  // ============================================
-
-  return draft ? (
+  const OUTPUT = draft ? (
     <>
       {newEntry}
       {cache.length ? (
@@ -161,5 +160,17 @@ export default function ArraySet({
     </>
   ) : (
     "No entry"
+  );
+
+  // ============================================
+  // :::::::::::::::::\ RENDER /:::::::::::::::::
+  // ============================================
+
+  return wrapper ? (
+    <InputWrapper {...wrapper} group={true}>
+      {OUTPUT}
+    </InputWrapper>
+  ) : (
+    OUTPUT
   );
 }

@@ -1,11 +1,13 @@
 import styles from "@/styles/form/Checkbox.module.scss";
+import InputWrapper from "./InputWrapper";
 
 export default function Checkbox({
   field,
   handleChange,
   value,
+  wrapper,
 }: InputPropsType) {
-  return (
+  const OUTPUT = (
     <>
       <input
         type="checkbox"
@@ -18,4 +20,5 @@ export default function Checkbox({
       <div className={`${styles.checkmark} flex center`} />
     </>
   );
+  return wrapper ? <InputWrapper {...wrapper}>{OUTPUT}</InputWrapper> : OUTPUT;
 }

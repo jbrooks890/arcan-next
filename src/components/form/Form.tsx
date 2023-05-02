@@ -1,4 +1,6 @@
 import styles from "@/styles/Form.module.scss";
+import type { SummaryType } from "./Summary";
+
 import {
   FormEventHandler,
   MouseEvent,
@@ -16,7 +18,7 @@ export type FormType<Data> = {
   spellCheck?: boolean;
   submitTxt?: string;
   resetTxt?: string;
-  useSummary?: boolean;
+  summary?: SummaryType;
   subForm?: boolean;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
   handleCancel?: MouseEventHandler<HTMLButtonElement>;
@@ -35,7 +37,7 @@ export default function Form({
   resetTxt = "Reset",
   autoComplete = false,
   spellCheck = false,
-  useSummary = false,
+  summary,
   subForm = false,
   validate = false,
 }: FormType) {
@@ -47,7 +49,7 @@ export default function Form({
     <Element
       name={name ?? "anonymous"}
       id={id}
-      className={`${subForm ? "sub-form" : styles.form} flex col ${
+      className={`${subForm ? "sub-form" : styles.form} flex ${
         validate ? "validate" : "no-validate"
       } ${className ?? "exo"}`}
       onSubmit={handleSubmit}
@@ -55,11 +57,13 @@ export default function Form({
       spellCheck={spellCheck}
       group={subForm ? true : undefined}
     >
-      {name && !subForm && !useSummary && (
-        <h2 className={styles.title}>{name}</h2>
-      )}
-      {children}
-      {!useSummary && (
+      <div className={`${styles.body} flex col`}>
+        {name && !subForm && !summary && (
+          <h2 className={styles.title}>{name}</h2>
+        )}
+        {children}
+      </div>
+      {!summary && (
         <>
           <button
             type="submit"

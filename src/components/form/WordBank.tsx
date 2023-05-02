@@ -1,11 +1,13 @@
 import { MouseEventHandler, useRef, useState } from "react";
 import styles from "@/styles/form/WordBank.module.scss";
 import TextField from "./TextField";
+import InputWrapper from "./InputWrapper";
 
 export default function WordBank({
   field,
   value = [],
   handleChange,
+  wrapper,
 }: InputPropsType & { terms: string[] }) {
   const [entry, setEntry] = useState("");
   const placeholder = field.replace(/([A-Z])/g, " $1");
@@ -22,7 +24,7 @@ export default function WordBank({
   const removeTerm = (term: string) =>
     handleChange(value.filter(entry => entry !== term));
 
-  return (
+  const OUTPUT = (
     <>
       <div className={`${styles.wrapper} flex middle`}>
         <input
@@ -56,4 +58,6 @@ export default function WordBank({
       </ul>
     </>
   );
+
+  return wrapper ? <InputWrapper {...wrapper}>{OUTPUT}</InputWrapper> : OUTPUT;
 }

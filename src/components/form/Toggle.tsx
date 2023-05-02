@@ -1,7 +1,13 @@
 import styles from "@/styles/form/Toggle.module.scss";
+import InputWrapper from "./InputWrapper";
 
-export default function Toggle({ field, handleChange, value }: InputPropsType) {
-  return (
+export default function Toggle({
+  field,
+  handleChange,
+  value,
+  wrapper,
+}: InputPropsType) {
+  const OUTPUT = (
     <>
       <input
         type="checkbox"
@@ -14,4 +20,5 @@ export default function Toggle({ field, handleChange, value }: InputPropsType) {
       <div className={styles.toggle} />
     </>
   );
+  return wrapper ? <InputWrapper {...wrapper}>{OUTPUT}</InputWrapper> : OUTPUT;
 }

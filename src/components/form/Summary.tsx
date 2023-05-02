@@ -2,7 +2,7 @@ import styles from "@/styles/form/Summary.module.scss";
 import { MouseEventHandler } from "react";
 import ObjectNest from "./ObjectNest";
 
-type Props = {
+export type SummaryType = {
   form: {};
   collection: {};
   legend?: string;
@@ -24,7 +24,7 @@ export default function Summary({
   cancelTxt = "cancel",
   handleSubmit,
   handleCancel,
-}: Props) {
+}: SummaryType) {
   // console.log({ name, form });
 
   return (

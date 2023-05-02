@@ -7,6 +7,7 @@ import {
   DetailedHTMLProps,
   Dispatch,
   FormEventHandler,
+  Fragment,
   HTMLAttributes,
   HTMLInputTypeAttribute,
   MouseEvent,
@@ -193,12 +194,6 @@ export default function useForm() {
     );
     const value = parent?.[field] ?? defaultValue;
 
-    const props: Omit<InputPropsType, "handleChange"> = {
-      field,
-      value,
-      placeholder,
-    };
-
     const updateNestedValue = (
       source = formData,
       value: any,
@@ -270,6 +265,13 @@ export default function useForm() {
     if (error) wrapperProps.error = error;
     if (children) wrapperProps.group = true;
 
+    const props: Omit<InputPropsType, "handleChange"> = {
+      field,
+      value,
+      placeholder,
+      wrapper: wrapperProps,
+    };
+
     let ELEMENT = () => {
       // =========> EXTERNAL <=========
       if (entry_options?.Element) {
@@ -278,9 +280,7 @@ export default function useForm() {
         const handleChange = entry => updateValue(entry);
         const $props = {
           ...props,
-          // ...wrapperProps,
           ...elementProps,
-          wrapper: wrapperProps,
           handleChange,
         };
 
@@ -295,9 +295,10 @@ export default function useForm() {
             // field={CHAIN}
             multi={entry.options?.multi}
             other={entry.options?.other}
-            value={value}
+            // value={value}
             handleChange={updateValue}
-            wrapper={wrapperProps}
+            {...props}
+            // wrapper={wrapperProps}
           />
         );
       }
@@ -312,7 +313,7 @@ export default function useForm() {
             min={entry.options?.min}
             max={entry.options?.max}
             step={entry.options?.step ?? 0.1}
-            wrapper={wrapperProps}
+            // wrapper={wrapperProps}
             {...props}
           />
         );
@@ -321,25 +322,22 @@ export default function useForm() {
       switch (type) {
         case "boolean":
           return (
-            <InputWrapper {...wrapperProps}>
-              <Toggle
-                {...props}
-                handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  updateValue(e.target.checked)
-                }
-              />
-            </InputWrapper>
+            <Toggle
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.checked)
+              }
+            />
           );
         case "checkbox":
           return (
-            <InputWrapper {...wrapperProps}>
-              <Checkbox
-                {...props}
-                handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  updateValue(e.target.checked)
-                }
-              />
-            </InputWrapper>
+            <Checkbox
+              {...props}
+              handleChange={(e: ChangeEvent<HTMLInputElement>) =>
+                updateValue(e.target.checked)
+              }
+              // wrapper={wrapperProps}
+            />
           );
         case "password":
           return (
@@ -365,7 +363,7 @@ export default function useForm() {
         children={[]}
       />
     ) : (
-      ELEMENT()
+      <Fragment key={CHAIN}>{ELEMENT()}</Fragment>
     );
   };
 

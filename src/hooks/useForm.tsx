@@ -13,6 +13,7 @@ import {
   MouseEvent,
   MouseEventHandler,
   ReactElement,
+  ReactNode,
   SetStateAction,
   useEffect,
   useState,
@@ -83,7 +84,7 @@ export type FieldType<T = SimpleTypes> = {
     HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement
   >;
   options?: {
-    Element?: [ComponentType, object | undefined];
+    Element?: [ReactNode, object | undefined];
     block?: boolean;
     inline?: boolean;
     min?: number;
@@ -534,6 +535,7 @@ export default function useForm() {
     useSummary = false,
     subForm = false,
     handleReset,
+    handleCancel,
     handleSubmit,
     postMessage,
   }: FormAPIType & { useSummary?: boolean }) => {

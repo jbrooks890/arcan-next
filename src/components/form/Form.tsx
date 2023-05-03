@@ -7,7 +7,6 @@ import {
   MouseEventHandler,
   ReactElement,
 } from "react";
-import FieldSet from "./FieldSet";
 import InputWrapper from "./InputWrapper";
 import Summary from "./Summary";
 
@@ -19,19 +18,20 @@ export type FormType<Data> = {
   spellCheck?: boolean;
   submitTxt?: string;
   resetTxt?: string;
-  summary?: object;
+  summary?: Data;
   subForm?: boolean;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
-  handleCancel?: MouseEventHandler<HTMLButtonElement>;
+  handleCancel?: () => void;
   handleSubmit: (v?: Data) => void;
   postMessage?: (v: Data) => string;
 } & Passthrough;
 
-export default function Form({
+export default function Form<T>({
   name,
   children,
-  handleSubmit = e => e.preventDefault(),
-  handleReset = e => e.preventDefault(),
+  handleReset,
+  handleCancel,
+  handleSubmit,
   id,
   className,
   submitTxt = "Submit",
@@ -41,7 +41,7 @@ export default function Form({
   summary,
   subForm = false,
   validate = false,
-}: FormType) {
+}: FormType<T>) {
   // console.log({ name, subForm });
   const Element = subForm ? InputWrapper : "form";
   // const Title = subForm ? "legend" : "h2";
@@ -74,7 +74,7 @@ export default function Form({
         <Summary
           data={summary}
           name={name}
-          handleCancel={handleReset}
+          handleCancel={handleCancel}
           handleSubmit={handleSubmit}
         />
       ) : (

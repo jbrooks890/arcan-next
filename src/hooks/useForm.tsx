@@ -19,16 +19,10 @@ import {
   useState,
 } from "react";
 import Form from "@/components/form/Form";
-import Label from "@/components/form/Label";
-import TextField from "@/components/form/TextField";
-import NumField from "@/components/form/NumField";
 import Toggle from "@/components/form/Toggle";
 import Password from "@/components/form/Password";
-import DateField from "@/components/form/DateField";
-import EmailField from "@/components/form/EmailField";
 import FieldSet from "@/components/form/FieldSet";
 import Markdown from "markdown-to-jsx";
-import ChoiceBox from "@/components/form/ChoiceBox";
 import SelectMaster from "@/components/form/SelectMaster";
 import { capitalize } from "@/utility/helperFns";
 import Checkbox from "@/components/form/Checkbox";
@@ -67,7 +61,7 @@ enum SimpleTypes {
   email,
 }
 
-export type FieldType<T = SimpleTypes> = {
+export type FieldType = {
   name: string;
   field: string;
   type: keyof typeof FieldTypeEnum;
@@ -75,8 +69,8 @@ export type FieldType<T = SimpleTypes> = {
   placeholder?: string;
   required?: boolean;
   confirm?: boolean;
-  choices?: (T | object)[] | { [key: string]: T };
-  children?: FieldType<T>[];
+  choices?: (string | object)[] | { [key: string]: string };
+  children?: FieldType[];
   validation?: validatorFn | validatorObj[];
   labelize?: boolean;
   aux?: boolean;
@@ -84,7 +78,7 @@ export type FieldType<T = SimpleTypes> = {
     HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement
   >;
   options?: {
-    Element?: [ReactNode, object | undefined];
+    Element?: [ComponentType, object | undefined];
     block?: boolean;
     inline?: boolean;
     min?: number;
@@ -288,6 +282,7 @@ export default function useForm() {
         return createElement(component, $props);
       }
 
+      Object.assign(props, { value });
       // =========> SELECT <=========
       if (type === "select") {
         return (
@@ -304,6 +299,8 @@ export default function useForm() {
         );
       }
 
+      // =========> SIMPLE TYPES <=========
+
       if (Object.keys(SIMPLE_TYPES).includes(type)) {
         return (
           <Input
@@ -319,6 +316,8 @@ export default function useForm() {
           />
         );
       }
+
+      // =========> OTHERS <=========
 
       switch (type) {
         case "boolean":
@@ -598,6 +597,7 @@ export default function useForm() {
 
   return {
     form,
+    state: () => formData,
     isSubmitted,
     getValue,
     render: renderField,

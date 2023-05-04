@@ -1,17 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import type { FieldType } from "@/hooks/useForm";
+import { ReactElement, useEffect, useRef, useState } from "react";
 
-const DataSetItem = ({
+type Props = {
+  option: any;
+  secondaries: ReactElement | ReactElement[];
+  field: string;
+  multi: boolean;
+  checked: boolean;
+  handleChange: Function;
+  setRef: Function;
+} & Passthrough;
+
+export default function DataSetItem({
   option,
-
   secondaries,
   field,
   multi,
   checked,
   handleChange,
   setRef,
-}) => {
+}: Props) {
   const [open, setOpen] = useState(false);
-  const drawer = useRef();
+  const drawer = useRef<HTMLDivElement | null>(null);
 
   // useEffect(() => console.log({ checked }), []);
 
@@ -29,7 +39,7 @@ const DataSetItem = ({
             type={multi ? "checkbox" : "radio"}
             value={option}
             checked={checked}
-            onChange={handleChange}
+            onChange={() => handleChange()}
           />
           <div className={`ticker ${multi ? "checkbox" : "radio"}`} />
           <span>{option}</span>
@@ -39,12 +49,12 @@ const DataSetItem = ({
       <div
         ref={drawer}
         className={`drawer ${open ? "open" : "closed"}`}
-        style={{ maxHeight: open && drawer.current.scrollHeight + "px" }}
+        style={{
+          maxHeight: open ? drawer.current?.scrollHeight + "px" : undefined,
+        }}
       >
         {secondaries}
       </div>
     </div>
   );
-};
-
-export default DataSetItem;
+}

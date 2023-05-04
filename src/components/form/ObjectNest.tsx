@@ -2,13 +2,14 @@ import { useDBMaster } from "../contexts/DBContext";
 import { useDBDraft } from "../contexts/DBDraftContext";
 import Accordion from "./Accordion";
 
+type Props = { dataObj: object; ancestors: string[] } & Passthrough;
+
 export default function ObjectNest({
   dataObj,
   ancestors = [],
   id,
   className,
-}: // ...props
-Passthrough & { dataObj: object; ancestors: string[] }) {
+}: Props) {
   const { arcanData, omittedFields } = useDBMaster();
   const { getPathData } = useDBDraft();
   const { models, references } = arcanData;

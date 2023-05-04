@@ -145,17 +145,23 @@ export default function DatabaseDraft({
 
         // ---------| CREATE DATASET ENTRY |---------
 
-        const createDataSetEntry = (paths, options, multi = true) => {
-          return (
-            <DataSetEntry
-              {...props}
-              multi={multi}
-              options={options}
-              createFields={option =>
-                createFields(paths, [...ancestors, path, option])
-              }
-              handleChange={handleChange}
-            />
+        const createDataSetEntry = (
+          paths: object,
+          options: string[],
+          multi = true
+        ) => {
+          const fields = Object.fromEntries(
+            options.map(option => [
+              option,
+              createFields(paths, [...ancestors, path, option]),
+            ])
+          );
+
+          return component(
+            `$${path}`,
+            [DataSetEntry, { multi, options: fields }],
+            undefined,
+            { ...props }
           );
         };
 
@@ -177,7 +183,9 @@ export default function DatabaseDraft({
 
           // console.log({ path, dependency });
 
-          return select("$" + path, dependency, multi, false, { ...props });
+          return select("$" + path, dependency, multi, false, false, {
+            ...props,
+          });
         };
 
         // =====================| SELECT/CHOICES |=====================
@@ -265,14 +273,9 @@ export default function DatabaseDraft({
                   const { instance } = caster;
                   if (instance === "String") {
                     // console.log({ path, value });
-                    element = component(
-                      label,
-                      [WordBank, { value }],
-                      "string",
-                      {
-                        ...props,
-                      }
-                    );
+                    element = component(label, [WordBank], "string", {
+                      ...props,
+                    });
                   }
 
                   if (instance === "ObjectID")
@@ -295,38 +298,38 @@ export default function DatabaseDraft({
                 }
 
                 break;
-              // case "Map":
-              //   const $data = paths[path + ".$*"];
-              //   if ($data?.options?.type?.paths) {
-              //     element = createDataSetEntry(
-              //       $data.options.type.paths,
-              //       options.enum
-              //     );
-              //   } else {
-              //     // element = NO_ELEMENT;
-              //     element = (
-              //       <FieldSet {...props}>
-              //         <TextField />
-              //       </FieldSet>
-              //     );
-              //   }
+              case "Map":
+                const $data = paths[path + ".$*"];
+                if ($data?.options?.type?.paths) {
+                  element = createDataSetEntry(
+                    $data.options.type.paths,
+                    options.enum
+                  );
+                } else {
+                  break;
+                }
+                // else {
+                //   // element = NO_ELEMENT;
+                //   element = (
+                //     <FieldSet {...props}>
+                //       <TextField />
+                //     </FieldSet>
+                //   );
+                // }
 
-              //   break;
-              // case "Mixed":
-              //   if (pathRef) {
-              //     const pathChain = pathRef?.split(".");
-              //     // console.log({ pathChain, source });
-              //   }
-              //   // props = { ...props, type: "set", options: { Element: Mixed } };
-              //   element = component(label, [Mixed]);
-              //   break;
+                break;
+              case "Mixed":
+                // if (pathRef) {
+                //   const pathChain = pathRef?.split(".");
+                //   // console.log({ pathChain, source });
+                // }
+                // props = { ...props, type: "set", options: { Element: Mixed } };
+                element = component(label, [Mixed, { value }]);
+                break;
               // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
               // -----------------| DEFAULT |-----------------
               // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
               default:
-                // console.warn(
-                //   `${path.toUpperCase()}: No handler for ${instance}`
-                // );
                 element = text(label + "NoElement");
             }
 
@@ -373,7 +376,7 @@ export default function DatabaseDraft({
   };
 
   // :::::::::::::\ HANDLE RESET /:::::::::::::
-  const handleReset = e => {
+  const handleReset: MouseEventHandler<HTMLButtonElement> = e => {
     e.preventDefault();
     console.clear();
     console.log(`%cFORM`, "color: lime");

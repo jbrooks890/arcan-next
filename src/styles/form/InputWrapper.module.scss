@@ -1,3 +1,5 @@
+@use "@/styles/utility.scss" as *;
+
 // =======================================
 // %%%%%%%%%%%%%%%\ LABEL /%%%%%%%%%%%%%%%
 // =======================================
@@ -141,28 +143,32 @@
   }
 
   & > legend {
-    position: relative;
-    padding-inline: 1em;
-    color: var(--mint);
-    font: {
-      family: var(--keyFont2);
-      size: small;
-      weight: bold;
-    }
-    text: {
-      align: left;
-      transform: uppercase;
-    }
-    letter-spacing: 0.1em;
-    line-height: 1;
-
-    &::before {
-      content: "";
-      position: absolute;
-      inset: 25% 0;
-      border-inline: var(--input);
-    }
+    @include db-legend;
   }
+
+  // & > legend {
+  //   position: relative;
+  //   padding-inline: 1em;
+  //   color: var(--mint);
+  //   font: {
+  //     family: var(--keyFont2);
+  //     size: small;
+  //     weight: bold;
+  //   }
+  //   text: {
+  //     align: left;
+  //     transform: uppercase;
+  //   }
+  //   letter-spacing: 0.1em;
+  //   line-height: 1;
+
+  //   &::before {
+  //     content: "";
+  //     position: absolute;
+  //     inset: 25% 0;
+  //     border-inline: var(--input);
+  //   }
+  // }
 
   & > .label {
     position: relative;

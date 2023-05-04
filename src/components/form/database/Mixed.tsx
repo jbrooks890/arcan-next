@@ -1,38 +1,62 @@
-import useForm, { FieldTypeEnum } from "@/hooks/useForm";
+import useForm, { FieldType, FieldTypeEnum } from "@/hooks/useForm";
 import { useReducer } from "react";
-import FieldSet from "../FieldSet";
-import SelectMaster from "../SelectMaster";
+import InputWrapper from "../InputWrapper";
 
-type MixedStateType<T> = {
-  fieldType: keyof typeof FieldTypeEnum;
-  fieldKey: string;
-  fieldValue: T;
-};
+// type State<T> = {
+//   fieldType: FieldType["type"];
+//   fieldKey: string | undefined;
+//   fieldValue: T | undefined;
+// } & InputPropsType;
 
-const reducer = (state, action) => {
-  const { type, payload } = action;
-  switch (type) {
-    case "update":
-      break;
-    case "delete":
-      break;
-    case "clear":
-      break;
-    default:
-      return state;
-  }
-};
+// const initialState: State<string> = {
+//   fieldType: "string",
+//   fieldKey: undefined,
+//   fieldValue: undefined,
+// };
+
+// const reducer = (state: State, action) => {
+//   const { type, payload } = action;
+//   switch (type) {
+//     case "update":
+//       break;
+//     case "reset":
+//       return initialState;
+//     default:
+//       return state;
+//   }
+// };
+
+// ===============================================
+// :::::::::::::::::| COMPONENT |:::::::::::::::::
+// ===============================================
 
 export default function Mixed({
-  name,
   field,
   handleChange,
   value,
-}: InputPropsType & InputWrapperType) {
-  const [state, dispatch] = useReducer(reducer, {});
-  const { text, select, render, field: formField, group } = useForm();
+  wrapper,
+}: InputPropsType) {
+  // const [state, dispatch] = useReducer(reducer, initialState);
+  const { text, select, field: formField, form, state } = useForm();
 
-  const FIELD_TYPE = select("$fieldType*", Object.keys(FieldTypeEnum), false, {
+  // console.log({ state: state() });
+
+  // ---------------< METHODS >---------------
+
+  const addEntry = () => {
+    // const { fieldKey, fieldValue } = state;
+    handleChange({ ...value, [state.fieldKey]: state.fieldValue });
+  };
+
+  const deleteEntry = target => {
+    handleChange(value.filter(entry => entry !== target));
+  };
+
+  // ---------------< FIELDS >---------------
+
+  const simpleFields = "string number float boolean email".split(" ");
+
+  const FIELD_TYPE = select("$fieldType*", simpleFields, false, false, {
     aux: true,
   });
 
@@ -41,20 +65,25 @@ export default function Mixed({
   const FIELD_VALUE = formField({
     name: "field value",
     field: "fieldValue",
-    type: state.fieldType,
+    type: state()?.fieldType ?? "string",
     required: true,
   });
 
   const FIELD_GROUP = [FIELD_TYPE, FIELD_KEY, FIELD_VALUE];
 
-  // const newEntry = group("$" + field, FIELD_GROUP);
+  const newEntry = form({
+    name: `New ${wrapper?.name} entry`,
+    fields: FIELD_GROUP,
+    subForm: true,
+    submitTxt: "Add",
+    resetTxt: "Clear",
+    handleSubmit: addEntry,
+    // handleCancel: cancel,
+  });
 
-  // return render(newEntry, [], { source: state, updater: dispatch });
-  return (
-    <div className={`${styles.wrapper}`}>
-      <FieldSet name={name} field={field}>
-        {FIELD_GROUP.map(FIELD => render(FIELD))}
-      </FieldSet>
-    </div>
+  return wrapper ? (
+    <InputWrapper {...wrapper}>{newEntry}</InputWrapper>
+  ) : (
+    newEntry
   );
 }

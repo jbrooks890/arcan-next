@@ -18,10 +18,10 @@
         margin-right: 1rem;
         padding-right: 1rem;
       }
-    }
 
-    & > *:not(button) {
-      margin-bottom: 1rem;
+      & > *:not(button):not(.inactive) {
+        margin-bottom: 1rem;
+      }
     }
 
     button {

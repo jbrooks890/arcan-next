@@ -6,13 +6,14 @@ import {
   MouseEvent,
   MouseEventHandler,
   ReactElement,
+  ReactNode,
 } from "react";
 import InputWrapper from "./InputWrapper";
 import Summary from "./Summary";
 
 export type FormType<Data> = {
   name?: string;
-  children: ReactElement | ReactElement[] | JSX.Element;
+  children: ReactNode;
   validate?: boolean;
   autoComplete?: boolean;
   spellCheck?: boolean;

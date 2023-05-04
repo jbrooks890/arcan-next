@@ -20,18 +20,15 @@ export type FormType<Data> = {
   resetTxt?: string;
   summary?: Data;
   subForm?: boolean;
+  postMessage?: (v: Data) => string;
   handleReset?: MouseEventHandler<HTMLButtonElement>;
   handleCancel?: () => void;
   handleSubmit: (v?: Data) => void;
-  postMessage?: (v: Data) => string;
 } & Passthrough;
 
 export default function Form<T>({
   name,
   children,
-  handleReset,
-  handleCancel,
-  handleSubmit,
   id,
   className,
   submitTxt = "Submit",
@@ -41,6 +38,9 @@ export default function Form<T>({
   summary,
   subForm = false,
   validate = false,
+  handleReset,
+  handleCancel,
+  handleSubmit,
 }: FormType<T>) {
   // console.log({ name, subForm });
   const Element = subForm ? InputWrapper : "form";

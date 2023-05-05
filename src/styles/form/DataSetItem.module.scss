@@ -1,0 +1,127 @@
+.wrapper {
+  position: relative;
+  margin-bottom: 0.25rem;
+  /* border: 1px solid red; */
+
+  .header {
+    cursor: pointer;
+    padding: 0.25rem;
+    background-color: var(--mid);
+    color: var(--darkest);
+    border-radius: 2px;
+    justify-content: space-between;
+
+    & > label {
+      padding: 0;
+
+      & > input[type="checkbox"] {
+        position: absolute;
+        z-index: 0;
+
+        &:checked + .ticker {
+          &::before {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+      }
+
+      .ticker {
+        position: relative;
+        margin-right: 0.5rem;
+        background-color: black;
+        width: 1rem;
+        aspect-ratio: 1/1;
+        border: var(--input);
+        box-sizing: content-box;
+
+        &:global {
+          &.checkbox {
+            border-radius: var(--inside);
+
+            &::before {
+              border-radius: 1.5px;
+            }
+          }
+        }
+
+        &::before {
+          content: "";
+          position: absolute;
+          display: block;
+          inset: 3px;
+          background-color: var(--mid);
+          transform: scale(0.5);
+          transition: 0.1s ease-out;
+          opacity: 0;
+        }
+      }
+    }
+
+    .arrow {
+      cursor: pointer;
+      position: relative;
+      padding: 0;
+      width: 0.75em;
+      aspect-ratio: 1 / 1;
+      margin-right: 0.5em;
+
+      &::after {
+        --border: 2px solid black;
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: {
+          top: var(--border);
+          right: var(--border);
+          top-right-radius: 3px;
+        }
+        /* transform: rotate(45deg); */
+        transition: 0.2s ease-out;
+      }
+    }
+
+    &:global {
+      &.open {
+        button {
+          &::after {
+            transform: rotate(135deg);
+          }
+        }
+      }
+
+      &.closed {
+        button {
+          border-color: red;
+          &::after {
+            transform: rotate(45deg);
+          }
+        }
+      }
+    }
+  }
+  .drawer {
+    overflow: hidden;
+    transition: 0.2s ease-out;
+
+    &:global {
+      &.closed {
+        max-height: 0;
+        opacity: 0;
+        z-index: -1;
+      }
+
+      &.open {
+        max-height: none;
+      }
+    }
+
+    & > label {
+      margin-block: 0.25rem;
+    }
+
+    & > :last-child {
+      margin-bottom: 0.5em;
+    }
+  }
+}

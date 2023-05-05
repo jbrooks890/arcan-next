@@ -1,5 +1,7 @@
 import type { FieldType } from "@/hooks/useForm";
+import useForm from "@/hooks/useForm";
 import { ReactElement, useEffect, useRef, useState } from "react";
+import styles from "@/styles/form/DataSetItem.module.scss";
 
 type Props = {
   option: any;
@@ -23,12 +25,10 @@ export default function DataSetItem({
   const [open, setOpen] = useState(false);
   const drawer = useRef<HTMLDivElement | null>(null);
 
-  // useEffect(() => console.log({ checked }), []);
-
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <div
-        className={`entry-header flex middle ${open ? "open" : "closed"}`}
+        className={`${styles.header} flex middle ${open ? "open" : "closed"}`}
         onClick={() => setOpen(prev => !prev)}
       >
         <label htmlFor={option} className="flex middle">
@@ -41,14 +41,17 @@ export default function DataSetItem({
             checked={checked}
             onChange={() => handleChange()}
           />
-          <div className={`ticker ${multi ? "checkbox" : "radio"}`} />
+          <div className={`${styles.ticker} ${multi ? "checkbox" : "radio"}`} />
           <span>{option}</span>
         </label>
-        <button className="arrow" onClick={() => setOpen(prev => !prev)} />
+        <button
+          className={styles.arrow}
+          onClick={() => setOpen(prev => !prev)}
+        />
       </div>
       <div
         ref={drawer}
-        className={`drawer ${open ? "open" : "closed"}`}
+        className={`${styles.drawer} ${open ? "open" : "closed"}`}
         style={{
           maxHeight: open ? drawer.current?.scrollHeight + "px" : undefined,
         }}

@@ -78,7 +78,7 @@ export type FieldType = {
     HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement
   >;
   options?: {
-    Element?: [ComponentType, object | undefined];
+    Element?: ReactElement;
     block?: boolean;
     inline?: boolean;
     min?: number;
@@ -91,6 +91,13 @@ export type FieldType = {
 
 export type FormMasterType = {
   [key: string]: any;
+};
+
+export type FieldsDataType = {
+  data: FormMasterType;
+  elements: { [key: string]: ReactElement };
+  // ^^ TODO: key should be generic: keyof data
+  initialOutput: object;
 };
 
 type FormAPIType = Omit<FormType<FormMasterType>, "children"> & {
@@ -271,7 +278,9 @@ export default function useForm() {
       // =========> EXTERNAL <=========
       if (entry_options?.Element) {
         const { Element } = entry_options;
-        const [component, elementProps] = Element;
+        const { type, props: elementProps } = Element;
+        // console.log({ Element, elementProps });
+
         const handleChange = entry => updateValue(entry);
         const $props = {
           ...props,
@@ -279,12 +288,14 @@ export default function useForm() {
           handleChange,
         };
 
-        return createElement(component, $props);
+        return createElement(type, $props);
       }
 
       Object.assign(props, { value });
       // =========> SELECT <=========
       if (type === "select") {
+        // console.log({ field, ancestors });
+
         return (
           <SelectMaster
             options={entry.choices}
@@ -369,17 +380,21 @@ export default function useForm() {
 
   // %%%%%%%%%%%%%%\ RENDER EACH (FIELD) /%%%%%%%%%%%%%%
   const renderEach = (
-    field: string,
+    // field: string,
     fields: FieldType[],
     ancestors = [],
-    options?: Parameters<typeof renderField>[2]
-  ) => {
+    options?: {
+      changeHandler?: ChangeEventHandler<HTMLInputElement>;
+      source?: object;
+      updater?: Dispatch<SetStateAction<any>>;
+    }
+  ): ReactNode => {
     return (
-      <FieldSet name={field} {...options}>
+      <>
         {fields.map(field =>
           field.children ? renderEach(field.children) : renderField(field)
         )}
-      </FieldSet>
+      </>
     );
   };
 
@@ -446,23 +461,16 @@ export default function useForm() {
 
   // %%%%%%%%%%%%%%\ GET FIELD DATA /%%%%%%%%%%%%%%
 
-  type GetFieldsDataType = {
-    data: FormMasterType;
-    elements: { [key: string]: ReactElement };
-    // ^^ TODO: key should be generic: keyof data
-    initialOutput: object;
-  };
-
   const getFieldData = (
     fields: FieldType[],
     ancestors: string[] = [] // TODO
-  ): GetFieldsDataType => {
+  ): FieldsDataType => {
     type FieldDataOutput = Omit<FieldType, "field" | "confirm"> & {
       element: ReactElement | ReactElement[];
-      aux?: Omit<GetFieldsDataType, "initialOutput"> & {
+      aux?: Omit<FieldsDataType, "initialOutput"> & {
         values: object;
       };
-      children?: GetFieldsDataType;
+      children?: FieldsDataType;
     };
 
     const [_formMaster, _formElements, _formData] = fields
@@ -602,6 +610,7 @@ export default function useForm() {
     getValue,
     render: renderField,
     renderEach,
+    process: getFieldData,
     ...INPUTS,
   };
 }

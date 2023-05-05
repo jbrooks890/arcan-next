@@ -30,13 +30,13 @@ export default function ChoiceBox({
     >
       {options.length ? (
         options.map(([index, option], i) => {
-          const id = `${field}-${option}`;
           // console.log({ field, option });
 
           const $value = display ? index : option;
           const isActive: boolean = multi
             ? value.includes($value)
             : value === $value;
+          const id = `${field}-${$value}`;
 
           // console.log({ isActive });
 
@@ -47,6 +47,8 @@ export default function ChoiceBox({
               className={`flex start middle ${
                 isActive ? "selected" : "not-selected"
               }`}
+              data-option={$value}
+              data-option-display={display ? option : undefined}
             >
               <input
                 ref={(element: HTMLInputElement) =>
@@ -70,7 +72,12 @@ export default function ChoiceBox({
               <div
                 className={`${styles.ticker} ${multi ? "checkbox" : "radio"}`}
               />
-              <div>{option}</div>
+              <div
+                data-option={$value}
+                data-option-display={display ? option : undefined}
+              >
+                {option}
+              </div>
             </label>
           );
         })

@@ -255,9 +255,9 @@ export default function useFormInputs() {
 
   // <><><><><><><><>\ ELEMENT /<><><><><><><><>
   const component = (
-    label: string,
     component: NonNullable<FieldType["options"]>["Element"],
-    type: FieldType["type"],
+    label: string,
+    // type: FieldType["type"],
     params?: Partial<Omit<FieldType, "type">>
   ): FieldType => {
     const [name, field, required] = parseLabel(label);
@@ -266,7 +266,7 @@ export default function useFormInputs() {
       name,
       field,
       required,
-      type,
+      type: "set",
       ...params,
       options: {
         Element: component!,

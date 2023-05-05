@@ -159,7 +159,7 @@ export default function ArraySet({
       )}
     </>
   ) : (
-    "No entry"
+    <div className="fade">No entry</div>
   );
 
   // ============================================

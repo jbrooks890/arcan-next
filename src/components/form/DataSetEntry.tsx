@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import DataSetItem from "./DataSetItem";
 import InputWrapper from "./InputWrapper";
-import useForm, { FieldType } from "@/hooks/useForm";
+import useForm, { FieldType, FieldsDataType } from "@/hooks/useForm";
 
 type Props = {
-  options: { [key: string]: FieldType[] };
+  options: { [key: string]: FieldsDataType };
   multi?: boolean;
 } & InputPropsType;
 
@@ -15,13 +15,12 @@ export default function DataSetEntry({
   handleChange,
   value,
   wrapper,
-}: // subFields,
-Props) {
-  const { renderEach } = useForm();
+}: Props) {
+  // const { renderEach } = useForm();
   // const inputs = useRef([]);
   const primaries = useRef<(HTMLInputElement | null)[]>([]);
 
-  console.log({ field, value, options });
+  console.log({ options });
 
   // --------------| UPDATE |--------------
 
@@ -61,14 +60,9 @@ Props) {
   const OUTPUT =
     value && Object.keys(options).length ? (
       <ul className="entry-cache flex col">
-        {Object.entries(options).map(([option, secondaries], i) => {
-          // const DATA = createFields(option);
-          // const ELEMENTS = DATA.map(entry => entry[1].element);
-          // const FIELDS = Object.fromEntries(
-          //   DATA.map(([path, entry]) => [path, entry.field])
-          // );
-
-          // console.log({ FIELDS });
+        {Object.entries(options).map(([option, subField], i) => {
+          const { elements, initialOutput } = subField;
+          const secondaries = Object.values(elements);
           return (
             <DataSetItem
               key={i}
@@ -80,7 +74,7 @@ Props) {
               field={field}
               multi={multi}
               checked={Object.keys(value).includes(option)}
-              // handleChange={() => update(option, FIELDS)}
+              handleChange={() => update(option, initialOutput)}
             />
           );
         })}
@@ -89,5 +83,11 @@ Props) {
       <span className="fade">No entries</span>
     );
 
-  return wrapper ? <InputWrapper {...wrapper}>{OUTPUT}</InputWrapper> : OUTPUT;
+  return wrapper ? (
+    <InputWrapper {...wrapper} group={true}>
+      {OUTPUT}
+    </InputWrapper>
+  ) : (
+    OUTPUT
+  );
 }

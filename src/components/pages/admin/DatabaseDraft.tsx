@@ -9,6 +9,7 @@ import { useDBMaster } from "@/components/contexts/DBContext";
 import useForm, { FieldType } from "@/hooks/useForm";
 import Mixed from "@/components/form/database/Mixed";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import Input from "@/components/form/Input";
 
 type DBDraftType = {
   record: object;
@@ -35,6 +36,7 @@ export default function DatabaseDraft({
   const CURRENT = pathname.split("/").pop();
 
   // console.log("TEST", { CURRENT });
+  console.log({ entryData });
 
   const {
     form,
@@ -47,6 +49,9 @@ export default function DatabaseDraft({
     group,
     component,
     field: formField,
+    renderEach,
+    state,
+    process,
   } = useForm();
 
   // useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
@@ -62,7 +67,7 @@ export default function DatabaseDraft({
   function createFields(
     paths: object,
     ancestors: string[] = [],
-    source = entryData ?? record,
+    source = state() ?? record,
     updateFn = setEntryData
   ): FieldType[] {
     return Object.entries(paths)
@@ -181,9 +186,13 @@ export default function DatabaseDraft({
             : ref;
           const dependency = references[reference];
 
-          // console.log({ path, dependency });
+          // console.log({ path, refPath, reference });
+          refPath &&
+            path !== "source" &&
+            // console.log({ path, refPath, set, paths });
+            console.log({ path, source });
 
-          return select("$" + path, dependency, multi, false, false, {
+          return select("$" + path, dependency, multi, false, {
             ...props,
           });
         };
@@ -273,7 +282,7 @@ export default function DatabaseDraft({
                   const { instance } = caster;
                   if (instance === "String") {
                     // console.log({ path, value });
-                    element = component(label, [WordBank], "string", {
+                    element = component(<WordBank />, label, {
                       ...props,
                     });
                   }
@@ -290,9 +299,8 @@ export default function DatabaseDraft({
                   // console.log({ path, ...props });
 
                   element = component(
+                    <ArraySet entryFields={entryFields} value={value} />,
                     label,
-                    [ArraySet, { entryFields, value }],
-                    undefined,
                     { ...props, children: createFields(paths) }
                   );
                 }
@@ -301,21 +309,27 @@ export default function DatabaseDraft({
               case "Map":
                 const $data = paths[path + ".$*"];
                 if ($data?.options?.type?.paths) {
-                  element = createDataSetEntry(
-                    $data.options.type.paths,
-                    options.enum
+                  const fields = Object.fromEntries(
+                    options.enum.map(option => {
+                      const ancestry = [...ancestors, path, option];
+                      return [
+                        option,
+                        process(
+                          createFields($data.options.type.paths, ancestry),
+                          ancestry
+                        ),
+                      ];
+                    })
+                  );
+
+                  element = component(
+                    <DataSetEntry multi={true} options={fields} />,
+                    `$${path}`,
+                    { ...props }
                   );
                 } else {
                   break;
                 }
-                // else {
-                //   // element = NO_ELEMENT;
-                //   element = (
-                //     <FieldSet {...props}>
-                //       <TextField />
-                //     </FieldSet>
-                //   );
-                // }
 
                 break;
               case "Mixed":
@@ -324,7 +338,8 @@ export default function DatabaseDraft({
                 //   // console.log({ pathChain, source });
                 // }
                 // props = { ...props, type: "set", options: { Element: Mixed } };
-                element = component(label, [Mixed, { value }]);
+                // element = component([Mixed, { value }], label);
+                element = component(<Mixed value={value} />, label, undefined);
                 break;
               // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
               // -----------------| DEFAULT |-----------------

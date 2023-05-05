@@ -10,10 +10,12 @@ export default function Dropdown<Choices>({
   value,
   other,
   className,
+  wrapper,
 }: SelectType<Choices> & Passthrough) {
   const [selected, setSelected] = useState<typeof value | "other">(value);
   const [open, setOpen] = useState(false);
-  const list = useRef<HTMLUListElement | null>(null);
+  const displayRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLUListElement | null>(null);
   const $OTHER = "other";
 
   const BLANK = "--";
@@ -30,16 +32,14 @@ export default function Dropdown<Choices>({
 
   const toggle = () => setOpen(prev => !prev);
 
+  const posList = () => {
+    const listHeight = listRef.current?.scrollHeight;
+    const displayRect = displayRef.current?.getBoundingClientRect();
+  };
+
   return (
     <label className={`${styles.dropdown} dropdown-ext ${className ?? "exo"}`}>
-      {/* <select name={field} style={{ display: "none" }} defaultValue={selected}>
-        {$options.map(([_, option], i) => (
-          <option key={i} value={option}>
-            {option}
-          </option>
-        ))}
-      </select> */}
-      <div className={`${styles.wrapper} wrapper-ext`}>
+      <div ref={displayRef} className={`${styles.wrapper} wrapper-ext`}>
         {/* ----------| DISPLAY |---------- */}
         <div
           className={`${styles.display} flex middle ${
@@ -52,9 +52,9 @@ export default function Dropdown<Choices>({
         {/* ----------| MENU |---------- */}
         <ul
           className={`${styles.cache} ${open ? "open" : "closed"}`}
-          ref={list}
+          ref={listRef}
           style={{
-            maxHeight: open ? list?.current?.scrollHeight + "px" : undefined,
+            maxHeight: open ? listRef?.current?.scrollHeight + "px" : undefined,
           }}
           onMouseLeave={() => open && toggle()}
         >

@@ -288,8 +288,6 @@ export default function useForm() {
           handleChange,
         };
 
-        console.log({ field, $props });
-
         return createElement(type, $props);
       }
 
@@ -590,6 +588,7 @@ export default function useForm() {
         autoComplete={autoComplete}
         spellCheck={spellCheck}
         handleSubmit={submitForm}
+        handleCancel={handleCancel}
         handleReset={resetForm}
         submitTxt={submitTxt}
         resetTxt={resetTxt}

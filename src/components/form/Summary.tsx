@@ -1,6 +1,6 @@
 import styles from "@/styles/form/Summary.module.scss";
 import { MouseEventHandler } from "react";
-import ObjectNest from "./ObjectNest";
+import Cascade from "./Cascade";
 
 export type SummaryType = {
   data: {};
@@ -9,7 +9,7 @@ export type SummaryType = {
   submitTxt?: string;
   cancelTxt?: string;
   handleSubmit: MouseEventHandler<HTMLButtonElement>;
-  handleCancel: MouseEventHandler<HTMLButtonElement>;
+  handleCancel?: MouseEventHandler<HTMLButtonElement>;
 } & Passthrough;
 
 export default function Summary({
@@ -32,15 +32,22 @@ export default function Summary({
     >
       <legend>{legend}</legend>
       <h3>{name}</h3>
-      <ObjectNest
+      <Cascade
         dataObj={data}
         // collectionName={collection}
         className={`${styles.wrapper} flex col`}
       />
-      <button type="submit" className={styles.submit} onClick={handleSubmit}>
+      <button
+        type="submit"
+        className={styles.submit}
+        onClick={e => handleSubmit(e)}
+      >
         {submitTxt}
       </button>
-      <button className={styles.cancel} onClick={handleCancel}>
+      <button
+        className={styles.cancel}
+        onClick={e => handleCancel?.(e) ?? undefined}
+      >
         {cancelTxt}
       </button>
     </fieldset>

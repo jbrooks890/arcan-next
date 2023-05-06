@@ -4,7 +4,7 @@ import ArraySetEntry from "./ArraySetEntry";
 import ArraySetNew from "./ArraySetNew";
 import { useDBMaster } from "../contexts/DBContext";
 import useTableElement from "@/hooks/useTableElement";
-import ObjectNest from "./ObjectNest";
+import Cascade from "./Cascade";
 import useOpsCache from "@/hooks/useOpsCache";
 import useForm, { FieldType } from "@/hooks/useForm";
 import InputWrapper from "./InputWrapper";
@@ -149,7 +149,7 @@ export default function ArraySet({
                   Edit: () => editEntry(entry),
                   Delete: () => removeEntry(entry),
                 })}
-                {<ObjectNest dataObj={entry} ancestors={ancestors} />}
+                {<Cascade dataObj={entry} ancestors={ancestors} />}
               </>
             );
           },

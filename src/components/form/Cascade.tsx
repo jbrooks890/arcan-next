@@ -4,51 +4,34 @@ import Accordion from "./Accordion";
 
 type Props = { dataObj: object; ancestors: string[] } & Passthrough;
 
-export default function ObjectNest({
+export default function Cascade({
   dataObj,
   ancestors = [],
   id,
   className,
 }: Props) {
-  const { arcanData, omittedFields } = useDBMaster();
-  const { getPathData } = useDBDraft();
-  const { models, references } = arcanData;
-
   // :::::::::::::\ BUILD LIST /:::::::::::::
 
   const buildList = (obj = {}, ancestors = []) => {
-    obj = Object.fromEntries(
-      Object.entries(obj).filter(([key]) => !omittedFields.includes(key))
-    );
-
     return (
       <ul>
         {Object.entries(obj).map(([key, value], i) => {
           const isObject = typeof value === "object";
+          const isArray = Array.isArray(value);
           const isSimple =
-            Array.isArray(value) &&
-            value.every(entry => typeof entry !== "object");
-
-          // isObject && console.log({ value, isSimple });
+            isArray && value.every(entry => typeof entry !== "object");
 
           // ---------- RENDER ENTRY ----------
           const renderEntry = () => {
-            const pathData = getPathData([...ancestors, key]);
-            const { instance, options } = pathData;
-
-            // instance === "ObjectID" && console.log({ options });
-
             return value === null || value === undefined ? (
               <span className="fade">no entry</span>
-            ) : instance === "ObjectID" ? (
-              references[options.ref ?? dataObj[options.refPath]][value]
             ) : (
               String(value)
             );
           };
 
           return (
-            <li key={i} className={!isObject ? "flex" : ""}>
+            <li key={i} className={!isObject ? "flex" : "block"}>
               {isObject ? (
                 <Accordion
                   field={key}

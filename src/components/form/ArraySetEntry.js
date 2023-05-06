@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ObjectNest from "./ObjectNest";
+import Cascade from "./Cascade";
 
 const ArraySetEntry = ({ obj, ancestry }) => {
   const [expanded, setExpanded] = useState(false);
@@ -7,7 +7,7 @@ const ArraySetEntry = ({ obj, ancestry }) => {
   // console.log({ obj });
   return (
     <div className={`array-set-entry flex col`}>
-      <ObjectNest dataObj={obj} ancestry={ancestry} />
+      <Cascade dataObj={obj} ancestry={ancestry} />
       <div className="flex">
         <button>Edit</button>
         <button>Delete</button>

@@ -15,7 +15,7 @@ type DBDraftType = {
   record: object;
   schemaName: string;
   updateMaster: Function;
-  cancel: MouseEventHandler<HTMLButtonElement>;
+  cancel: () => void;
 };
 
 export default function DatabaseDraft({
@@ -55,6 +55,11 @@ export default function DatabaseDraft({
 
   const initEntry = () => {
     const { paths } = SCHEMA;
+  };
+
+  const handleCancel: MouseEventHandler<HTMLButtonElement> = e => {
+    e.preventDefault();
+    cancel();
   };
 
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
@@ -450,7 +455,7 @@ export default function DatabaseDraft({
     validate: true,
     useSummary: true,
     handleSubmit,
-    handleCancel: cancel,
+    handleCancel,
     className: styles.record,
   });
 }

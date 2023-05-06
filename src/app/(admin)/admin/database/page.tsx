@@ -9,7 +9,7 @@ import Accordion from "@/components/form/Accordion";
 import DatabaseDraft from "@/components/pages/admin/DatabaseDraft";
 import { ArcanDataType, useDBMaster } from "@/components/contexts/DBContext";
 import DBDraftProvider from "@/components/contexts/DBDraftContext";
-import ObjectNest from "@/components/form/ObjectNest";
+import Cascade from "@/components/form/Cascade";
 import Prompt from "@/components/frags/Prompt";
 import useTableElement from "@/hooks/useTableElement";
 import Page from "@/components/layout/Page";
@@ -307,7 +307,8 @@ export default function Database({ params }) {
               />
 
               {/* ------- ENTRY DATA ------- */}
-              <div className={`${styles.viewport} flex col`}>
+              <fieldset className={`${styles.viewport} flex col`}>
+                <legend>Entry Data</legend>
                 {entrySelection || draftMode ? (
                   <>
                     {/* ------- ENTRY HEADER ------- */}
@@ -361,7 +362,7 @@ export default function Database({ params }) {
                       {draftMode ? (
                         <DatabaseDraft {...draftMode} cancel={cancelDraft} />
                       ) : (
-                        <ObjectNest
+                        <Cascade
                           dataObj={entrySelection}
                           collectionName={selection}
                           className={`${styles.fields} flex col`}
@@ -372,7 +373,7 @@ export default function Database({ params }) {
                 ) : (
                   <span className="fade">No entries</span>
                 )}
-              </div>
+              </fieldset>
             </div>
           ) : (
             <div>Loading...</div>

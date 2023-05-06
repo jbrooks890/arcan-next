@@ -22,9 +22,9 @@ export type FormType<Data> = {
   summary?: Data;
   subForm?: boolean;
   postMessage?: (v: Data) => string;
-  handleReset?: MouseEventHandler<HTMLButtonElement>;
-  handleCancel?: () => void;
-  handleSubmit: (v?: Data) => void;
+  handleReset?: () => void;
+  handleCancel?: MouseEventHandler<HTMLButtonElement>;
+  handleSubmit: MouseEventHandler<HTMLButtonElement>;
 } & Passthrough;
 
 export default function Form<T>({

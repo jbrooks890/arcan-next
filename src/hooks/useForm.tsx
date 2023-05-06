@@ -288,6 +288,8 @@ export default function useForm() {
           handleChange,
         };
 
+        console.log({ field, $props });
+
         return createElement(type, $props);
       }
 
@@ -370,7 +372,7 @@ export default function useForm() {
       <InputWrapper
         key={CHAIN}
         {...wrapperProps}
-        inline={!entry.options?.block && children?.length < 3}
+        // inline={!entry.options?.block && children?.length < 3}
         children={[]}
       />
     ) : (

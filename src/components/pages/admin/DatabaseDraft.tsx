@@ -35,9 +35,6 @@ export default function DatabaseDraft({
   const pathname = usePathname();
   const CURRENT = pathname.split("/").pop();
 
-  // console.log("TEST", { CURRENT });
-  console.log({ entryData });
-
   const {
     form,
     text,
@@ -295,13 +292,15 @@ export default function DatabaseDraft({
                   const { paths } = schema;
                   const entryFields = createFields(paths);
 
-                  // console.log({ newEntry });
-                  // console.log({ path, ...props });
+                  // console.log({ path, props });
 
                   element = component(
                     <ArraySet entryFields={entryFields} value={value} />,
                     label,
-                    { ...props, children: createFields(paths) }
+                    {
+                      ...props,
+                      children: createFields(paths),
+                    }
                   );
                 }
 

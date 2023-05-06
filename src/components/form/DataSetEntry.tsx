@@ -20,7 +20,7 @@ export default function DataSetEntry({
   // const inputs = useRef([]);
   const primaries = useRef<(HTMLInputElement | null)[]>([]);
 
-  console.log({ options });
+  // console.log({ options });
 
   // --------------| UPDATE |--------------
 

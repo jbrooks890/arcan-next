@@ -118,15 +118,13 @@
     }
 
     .ticker {
-      --size: 1rem;
       position: relative;
       flex-grow: 0;
       margin-right: 0.5em;
-      width: var(--size);
-      height: var(--size);
-      border: 2px solid var(--green);
+      width: 1rem;
+      aspect-ratio: 1/1;
+      border: var(--input);
       box-sizing: content-box;
-      /* border-radius: 50%; */
 
       &::before {
         content: "";
@@ -135,8 +133,8 @@
         inset: 3px;
         background-color: var(--green);
         transform: scale(0.5);
-        opacity: 0;
         transition: 0.1s ease-out;
+        opacity: 0;
 
         // input:checked + & {
         //   transform: scale(1);

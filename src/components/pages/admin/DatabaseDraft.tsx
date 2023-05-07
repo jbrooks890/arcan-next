@@ -85,7 +85,7 @@ export default function DatabaseDraft({
           enumValues,
         } = data;
 
-        const getNestedValue = root =>
+        const getNestedValue = (root = source) =>
           root ? ancestors.reduce((obj, path) => obj?.[path], root) : null;
 
         const recordValue = record ? getNestedValue(record) : null;
@@ -138,7 +138,7 @@ export default function DatabaseDraft({
 
         label = createLabel();
 
-        const set = getNestedValue(source);
+        const set = getNestedValue();
         const value = set?.[path] ?? field;
 
         // console.log({ path, value });
@@ -327,7 +327,11 @@ export default function DatabaseDraft({
                   );
 
                   element = component(
-                    <DataSetEntry multi={true} options={fields} />,
+                    <DataSetEntry
+                      multi={true}
+                      options={fields}
+                      ancestors={[...ancestors, path]}
+                    />,
                     `$${path}`,
                     { ...props }
                   );
@@ -337,12 +341,10 @@ export default function DatabaseDraft({
 
                 break;
               case "Mixed":
-                // if (pathRef) {
-                //   const pathChain = pathRef?.split(".");
-                //   // console.log({ pathChain, source });
-                // }
-                // props = { ...props, type: "set", options: { Element: Mixed } };
-                // element = component([Mixed, { value }], label);
+                if (pathRef) {
+                  const pathChain = pathRef?.split(".");
+                  console.log({ pathChain, source });
+                }
                 element = component(<Mixed value={value} />, label, undefined);
                 break;
               // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -373,26 +375,6 @@ export default function DatabaseDraft({
         return element ?? text(label + "NoElement");
       });
   }
-
-  // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
-
-  const buildForm = () => {
-    const { paths } = SCHEMA;
-    const DATA = createFields(paths);
-    // console.log({ DATA });
-
-    if (!entryMaster) {
-      setEntryMaster(Object.fromEntries(DATA));
-      setEntryData(
-        Object.fromEntries(
-          DATA.map(([path, pathData]) => [path, pathData.field])
-        )
-      );
-    }
-
-    // console.log(createFields(paths));
-    return DATA.map(entry => entry[1].element);
-  };
 
   // :::::::::::::\ HANDLE RESET /:::::::::::::
   const handleReset: MouseEventHandler<HTMLButtonElement> = e => {

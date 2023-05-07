@@ -5,22 +5,20 @@ import useForm, { FieldType, FieldsDataType } from "@/hooks/useForm";
 
 type Props = {
   options: { [key: string]: FieldsDataType };
+  ancestors?: string[];
   multi?: boolean;
 } & InputPropsType;
 
 export default function DataSetEntry({
   field,
   options,
+  ancestors,
   multi = false,
   handleChange,
   value,
   wrapper,
 }: Props) {
-  // const { renderEach } = useForm();
-  // const inputs = useRef([]);
   const primaries = useRef<(HTMLInputElement | null)[]>([]);
-
-  // console.log({ options });
 
   // --------------| UPDATE |--------------
 
@@ -71,7 +69,9 @@ export default function DataSetEntry({
               }
               option={option}
               secondaries={secondaries}
-              field={field}
+              field={
+                ancestors?.length ? [...ancestors, option].join("-") : option
+              }
               multi={multi}
               checked={Object.keys(value).includes(option)}
               handleChange={() => update(option, initialOutput)}

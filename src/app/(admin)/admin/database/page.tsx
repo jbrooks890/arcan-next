@@ -1,8 +1,6 @@
 "use client";
 import styles from "@/styles/DatabaseView.module.scss";
-// import "@/styles/Form.css";
 import axios from "@/interfaces/axios";
-// import { useState, useEffect } from "react";
 import Dropdown from "@/components/form/Dropdown";
 import Menu from "@/components/form/Menu";
 import Accordion from "@/components/form/Accordion";
@@ -28,10 +26,19 @@ type DraftModeParams = {
   update: any; // TODO
 };
 
-const reducer = (
-  state,
-  action: { type: reducerActionType; payload: any }
-) => {};
+const initialState = {
+  collection: {}, // SELECTION
+  record: {}, // ENTRY SELECTION
+  draftMode: undefined,
+};
+
+type Action = { type: string; payload: any }; // TODO
+
+const reducer = (state: typeof initialState, action: Action) => {
+  const { type, payload } = action;
+  switch (type) {
+  }
+};
 
 export default function Database({ params }) {
   const { arcanData, updateArcanData } = useDBMaster();
@@ -40,11 +47,7 @@ export default function Database({ params }) {
   const [draftMode, setDraftMode] = useState<DraftModeParams | undefined>(
     undefined
   );
-  const [state, dispatch] = useReducer(reducer, {
-    collection: {}, // SELECTION
-    record: {}, // ENTRY SELECTION
-    draftMode: undefined,
-  });
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const { models, references, collections } = arcanData;
   const collection = collections[selection];
@@ -164,24 +167,6 @@ export default function Database({ params }) {
   // :::::::::::::\ UPDATE ARCAN DATA /:::::::::::::
 
   const updateMaster = (newData, collection = selection) => {
-    // setArcanData(prev => {
-    //   const { _id, name, subtitle, title, username } = newData;
-
-    //   const NAME =
-    //     (typeof name === "object" ? name[Object.keys(name)[0]] : name) ??
-    //     subtitle ??
-    //     title ??
-    //     username ??
-    //     `${collection}: ${_id}`;
-
-    //   return {
-    //     ...prev,
-    //     references: {
-    //       ...prev.references,
-    //       [collection]: { ...prev.references[collection], [_id]: NAME },
-    //     },
-    //   };
-    // });
     updateArcanData(newData, collection);
     setEntrySelection(newData);
   };

@@ -252,7 +252,7 @@ export default function useForm() {
 
     const wrapperProps: InputWrapperType = {
       name: junior ? name!.replace(parentName, "").trim() : name!,
-      field,
+      field: CHAIN,
       required,
       criteria: criteriaList?.length ? criteriaList : "",
       validated: !!formMaster?.validation,
@@ -268,7 +268,7 @@ export default function useForm() {
     if (children) wrapperProps.group = true;
 
     const props: Omit<InputPropsType, "handleChange"> = {
-      field,
+      field: CHAIN,
       value,
       placeholder,
       wrapper: wrapperProps,

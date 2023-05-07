@@ -31,10 +31,10 @@ export default function DataSetItem({
         className={`${styles.header} flex middle ${open ? "open" : "closed"}`}
         onClick={() => setOpen(prev => !prev)}
       >
-        <label htmlFor={option} className="flex middle">
+        <label htmlFor={field} className="flex middle">
           <input
             ref={element => setRef(element)}
-            id={option}
+            id={field}
             name={field}
             type={multi ? "checkbox" : "radio"}
             value={option}

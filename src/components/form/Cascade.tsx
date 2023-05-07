@@ -2,10 +2,15 @@ import { useDBMaster } from "../contexts/DBContext";
 import { useDBDraft } from "../contexts/DBDraftContext";
 import Accordion from "./Accordion";
 
-type Props = { dataObj: object; ancestors: string[] } & Passthrough;
+type Props = {
+  dataObj: object;
+  omit: string[];
+  ancestors: string[];
+} & Passthrough;
 
 export default function Cascade({
   dataObj,
+  omit,
   ancestors = [],
   id,
   className,
@@ -13,6 +18,12 @@ export default function Cascade({
   // :::::::::::::\ BUILD LIST /:::::::::::::
 
   const buildList = (obj = {}, ancestors = []) => {
+    obj = omit?.length
+      ? Object.fromEntries(
+          Object.entries(obj).filter(([field]) => omit.includes(field))
+        )
+      : obj;
+
     return (
       <ul>
         {Object.entries(obj).map(([key, value], i) => {
@@ -23,6 +34,7 @@ export default function Cascade({
 
           // ---------- RENDER ENTRY ----------
           const renderEntry = () => {
+            const type = typeof value;
             return value === null || value === undefined ? (
               <span className="fade">no entry</span>
             ) : (

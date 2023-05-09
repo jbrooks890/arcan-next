@@ -10,26 +10,20 @@ import useForm, { FieldType } from "@/hooks/useForm";
 import Mixed from "@/components/form/database/Mixed";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Input from "@/components/form/Input";
+import { useDBDraft } from "@/components/contexts/DBDraftContext";
 
-type DBDraftType = {
-  record: object;
-  schemaName: string;
-  updateMaster: Function;
-  cancel: () => void;
-};
-
-export default function DatabaseDraft({
-  record,
-  schemaName,
-  updateMaster,
-  cancel,
-}: DBDraftType) {
-  const [entryMaster, setEntryMaster] = useState();
-  const [entryData, setEntryData] = useState();
+export default function DatabaseDraft() {
+  // const [entryMaster, setEntryMaster] = useState();
+  // const [entryData, setEntryData] = useState();
 
   const { arcanData, omittedFields } = useDBMaster();
   const { models, references } = arcanData;
-  const SCHEMA = models[schemaName];
+  const { draft, updateDraft } = useDBDraft();
+  const { collectionName, record } = draft;
+  const SCHEMA = models[collectionName];
+
+  // console.log({ record });
+  // console.log({ SCHEMA });
 
   const router = useRouter();
   const pathname = usePathname();
@@ -45,21 +39,15 @@ export default function DatabaseDraft({
     select,
     group,
     component,
-    field: formField,
-    renderEach,
     state,
     process,
   } = useForm();
 
   // useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
 
-  const initEntry = () => {
-    const { paths } = SCHEMA;
-  };
-
   const handleCancel: MouseEventHandler<HTMLButtonElement> = e => {
     e.preventDefault();
-    cancel();
+    updateDraft({ type: "cancel" });
   };
 
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
@@ -69,8 +57,8 @@ export default function DatabaseDraft({
   function createFields(
     paths: object,
     ancestors: string[] = [],
-    source = state() ?? record,
-    updateFn = setEntryData
+    source = state() ?? record
+    // updateFn = setEntryData
   ): FieldType[] {
     return Object.entries(paths)
       .filter(
@@ -98,46 +86,6 @@ export default function DatabaseDraft({
           options?.default ??
           (required && enumValues ? enumValues[0] : undefined);
 
-        // ---------| CREATE LABEL |---------
-
-        const createLabel = (str = path) => {
-          let label = str;
-          if (/[a-z]/.test(label.charAt(0)))
-            label = label.replace(/([A-Z])/g, " $1").toLowerCase();
-
-          if (label.startsWith("_")) label = label.slice(1);
-
-          const shorthands = new Map([
-            ["pref", "preference"],
-            ["ref", "reference"],
-            ["attr", "attribute"],
-            ["org", "organization"],
-            ["diffr", "differential"],
-            ["intro", "introduction"],
-            ["avg", "average"],
-            ["dob", "date of birth"],
-            ["abbr", "abbreviation"],
-            ["msg", "message"],
-          ]);
-          const nonPlurals = ["s", "y"];
-
-          shorthands.forEach((long, short) => {
-            const regex = new RegExp(`\\b${short}\\b`);
-            if (label.match(regex)) label = label.replace(regex, long);
-          });
-          if (parent && label.includes(parent))
-            label = label.replace(parent, "").trim();
-          if (
-            (instance === "Array" || instance === "Map") &&
-            !nonPlurals.includes(label.charAt(label.length - 1))
-          )
-            label += "(s)";
-          if (label.startsWith("is ")) label = label.slice(2) + "?";
-          return label;
-        };
-
-        label = createLabel();
-
         const set = getNestedValue();
         const value = set?.[path] ?? field;
 
@@ -148,29 +96,7 @@ export default function DatabaseDraft({
           required,
         };
 
-        const NO_ELEMENT = text(label + "NoElement");
-
-        // ---------| CREATE DATASET ENTRY |---------
-
-        const createDataSetEntry = (
-          paths: object,
-          options: string[],
-          multi = true
-        ) => {
-          const fields = Object.fromEntries(
-            options.map(option => [
-              option,
-              createFields(paths, [...ancestors, path, option]),
-            ])
-          );
-
-          return component(
-            `$${path}`,
-            [DataSetEntry, { multi, options: fields }],
-            undefined,
-            { ...props }
-          );
-        };
+        // const NO_ELEMENT = text(label + "NoElement");
 
         // ---------| CREATE OBJECT ID BOX |---------
 
@@ -229,8 +155,8 @@ export default function DatabaseDraft({
           // --------------------------------------------
           // %%%%%%%%%%%%%%| SIMPLE TYPES |%%%%%%%%%%%%%%
           // --------------------------------------------
+          const label = "$" + path;
           if (instance) {
-            const label = "$" + path;
             switch (instance) {
               case "String":
                 element = text(label, path === "description", { ...props });
@@ -343,7 +269,7 @@ export default function DatabaseDraft({
               case "Mixed":
                 if (pathRef) {
                   const pathChain = pathRef?.split(".");
-                  console.log({ pathChain, source });
+                  // console.log({ pathChain, source });
                 }
                 element = component(<Mixed value={value} />, label, undefined);
                 break;
@@ -376,20 +302,11 @@ export default function DatabaseDraft({
       });
   }
 
-  // :::::::::::::\ HANDLE RESET /:::::::::::::
-  const handleReset: MouseEventHandler<HTMLButtonElement> = e => {
-    e.preventDefault();
-    console.clear();
-    console.log(`%cFORM`, "color: lime");
-    console.log(`New ${schemaName}:`, entryData);
-    console.log("%cJSON:", "color:cyan", JSON.stringify(entryData));
-  };
-
   // :::::::::::::\ SEND UPDATE /:::::::::::::
   const sendUpdate = async () => {
     try {
       const response = await axios.put(
-        `/${schemaName}/${record._id}`,
+        `/${draft.collectionName}/${record._id}`,
         entryData
       );
       return response?.data;
@@ -403,8 +320,8 @@ export default function DatabaseDraft({
   // :::::::::::::\ SEND NEW /:::::::::::::
   const sendNew = async () => {
     try {
-      const response = await axios.post("/" + schemaName, entryData);
-      !record && initEntry(schemaName);
+      const response = await axios.post("/" + draft.collection, entryData);
+      !record && initEntry(draft.collectionName);
       // response?.data && updateArcanData(response.data);
       return response?.data;
     } catch (err) {
@@ -415,14 +332,13 @@ export default function DatabaseDraft({
   };
 
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
-  const handleSubmit = async e => {
-    e.preventDefault();
+  const handleSubmit: MouseEventHandler<HTMLButtonElement> = async () => {
     // console.clear();
     const success = record ? await sendUpdate() : await sendNew();
     if (success) {
       console.log({ success });
-      updateMaster(success);
-      cancel(e);
+      // updateMaster(success);
+      // cancel(e);
     }
   };
 
@@ -435,7 +351,7 @@ export default function DatabaseDraft({
     submitTxt: record ? "Update" : "Submit",
     fields: createFields(SCHEMA.paths),
     validate: true,
-    useSummary: true,
+    useSummary: { omit: omittedFields },
     handleSubmit,
     handleCancel,
     className: styles.record,

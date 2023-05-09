@@ -15,7 +15,7 @@ export type ArcanDataType = {
   references: object;
 };
 
-const DBContext = createContext();
+const DBContext = createContext(undefined);
 export const useDBMaster = () => useContext(DBContext);
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,7 +50,7 @@ export default function DBContextProvider({
 
   // :::::::::::::\ PREPARE DATA /:::::::::::::
 
-  function prepData() {
+  function prepData(): ArcanDataType {
     let [models, references, collections] = Object.entries(data)
       .map(([name, { schema, collection }]) => {
         return [
@@ -86,14 +86,17 @@ export default function DBContextProvider({
 
   // :::::::::::::\ FETCH ENTRY /:::::::::::::
 
-  // async function fetchEntry(selection, entry_id) {
-  //   try {
-  //     const response = await axios.get(`/${selection}/${entry_id}`);
-  //     console.log({ RESPONSE: response.data });
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // }
+  const fetchEntry = async entry_id => {
+    try {
+      const response = await axios.get(`/${selection}/${entry_id}`);
+      console.log({ RESPONSE: response.data });
+      // draftMode && cancelDraft();
+      // setEntrySelection(response.data);
+      return response.data;
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // // :::::::::::::\ UPDATE ARCAN DATA /:::::::::::::
 
@@ -127,13 +130,10 @@ export default function DBContextProvider({
       value={{
         arcanData: state,
         updateArcanData: dispatch,
-        // setArcanData,
         omittedFields,
-        // fetchModels,
-        // fetchEntry,
+        fetch: fetchEntry,
       }}
     >
-      {/* {arcanData ? children : "Loading..."} */}
       {children}
     </DBContext.Provider>
   );

@@ -1,14 +1,15 @@
-import "../../styles/Prompt.css";
+import styles from "@/styles/Prompt.module.scss";
 import useModal from "../../hooks/useModal";
 import FieldSet from "../form/FieldSet";
 import Menu from "../form/Menu";
 import { ReactElement } from "react";
+import Markdown from "markdown-to-jsx";
 
 type PromptOptionsType = { [key: string]: Function } | Map<string, Function>;
 
 type PromptPropsType = {
   btnTxt: string;
-  message: string | ReactElement;
+  message: string;
   options: PromptOptionsType;
   cancelable?: boolean;
   className?: string;
@@ -35,12 +36,15 @@ export default function Prompt({
     };
 
     return (
-      <div className={"prompt wrapper col"}>
-        <p className="prompt-query">{message}</p>
+      <div className={`${styles.prompt} wrapper col`}>
+        <p className={styles.query}>
+          <Markdown>{message}</Markdown>
+        </p>
         <Menu
           options={[...optionsMapped.keys()]}
           handleChange={(option: keyof PromptOptionsType) => exec(option)}
           searchable={false}
+          className={styles.menu}
         />
       </div>
     );

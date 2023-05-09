@@ -12,7 +12,7 @@ type PropsType = {
   handleChange: Function;
 } & Passthrough;
 
-const Menu = ({
+export default function Menu({
   options,
   display,
   label,
@@ -23,7 +23,7 @@ const Menu = ({
   searchable = true,
   handleChange,
   ...props
-}: PropsType) => {
+}: PropsType) {
   const [filter, setFilter] = useState();
 
   return (
@@ -52,6 +52,4 @@ const Menu = ({
       ))}
     </fieldset>
   );
-};
-
-export default Menu;
+}

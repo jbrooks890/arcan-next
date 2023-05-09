@@ -9,6 +9,10 @@
   &:global {
     &.flex:not(.col) {
       justify-content: center;
+
+      label:not(:last-of-type) {
+        margin-right: 1em;
+      }
     }
   }
 

@@ -3,6 +3,7 @@ import DBContextProvider from "@/components/contexts/DBContext";
 import { fetchArcanData } from "@/lib/fetch";
 import { ReactElement } from "react";
 import Layout from "@/components/shared/Layout";
+import DBDraftProvider from "@/components/contexts/DBDraftContext";
 
 type Props = { children: ReactElement | ReactElement[] };
 
@@ -18,7 +19,9 @@ export default async function DBLayout({ children }: Props) {
     <html>
       <body>
         <DBContextProvider data={arcanData}>
-          <Layout>{children}</Layout>
+          <DBDraftProvider>
+            <Layout>{children}</Layout>
+          </DBDraftProvider>
         </DBContextProvider>
       </body>
     </html>

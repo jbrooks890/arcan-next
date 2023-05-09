@@ -14,16 +14,14 @@
   }
 
   .add-word {
-    --size: 2rem;
     cursor: pointer;
-    width: var(--size);
-    height: var(--size);
+    width: 2rem;
+    aspect-ratio: 1/1;
     margin-inline: 0.5em;
     flex-shrink: 0;
     padding: 0;
     font-family: var(--bodyFont);
     text-align: center;
-    line-height: 1;
     border: var(--input) {
       radius: 50%;
     }

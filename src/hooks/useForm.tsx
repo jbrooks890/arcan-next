@@ -102,6 +102,7 @@ export type FieldsDataType = {
 
 type FormAPIType = Omit<FormType<FormMasterType>, "children"> & {
   fields: FieldType[];
+  handleSubmit: Function;
 };
 
 // =================================================
@@ -539,13 +540,17 @@ export default function useForm() {
     submitTxt,
     id,
     className,
-    useSummary = false,
+    useSummary,
     subForm = false,
     handleReset,
     handleCancel,
     handleSubmit,
     postMessage,
-  }: FormAPIType & { useSummary?: boolean }) => {
+  }: FormAPIType & {
+    useSummary?: {
+      omit: string[];
+    };
+  }) => {
     const newForm: FormMasterType = getFieldData(expand(fields));
 
     !formMaster &&
@@ -564,7 +569,7 @@ export default function useForm() {
       e: MouseEvent<HTMLButtonElement>
     ): void => {
       e.preventDefault();
-      handleSubmit();
+      // handleSubmit();
       validateForm();
       // setFormMaster(prev => ({ ...prev, submitted: true }));
       // TODO: IF VALIDATE, VALIDATE
@@ -573,6 +578,18 @@ export default function useForm() {
     const resetForm: FormEventHandler<HTMLFormElement> = e => {
       e.preventDefault();
       setFormMaster(formMaster?.initialOutput);
+    };
+
+    const summarize = (data = formData) => {
+      const pruned = Object.fromEntries(
+        Object.entries(data).filter(
+          ([field]) => !useSummary!.omit.includes(field)
+        )
+      );
+
+      // console.log({ data, pruned });
+
+      return pruned;
     };
 
     return formMaster?.submitted ? (
@@ -592,7 +609,7 @@ export default function useForm() {
         handleReset={resetForm}
         submitTxt={submitTxt}
         resetTxt={resetTxt}
-        summary={useSummary ? formData : undefined}
+        summary={useSummary && formData ? summarize() : undefined}
         subForm={subForm}
       >
         {Object.values(newForm.elements)}

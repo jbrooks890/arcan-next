@@ -1,0 +1,24 @@
+.prompt {
+  align-self: center;
+  margin: 2rem {
+    bottom: 10rem;
+  }
+  padding: 1rem 2rem;
+  background-color: var(--darkest);
+  color: var(--mid);
+  border: var(--input) {
+    radius: var(--outside);
+  }
+  transition: 0.1s ease-out;
+
+  .query {
+    font-size: larger;
+  }
+
+  .menu {
+    padding: 0;
+    border: none {
+      border-radius: 0;
+    }
+  }
+}

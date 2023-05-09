@@ -4,8 +4,8 @@ import Accordion from "./Accordion";
 
 type Props = {
   dataObj: object;
-  omit: string[];
-  ancestors: string[];
+  omit?: string[];
+  ancestors?: string[];
 } & Passthrough;
 
 export default function Cascade({
@@ -20,7 +20,7 @@ export default function Cascade({
   const buildList = (obj = {}, ancestors = []) => {
     obj = omit?.length
       ? Object.fromEntries(
-          Object.entries(obj).filter(([field]) => omit.includes(field))
+          Object.entries(obj).filter(([field]) => omit?.includes(field))
         )
       : obj;
 

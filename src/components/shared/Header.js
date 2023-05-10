@@ -1,4 +1,4 @@
-import styles from "../../styles/Header.module.css";
+import styles from "@/styles/Header.module.css";
 import Nav from "./Nav";
 
 export default function Header() {

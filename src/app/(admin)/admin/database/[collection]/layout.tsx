@@ -3,29 +3,44 @@ import styles from "@/styles/DatabaseView.module.scss";
 import axios from "@/interfaces/axios";
 import Dropdown from "@/components/form/Dropdown";
 import Menu from "@/components/form/Menu";
-import DatabaseDraft from "@/components/pages/admin/DatabaseDraft";
-import { ArcanDataType, useDBMaster } from "@/components/contexts/DBContext";
-import Cascade from "@/components/form/Cascade";
-import Prompt from "@/components/frags/Prompt";
+import { useDBMaster } from "@/components/contexts/DBContext";
 import useTableElement from "@/hooks/useTableElement";
 import Page from "@/components/layout/Page";
-import { prune } from "@/lib/utility";
 import { useDBDraft } from "@/components/contexts/DBDraftContext";
+import { ReactNode } from "react";
+import {
+  useRouter,
+  usePathname,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 
-export default function Database({ params, children }) {
+type Props = {
+  params: {
+    collection: string;
+  };
+  children: ReactNode;
+};
+
+export default function Database({ params, children }: Props) {
   const { arcanData, omittedFields } = useDBMaster();
-  const { models, references } = arcanData;
+  const { models, references, collections } = arcanData;
   const { draft, updateDraft, fetchRecord } = useDBDraft();
   const { table } = useTableElement();
-
+  const router = useRouter();
+  // -----------------------------------------------------------------------
+  const { collection } = params;
+  const record_id = useSelectedLayoutSegment();
+  const record = collections[collection].find(
+    record => record._id === record_id
+  );
+  // -----------------------------------------------------------------------
+  const ROOT_URL = "/admin/database/";
+  const HOME_URL = `${ROOT_URL}/${collection}/`;
   console.log({ arcanData });
-  console.log({ params });
+  // console.log({ collections, collection, record_id, record });
 
-  // :::::::::::::\ DELETE ENTRY /:::::::::::::
-  const deleteEntry = async (
-    id = draft.record?._id,
-    collection = draft.collection
-  ) => {
+  // // :::::::::::::\ DELETE ENTRY /:::::::::::::
+  const deleteEntry = async (id = record_id, collection = draft.collection) => {
     try {
       const response = await axios.delete(`/${collection}/${id}`);
       if (response.status === 201) {
@@ -64,17 +79,18 @@ export default function Database({ params, children }) {
   return (
     <Page name="Database" type="screen">
       <div className={`${styles.wrapper} flex col middle`}>
-        {draft.collectionName ? (
+        {collection ? (
           <div className={`${styles.home} grid`}>
             {/* ------- COLLECTION SELECTOR ------- */}
             <fieldset className={`${styles.selector} flex middle`}>
               <legend>Collection</legend>
               <Dropdown
                 options={Object.keys(models)}
-                value={draft.collectionName}
-                handleChange={entry =>
-                  updateDraft({ type: "switch", payload: entry })
-                }
+                value={collection}
+                handleChange={collectionName => {
+                  router.push(`${ROOT_URL}/${collectionName}`);
+                  updateDraft({ type: "switch", payload: collectionName });
+                }}
                 className={styles.dropdown}
               />
             </fieldset>
@@ -83,14 +99,12 @@ export default function Database({ params, children }) {
             <fieldset className={`${styles["collection-data"]} flex middle`}>
               <legend>Collection Data</legend>
               <div className={`${styles.cache} flex middle`}>
-                <div>
-                  Entries:{" "}
-                  {Object.keys(references[draft.collectionName]).length}
-                </div>
+                <div>Entries: {Object.keys(references[collection]).length}</div>
                 <button
-                  onClick={() =>
-                    draft.record && updateDraft({ type: "goHome" })
-                  }
+                  onClick={() => {
+                    record && updateDraft({ type: "goHome" });
+                    router.push(HOME_URL);
+                  }}
                 >
                   Home
                 </button>
@@ -98,7 +112,10 @@ export default function Database({ params, children }) {
               </div>
               <button
                 className={`${styles.create} flex middle`}
-                onClick={() => updateDraft({ type: "create" })}
+                onClick={() => {
+                  updateDraft({ type: "create" });
+                  router.push(HOME_URL);
+                }}
               >
                 New
               </button>
@@ -108,78 +125,26 @@ export default function Database({ params, children }) {
             <Menu
               label="Entries"
               options={
-                draft.collectionName === "User"
-                  ? Object.values(references[draft.collectionName])
-                  : Object.keys(references[draft.collectionName])
+                collection === "User"
+                  ? Object.values(references[collection])
+                  : Object.keys(references[collection])
               }
               className="col"
               display={
-                draft.collectionName === "User"
-                  ? undefined
-                  : references[draft.collectionName]
+                collection === "User" ? undefined : references[collection]
               }
-              handleChange={entry_id => fetchRecord(entry_id)}
-              value={draft.record?._id}
+              handleChange={entry_id => {
+                updateDraft({ type: "switch", payload: entry_id }); //TODO
+                router.push(`${HOME_URL + entry_id}`);
+              }}
+              value={record_id}
               id="collection-entry-list"
             />
 
             {/* ------- ENTRY DATA ------- */}
             <fieldset className={`${styles.viewport} flex col`}>
               <legend>Entry Data</legend>
-              {draft.active || draft.record ? (
-                <>
-                  {/* ------- ENTRY HEADER ------- */}
-                  <div className={`${styles["entry-header"]} flex`}>
-                    <div className={styles["entry-title"]}>
-                      <h3
-                        className={styles["entry-name"]}
-                        data-entry-id={draft.record?._id ?? undefined}
-                      >
-                        {references[draft.collectionName][draft.record?._id] ??
-                          `New ${draft.collectionName}`}
-                      </h3>
-                      {draft.record?._id && (
-                        <h5 className={styles["entry-id"]}>
-                          {draft.record?._id}
-                        </h5>
-                      )}
-                    </div>
-                    {!draft.active && (
-                      <div className={styles["button-cache"]}>
-                        <button
-                          className={styles.edit}
-                          onClick={() => {
-                            updateDraft({
-                              type: "edit",
-                              payload: draft.record,
-                            });
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <Prompt
-                          btnTxt="Delete"
-                          message={`Are you sure you want to delete **${draft.record.name}**?`}
-                          options={{ Delete: deleteEntry }}
-                          className={styles.delete}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div className={`${styles.body} flex`}>
-                    {draft.active ? (
-                      <DatabaseDraft />
-                    ) : (
-                      <Cascade
-                        dataObj={prune(draft.record, omittedFields, true)}
-                        className={`${styles.fields} flex col`}
-                      />
-                    )}
-                  </div>
-                </>
-              ) : (
-                <span className="fade">No entries</span>
-              )}
+              {children}
             </fieldset>
           </div>
         ) : (

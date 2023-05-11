@@ -97,6 +97,10 @@ export default function DBDraftProvider({ children }: { children: ReactNode }) {
 
   const [draft, dispatch] = useReducer(reducer, initialState);
 
+  useEffect(() => {
+    console.log({ draft });
+  }, [draft]);
+
   // :::::::::::::\ FETCH RECORD /:::::::::::::
 
   const fetchRecord = async entry_id => {

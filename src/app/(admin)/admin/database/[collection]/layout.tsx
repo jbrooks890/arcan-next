@@ -21,7 +21,7 @@ type Props = {
   children: ReactNode;
 };
 
-export default function Database({ params, children }: Props) {
+export default function Database_Layout({ params, children }: Props) {
   const { arcanData, omittedFields } = useDBMaster();
   const { models, references, collections } = arcanData;
   const { draft, updateDraft, fetchRecord } = useDBDraft();
@@ -114,7 +114,7 @@ export default function Database({ params, children }: Props) {
                 className={`${styles.create} flex middle`}
                 onClick={() => {
                   updateDraft({ type: "create" });
-                  router.push(HOME_URL);
+                  router.push(HOME_URL + "new");
                 }}
               >
                 New

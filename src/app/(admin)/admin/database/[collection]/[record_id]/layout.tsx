@@ -12,7 +12,7 @@ type Props = {
   children: ReactNode;
 };
 
-export default function layout({ params, children }: Props) {
+export default function Draft_Layout({ params, children }: Props) {
   const { collection, record_id } = params;
   // -----------------------------------------------------------------------
   const { arcanData, omittedFields } = useDBMaster();

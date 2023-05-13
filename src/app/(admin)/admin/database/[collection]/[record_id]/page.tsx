@@ -20,27 +20,18 @@ type Props = {
   // chilren: ReactNode;
 };
 
-export default function DatabaseDraft({ params }: Props) {
+export default function Draft({ params }: Props) {
   const { arcanData, omittedFields } = useDBMaster();
   const { models, references, collections } = arcanData;
   const { draft, updateDraft } = useDBDraft();
   // -----------------------------------------------------------------------
   const { collection, record_id } = params;
-  const record = collections[collection].find(
-    record => record._id === record_id
-  );
+  const isNew = record_id === "new";
+  const record = isNew
+    ? undefined
+    : collections[collection].find(record => record._id === record_id);
   // -----------------------------------------------------------------------
   const SCHEMA = models[collection];
-  // console.log({ params });
-
-  // console.log({ record });
-  // console.log({ SCHEMA });
-
-  // const router = useRouter();
-  // const pathname = usePathname();
-  // const CURRENT = pathname.split("/").pop();
-
-  // console.log({ pathname });
 
   const {
     form,

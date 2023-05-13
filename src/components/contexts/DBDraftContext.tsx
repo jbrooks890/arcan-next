@@ -97,9 +97,9 @@ export default function DBDraftProvider({ children }: { children: ReactNode }) {
 
   const [draft, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(() => {
-    console.log({ draft });
-  }, [draft]);
+  // useEffect(() => {
+  //   console.log({ draft });
+  // }, [draft]);
 
   // :::::::::::::\ FETCH RECORD /:::::::::::::
 

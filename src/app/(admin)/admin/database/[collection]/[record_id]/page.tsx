@@ -30,6 +30,9 @@ export default function Draft({ params }: Props) {
   const record = isNew
     ? undefined
     : collections[collection].find(record => record._id === record_id);
+  // useEffect(() => {
+  //   isNew && updateDraft({ type: "create" }), [isNew];
+  // });
   // -----------------------------------------------------------------------
   const SCHEMA = models[collection];
 
@@ -77,8 +80,8 @@ export default function Draft({ params }: Props) {
           enumValues,
         } = data;
 
-        const getNestedValue = (root = source) =>
-          root ? ancestors.reduce((obj, path) => obj?.[path], root) : null;
+        const getNestedValue = (root = source, arr = ancestors) =>
+          root ? arr.reduce((obj, path) => obj?.[path], root) : null;
 
         const recordValue = record ? getNestedValue(record) : null;
 
@@ -113,9 +116,34 @@ export default function Draft({ params }: Props) {
           { ref, refPath }: ObjIDType,
           multi = false
         ): FieldType => {
+          let _reference = ref ?? refPath ?? undefined;
+          let nestedRef = _reference?.includes(".")
+            ? _reference.split(".")
+            : undefined;
           const reference = refPath
-            ? set?.[refPath] || paths[refPath].enumValues[0]
+            ? set?.[refPath] || paths[refPath]?.enumValues[0]
             : ref;
+
+          // nestedRef && console.log({ nestedRef, test: nestedRef.slice(0, -1) });
+          let last = nestedRef ? nestedRef.pop() : undefined;
+          nestedRef &&
+            last &&
+            console.log({
+              nestedRef,
+              last,
+              test: getNestedValue(undefined, [...ancestors, ...nestedRef])?.[
+                last
+              ],
+            });
+          // const refValue = nestedRef
+          //   ? getNestedValue(source, [...ancestors, ...nestedRef.slice(0, -1)])[
+          //       nestedRef.pop()
+          //     ]
+          //   : refPath
+          //   ? set?.[refPath]
+          //   : ref;
+
+          // console.log({ refValue });
           const dependency = references[reference];
 
           // console.log({ path, refPath, reference });

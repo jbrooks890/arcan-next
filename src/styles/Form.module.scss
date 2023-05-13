@@ -10,7 +10,7 @@
   }
 
   .body {
-    overflow-y: scroll;
+    overflow: visible scroll;
     min-width: 50%;
 
     &:global {

@@ -9,20 +9,22 @@
   --size: 1.25rem;
   cursor: pointer;
   position: relative;
-  border: 2px solid var(--mid);
   padding: 3px;
   width: calc(var(--size) * 2);
-  height: var(--size);
-  border-radius: 100px;
+  aspect-ratio: 2/1;
+  border: var(--input) {
+    radius: 100px;
+  }
   transition: 0.2s ease-out;
   box-sizing: content-box;
+  z-index: 100;
 
   &::before {
     --size: inherit;
     content: "";
     display: block;
     width: var(--size);
-    height: var(--size);
+    aspect-ratio: 1/1;
     transition: inherit;
     background-color: var(--mid);
     border-radius: 50%;

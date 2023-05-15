@@ -109,48 +109,28 @@ export default function Draft({ params }: Props) {
 
         type ObjIDType = {
           ref?: string; // SCHEMA NAME
-          refPath?: keyof typeof paths; // KEYOF CURRENT SCHEMA
+          refPath?: string; // KEYOF CURRENT SCHEMA
         };
 
         const createObjIdBox = (
           { ref, refPath }: ObjIDType,
           multi = false
         ): FieldType => {
-          let _reference = ref ?? refPath ?? undefined;
-          let nestedRef = _reference?.includes(".")
-            ? _reference.split(".")
-            : undefined;
-          const reference = refPath
-            ? set?.[refPath] || paths[refPath]?.enumValues[0]
-            : ref;
+          let reference;
+          if (ref) reference = ref;
+          if (refPath) {
+            const chain = refPath.includes(".")
+              ? refPath.split(".")
+              : undefined;
+            const target = chain?.pop();
+            const nestedRef = target
+              ? getNestedValue(set ?? paths, chain)?.[target]
+              : set?.[refPath];
 
-          // nestedRef && console.log({ nestedRef, test: nestedRef.slice(0, -1) });
-          let last = nestedRef ? nestedRef.pop() : undefined;
-          nestedRef &&
-            last &&
-            console.log({
-              nestedRef,
-              last,
-              test: getNestedValue(undefined, [...ancestors, ...nestedRef])?.[
-                last
-              ],
-            });
-          // const refValue = nestedRef
-          //   ? getNestedValue(source, [...ancestors, ...nestedRef.slice(0, -1)])[
-          //       nestedRef.pop()
-          //     ]
-          //   : refPath
-          //   ? set?.[refPath]
-          //   : ref;
+            reference = nestedRef || paths[refPath]?.enumValues[0];
+          }
 
-          // console.log({ refValue });
           const dependency = references[reference];
-
-          // console.log({ path, refPath, reference });
-          refPath &&
-            path !== "source" &&
-            // console.log({ path, refPath, set, paths });
-            console.log({ path, source });
 
           return select("$" + path, dependency, multi, false, {
             ...props,

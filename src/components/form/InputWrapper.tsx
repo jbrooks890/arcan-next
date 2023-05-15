@@ -32,7 +32,7 @@ export default function InputWrapper({
       // ref={wrapRef}
       htmlFor={field}
       data-label={name}
-      id={id}
+      id={group && id ? id : undefined}
       className={`${group ? styles.fieldset : styles.label} ${
         required ? "required" : "not-required"
       } ${criteria ? "has-criteria" : "no-criteria"} ${

@@ -336,8 +336,9 @@ export default function useForm() {
           return (
             <Toggle
               {...props}
+              // handleChange={() => updateValue(!value)}
               handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-                updateValue(e.target.checked)
+                updateValue(e.currentTarget.checked)
               }
             />
           );
@@ -348,7 +349,6 @@ export default function useForm() {
               handleChange={(e: ChangeEvent<HTMLInputElement>) =>
                 updateValue(e.target.checked)
               }
-              // wrapper={wrapperProps}
             />
           );
         case "password":
@@ -569,6 +569,7 @@ export default function useForm() {
       e: MouseEvent<HTMLButtonElement>
     ): void => {
       e.preventDefault();
+      console.log(`%cSUBMIT:`, "color:lime", { formData });
       // handleSubmit();
       validateForm();
       // setFormMaster(prev => ({ ...prev, submitted: true }));

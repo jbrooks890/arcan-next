@@ -1,4 +1,5 @@
 import styles from "@/styles/form/Toggle.module.scss";
+import { useState } from "react";
 import InputWrapper from "./InputWrapper";
 
 export default function Toggle({
@@ -11,13 +12,13 @@ export default function Toggle({
     <>
       <input
         type="checkbox"
+        name={field}
         id={field}
         className={styles.input}
-        name={field}
         onChange={handleChange}
-        checked={value ?? false}
+        checked={value}
       />
-      <div className={styles.toggle} />
+      <div className={`${styles.toggle} ${value ? "checked" : "unchecked"}`} />
     </>
   );
   return wrapper ? <InputWrapper {...wrapper}>{OUTPUT}</InputWrapper> : OUTPUT;

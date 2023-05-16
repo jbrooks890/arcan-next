@@ -11,13 +11,31 @@ import useTableElement from "@/hooks/useTableElement";
 import Page from "@/components/layout/Page";
 import { prune } from "@/lib/utility";
 import { useDBDraft } from "@/components/contexts/DBDraftContext";
+import Table from "@/components/form/Table";
 
-export default function Database() {
+type Props = {
+  params: {
+    collection: string;
+  };
+};
+
+export default function Database({ params }: Props) {
   const { arcanData, omittedFields } = useDBMaster();
-  const { models, references } = arcanData;
+  const { collections, models, references } = arcanData;
   const { draft, updateDraft, fetchRecord } = useDBDraft();
   const { table } = useTableElement();
+  const { collection } = params;
+  const records = collections[collection];
+  // const headers = records.map(record => Object.keys(record));
+  const headers = Array.from(
+    new Set(
+      records.reduce((prev, curr) => {
+        return [...prev, ...Object.keys(curr)];
+      }, [])
+    )
+  ).filter(header => !omittedFields.includes(header));
 
+  console.log({ records, headers });
   console.log({ arcanData });
 
   // :::::::::::::\ DELETE ENTRY /:::::::::::::
@@ -60,5 +78,6 @@ export default function Database() {
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
 
+  return <Table data={records} primary="name" headers={headers as string[]} />;
   return <h1>Test</h1>;
 }

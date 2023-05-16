@@ -4,14 +4,10 @@
 
 .table {
   position: relative;
-  display: block;
   margin: 0;
-  // padding-bottom: 1em;
   border-collapse: collapse;
   overflow-x: scroll;
   width: 100%;
-  // max-width: 100%;
-  border: 1px solid coral;
 
   &:global {
     &.array {
@@ -40,6 +36,21 @@
 
   & > * {
     white-space: nowrap;
+  }
+
+  .primary {
+    background-color: var(--mid);
+    color: var(--dark);
+    font: {
+      size: small;
+      weight: 600;
+    }
+    text: {
+      // align: right;
+      transform: uppercase;
+    }
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
   }
 
   tr {

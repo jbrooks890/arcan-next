@@ -18,7 +18,7 @@ export default function Database() {
   const { draft, updateDraft, fetchRecord } = useDBDraft();
   const { table } = useTableElement();
 
-  console.log({ arcanData });
+  // console.log({ arcanData });
 
   // :::::::::::::\ DELETE ENTRY /:::::::::::::
   const deleteEntry = async (

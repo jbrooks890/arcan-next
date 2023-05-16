@@ -1,54 +1,69 @@
 import styles from "@/styles/form/Table.module.scss";
-import { useDBMaster } from "../contexts/DBContext";
-import TableEntry from "./TableEntry";
-import Checkbox from "./Checkbox";
-import { ReactElement } from "react";
+import { CSSProperties, ReactElement } from "react";
 
-type PropsType = {
-  // data: object;
+type TablePropsType = {
+  data: object[];
+  primary?: string;
   headers: string[];
-  id?: string;
-  className?: string;
   omitted?: string[];
-  isArray: boolean;
   ancestors?: string[];
-  // selections: string[]
   children: ReactElement | ReactElement[];
 };
 
 export default function Table({
-  // data = {},
+  data,
+  headers,
+  primary = headers[0],
+  omitted,
+  ancestors = [],
   id,
   className,
-  omitted = [],
-  headers,
-  // headers = Object.keys(Object.values(data)[0]).filter(
-  //   entry => !omitted.includes(entry)
-  // ),
-  isArray,
-  ancestors = [],
   children,
-}: PropsType) {
+}: TablePropsType & Passthrough) {
+  const isArray = Array.isArray(data);
+  let colCount = headers.length;
+  if (isArray) colCount += 1;
+
+  headers.splice(headers.indexOf(primary), 1);
+  headers = [primary, ...headers.sort()];
+
+  data = data.sort((a, b) => {
+    return a[primary] > b[primary] ? 1 : -1;
+  });
+
+  const style: CSSProperties = {
+    gridTemplateColumns: `2fr repeat(${headers.length - 1}, 1fr)`,
+  };
+
   return (
-    <table
+    <div
       id={id}
-      className={`${styles.table} ${isArray ? "array" : "object"} ${
+      className={`${styles.table} ${isArray ? "array" : "object"} grid ${
         className ?? "exo"
       }`}
+      style={style}
     >
-      <thead>
-        <tr>
-          <th className="corner">
-            <input type="checkbox" />
-          </th>
-          {headers.map((col, i) => (
-            <th key={i} className={styles.header}>
-              {col}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-    </table>
+      {headers.map((header, i) => (
+        <div key={i} className={styles.header}>
+          {header}
+        </div>
+      ))}
+      {data.map((record, j) => {
+        return headers.map(field => {
+          // console.log({ field, record });
+          const value = record[field];
+
+          return (
+            <div
+              className={`${
+                field === primary ? styles.primary : styles.data
+              } flex middle`}
+            >
+              {typeof value === "object" ? `[${field}]` : String(value)}
+            </div>
+          );
+        });
+      })}
+    </div>
   );
 }

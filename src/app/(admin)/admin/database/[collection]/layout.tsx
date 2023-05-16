@@ -36,7 +36,7 @@ export default function Database_Layout({ params, children }: Props) {
   // -----------------------------------------------------------------------
   const ROOT_URL = "/admin/database/";
   const HOME_URL = `${ROOT_URL}/${collection}/`;
-  console.log({ arcanData });
+  // console.log({ arcanData });
   // console.log({ collections, collection, record_id, record });
 
   // // :::::::::::::\ DELETE ENTRY /:::::::::::::

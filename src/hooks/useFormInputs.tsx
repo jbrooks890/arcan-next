@@ -297,6 +297,7 @@ export default function useFormInputs() {
   };
 
   return {
+    labelize,
     field,
     text,
     number,

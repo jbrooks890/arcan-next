@@ -97,8 +97,8 @@
     .viewport {
       padding: 1rem;
       text-align: left;
-      overflow-y: scroll;
-      /* overflow: hidden; */
+      // overflow-y: scroll;
+      overflow: hidden scroll;
 
       legend {
         text-align: center;

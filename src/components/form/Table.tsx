@@ -1,3 +1,4 @@
+import useFormInputs from "@/hooks/useFormInputs";
 import styles from "@/styles/form/Table.module.scss";
 import { CSSProperties, ReactElement } from "react";
 
@@ -20,50 +21,63 @@ export default function Table({
   className,
   children,
 }: TablePropsType & Passthrough) {
+  const { labelize } = useFormInputs();
   const isArray = Array.isArray(data);
   let colCount = headers.length;
   if (isArray) colCount += 1;
 
-  headers.splice(headers.indexOf(primary), 1);
-  headers = [primary, ...headers.sort()];
+  // headers.splice(headers.indexOf(primary), 1);
+  // headers = [primary, ...headers.sort()];
 
-  data = data.sort((a, b) => {
-    return a[primary] > b[primary] ? 1 : -1;
-  });
+  // data = data.sort((a, b) => {
+  //   return a[primary] > b[primary] ? 1 : -1;
+  // });
 
   const style: CSSProperties = {
-    gridTemplateColumns: `2fr repeat(${headers.length - 1}, 1fr)`,
+    gridTemplateColumns: `20ch repeat(${headers.length - 1},20%)`,
   };
 
   return (
-    <div
-      id={id}
-      className={`${styles.table} ${isArray ? "array" : "object"} grid ${
-        className ?? "exo"
-      }`}
-      style={style}
-    >
-      {headers.map((header, i) => (
-        <div key={i} className={styles.header}>
-          {header}
-        </div>
-      ))}
-      {data.map((record, j) => {
-        return headers.map(field => {
-          // console.log({ field, record });
-          const value = record[field];
-
+    <div className={`${styles.wrap} flex col`}>
+      <div
+        id={id}
+        className={`${styles.table} ${isArray ? "array" : "object"} grid ${
+          className ?? "exo"
+        }`}
+        style={style}
+      >
+        {headers.map((header, i) => {
+          if (header.includes(".")) header = header.split(".").pop()!;
           return (
             <div
-              className={`${
-                field === primary ? styles.primary : styles.data
-              } flex middle`}
+              key={i}
+              className={`${styles.header} ${
+                header === primary ? styles.primary : "non-primary"
+              }`}
             >
-              {typeof value === "object" ? `[${field}]` : String(value)}
+              {labelize(header)}
             </div>
           );
-        });
-      })}
+        })}
+        {data.map(record => {
+          return headers.map(field => {
+            // console.log({ field, record });
+            const value = record[field];
+
+            return (
+              <div
+                key={field}
+                className={`${
+                  field === primary ? styles.primary : styles.data
+                } flex middle`}
+                data-col={field}
+              >
+                {typeof value === "object" ? `[${field}]` : String(value)}
+              </div>
+            );
+          });
+        })}
+      </div>
     </div>
   );
 }

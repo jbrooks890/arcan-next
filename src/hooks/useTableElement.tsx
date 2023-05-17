@@ -13,6 +13,57 @@ type TableAPIType<Data> = (
 ) => ReactElement<HTMLTableElement>;
 
 export default function useTableElement() {
+  // --------------\ UNPACK OBJECT /--------------
+
+  const unpackObj = (obj: object): any[] =>
+    Object.entries(obj).flatMap(entry => {
+      const [key, value] = entry;
+      if (typeof value === "object" && !Array.isArray(value)) {
+        const child = unpackObj(value).map(([child, _value]) => [
+          `${key}.${child}`,
+          _value,
+        ]);
+        return child;
+      }
+      return [entry];
+    });
+
+  // --------------\ CREATE HEADERS /--------------
+  const createHeaders = (
+    data: object,
+    primary?: string,
+    omit?: string[],
+    sort = false
+  ) => {
+    const isArray = Array.isArray(data);
+    let arr = isArray ? data : Object.values(data);
+    // if (!primary) primary = arr[0];
+    let colCount = arr.length;
+    if (isArray) colCount += 1;
+
+    // -----------: SORT :-----------
+    if (sort) arr = arr.sort((a, b) => (a[primary] > b[primary] ? 1 : -1));
+
+    let result = Array.from(
+      new Set(
+        arr.reduce((prev, curr) => {
+          return [...prev, ...Object.keys(curr).sort()];
+        }, [])
+      )
+    );
+
+    // -----------: OMIT :-----------
+    if (omit?.length) result = result.filter(field => !omit.includes(field));
+
+    // ---------: PRIMARY :---------
+    if (primary && result.includes(primary)) {
+      result.splice(result.indexOf(primary), 1);
+      result = [primary, ...result];
+    }
+
+    return result;
+  };
+
   const table: TableAPIType = (data, options) => {
     const {
       omittedFields = [],
@@ -39,5 +90,10 @@ export default function useTableElement() {
       </Table>
     );
   };
-  return { table };
+  return {
+    table,
+    createHeaders,
+    // unpackObj,
+    unpackObj: (obj: object) => Object.fromEntries(unpackObj(obj)),
+  };
 }

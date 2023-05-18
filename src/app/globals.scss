@@ -390,6 +390,20 @@ label {
   font-family: var(--brands);
 }
 
+// ::::::::::\ ANIMATIONS /::::::::::
+@keyframes jab {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(5px);
+  }
+}
+
+.jab:hover {
+  animation: jab 0.5s ease-in-out infinite alternate;
+}
+
 // -----------------------------------
 // %%%%%%%%%%%%%\ HOVER /%%%%%%%%%%%%%
 // -----------------------------------

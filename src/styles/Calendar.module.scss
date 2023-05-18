@@ -73,6 +73,8 @@
   }
 
   .day {
+    position: relative;
+
     &::before {
       content: attr(data-date);
     }
@@ -85,18 +87,33 @@
       border: 2px solid transparent {
         radius: 2px;
       }
-      // transition: background-color 0.1s ease-out;
+      transition: 0.1s ease-out;
 
       &:global {
         &.today {
-          border-color: var(--mid);
+          // border-color: var(--mid);
+          color: var(--brite);
+          // transform: scale(1.25);
+
+          &::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            aspect-ratio: 1/1;
+            border: var(--input) {
+              radius: 50%;
+            }
+            opacity: 0.25;
+          }
         }
       }
 
       &:hover {
-        background-color: var(--mid);
-        color: var(--darkest);
-        border-color: var(--mid);
+        color: var(--brite);
+        transform: scale(1.1);
+        // background-color: var(--mid);
+        // color: var(--darkest);
+        // border-color: var(--mid);
       }
     }
   }

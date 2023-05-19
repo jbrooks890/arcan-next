@@ -41,21 +41,31 @@
 
       &:hover {
         color: var(--brite);
-        transform: scale(1.1);
+
+        &::before {
+          transform: scale(1.1);
+          transform-origin: center;
+        }
       }
 
       &::before {
+        content: "<";
         position: absolute;
+        line-height: 1;
       }
     }
 
-    .prev::before {
-      content: "<";
+    .next {
+      transform: scaleX(-1);
     }
 
-    .next::before {
-      content: ">";
-    }
+    // .prev::before {
+    //   content: "<";
+    // }
+
+    // .next::before {
+    //   content: ">";
+    // }
   }
 
   .header {
@@ -65,6 +75,7 @@
     text-transform: uppercase;
     font-size: small;
     border-bottom: 1px solid var(--mid);
+    user-select: none;
   }
 
   .padding {
@@ -106,14 +117,17 @@
             opacity: 0.25;
           }
         }
-      }
+        &.selected {
+          color: var(--pop);
+        }
 
-      &:hover {
-        color: var(--brite);
-        transform: scale(1.1);
-        // background-color: var(--mid);
-        // color: var(--darkest);
-        // border-color: var(--mid);
+        &.not-selected:hover {
+          color: var(--brite);
+          transform: scale(1.1);
+          // background-color: var(--mid);
+          // color: var(--darkest);
+          // border-color: var(--mid);
+        }
       }
     }
   }

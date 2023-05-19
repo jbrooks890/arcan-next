@@ -364,6 +364,10 @@ label {
     justify-content: center;
     align-items: center;
   }
+
+  &.justify {
+    justify-content: space-between;
+  }
 }
 
 /* ::::::::::\ GRID /:::::::::: */
@@ -396,12 +400,19 @@ label {
     transform: translateX(0);
   }
   to {
-    transform: translateX(5px);
+    transform: translateX(-5px);
   }
 }
 
 .jab:hover {
   animation: jab 0.5s ease-in-out infinite alternate;
+}
+
+.jab.under:hover {
+  animation: inherit;
+  &::before {
+    animation: jab 0.5s ease-in-out infinite alternate;
+  }
 }
 
 // -----------------------------------

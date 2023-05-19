@@ -1,5 +1,6 @@
 import styles from "@/styles/Calendar.module.scss";
 import { useReducer, useMemo, useState } from "react";
+import Day from "./Day";
 
 // ----------------------------------------------------------------------
 const MONTHS = [
@@ -27,7 +28,7 @@ const DAYS = [
 ] as const;
 // ----------------------------------------------------------------------
 
-type DatePkg = {
+export type DatePkg = {
   fullDate: Date;
   year: number;
   month: number;
@@ -36,15 +37,31 @@ type DatePkg = {
   firstDay: number;
   lastDate: number;
   strings: [keyof typeof MONTHS, keyof typeof DAYS];
+  dateString: string;
+  value: string;
 };
 
-type CalendarProps = { date?: string | number | Date; minimize?: boolean };
+type CalendarProps = {
+  date?: string | number | Date;
+  minimize?: boolean;
+  min?: string | number | Date;
+  max?: string | number | Date;
+  handleChange?: () => void;
+};
 
-export default function Calendar({ date, minimize = false }: CalendarProps) {
+export default function Calendar({
+  date,
+  minimize = false,
+  min,
+  max,
+  handleChange,
+}: CalendarProps) {
   const createDateObj = ($date: string | number | Date): DatePkg => {
     const newDate = $date instanceof Date ? $date : new Date($date);
     if (!newDate)
       throw new Error(`${$date} cannot be rendered as a valid date.`);
+
+    newDate.setHours(0, 0, 0, 0);
 
     // console.log({ newDate });
 
@@ -54,7 +71,8 @@ export default function Calendar({ date, minimize = false }: CalendarProps) {
       day = newDate.getDay(),
       firstDay = new Date(year, month, 1).getDay(),
       lastDate = new Date(year, month + 1, 0).getDate(),
-      strings = [MONTHS[month], DAYS[day]];
+      strings = [MONTHS[month], DAYS[day]],
+      dateString = `${strings[0]} ${date}, ${year}`;
 
     return {
       fullDate: newDate,
@@ -65,11 +83,14 @@ export default function Calendar({ date, minimize = false }: CalendarProps) {
       firstDay,
       lastDate,
       strings,
+      dateString,
     };
   };
 
   const NOW = new Date();
-  const [selected, setSelected] = useState(date ? new Date(date) : undefined);
+  const [selected, setSelected] = useState(
+    date ? (date instanceof Date ? date : new Date(date)) : undefined
+  );
   const [targetDate, setTargetDate] = useState(date ?? NOW);
   const target = useMemo(() => createDateObj(targetDate), [targetDate]);
   const dayAbbr = ["U", "M", "T", "W", "R", "F", "S"];
@@ -88,44 +109,42 @@ export default function Calendar({ date, minimize = false }: CalendarProps) {
     "Dec",
   ];
 
-  // -------------\ PAD MONTH /-------------
-  const padMonth = (start = true) => {
-    const padding = [];
-    let prevLastDate = new Date(target.year, target.month, 0).getDate();
-
-    for (let i = target.firstDay; i > 0; i--) {
-      padding.unshift(
-        <div
-          key={"p" + i}
-          className={`${styles.padding} ${styles.day} flex center`}
-          data-date={prevLastDate--}
-        />
-      );
-    }
-
-    return padding;
-  };
-
   // -------------\ CREATE MONTH /-------------
   const createMonth = () => {
     const days = [];
-    for (let i = 1; i <= target.lastDate; i++) {
-      const isToday =
-        target.year === NOW.getFullYear() &&
-        target.month === NOW.getMonth() &&
-        i === NOW.getDate();
+    let prevLastDate = new Date(target.year, target.month, 0).getDate();
 
-      const thisDate = new Date(target.fullDate.setDate(i));
-      // console.log({ thisDate });
+    if (target.firstDay) {
+      for (let i = target.firstDay; i > 0; i--) {
+        const thisDate = createDateObj(
+            new Date(target.year, target.month - 1, prevLastDate--)
+          ),
+          isToday = thisDate.fullDate.getTime() == NOW.getTime();
+
+        days.unshift(
+          <Day
+            key={"p" + i}
+            className={styles.padding}
+            thisDate={thisDate}
+            isToday={isToday}
+            isSelected={selected?.getTime() == thisDate.fullDate.getTime()}
+          />
+        );
+      }
+    }
+
+    for (let i = 1; i <= target.lastDate; i++) {
+      NOW.setHours(0, 0, 0, 0);
+      const thisDate = createDateObj(new Date(target.year, target.month, i)),
+        isToday = thisDate.fullDate.getTime() == NOW.getTime();
 
       days.push(
-        <div
+        <Day
           key={i}
-          className={`${styles.day} ${
-            isToday ? "today" : "not-today"
-          } flex center`}
-          data-date={i}
-          onClick={() => setSelected(thisDate)}
+          thisDate={thisDate}
+          isToday={isToday}
+          isSelected={selected?.getTime() == thisDate.fullDate.getTime()}
+          handleSelect={() => setSelected(thisDate.fullDate)}
         />
       );
     }
@@ -156,7 +175,7 @@ export default function Calendar({ date, minimize = false }: CalendarProps) {
           {MONTHS[target.month]}
         </h2>
         <button
-          className={`${styles.next} flex center jab`}
+          className={`${styles.next} flex center jab under`}
           onClick={e => {
             e.preventDefault();
             shiftMonth();
@@ -168,7 +187,6 @@ export default function Calendar({ date, minimize = false }: CalendarProps) {
           {day}
         </div>
       ))}
-      {target.firstDay > 0 ? padMonth() : undefined}
       {createMonth()}
     </div>
   );

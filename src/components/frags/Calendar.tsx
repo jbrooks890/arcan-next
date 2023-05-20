@@ -42,6 +42,7 @@ export type DatePkg = {
 };
 
 type CalendarProps = {
+  value: Date;
   date?: string | number | Date;
   minimize?: boolean;
   min?: string | number | Date;
@@ -52,6 +53,7 @@ type CalendarProps = {
 export default function Calendar({
   date,
   minimize = false,
+  value,
   min,
   max,
   handleChange,
@@ -88,26 +90,9 @@ export default function Calendar({
   };
 
   const NOW = new Date();
-  const [selected, setSelected] = useState(
-    date ? (date instanceof Date ? date : new Date(date)) : undefined
-  );
+  const [selected, setSelected] = useState(value);
   const [targetDate, setTargetDate] = useState(date ?? NOW);
   const target = useMemo(() => createDateObj(targetDate), [targetDate]);
-  const dayAbbr = ["U", "M", "T", "W", "R", "F", "S"];
-  const monthAbbr = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
 
   // -------------\ CREATE MONTH /-------------
   const createMonth = () => {
@@ -144,7 +129,10 @@ export default function Calendar({
           thisDate={thisDate}
           isToday={isToday}
           isSelected={selected?.getTime() == thisDate.fullDate.getTime()}
-          handleSelect={() => setSelected(thisDate.fullDate)}
+          handleSelect={() => {
+            handleChange(thisDate.fullDate);
+            setSelected(thisDate.fullDate);
+          }}
         />
       );
     }

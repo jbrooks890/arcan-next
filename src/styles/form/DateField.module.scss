@@ -11,54 +11,98 @@
   }
 
   & > *:not(:last-child) {
-    margin-right: 0.5rem;
+    margin-right: 0.25rem;
   }
 
   .shell {
     // border: 2px solid hsla(0, 0, 100%, 0.1);
+    cursor: pointer;
+    overflow-y: auto;
+    height: 2em;
+    padding-inline: 0.5ch;
+    border-bottom: 2px solid transparent;
+    // outline: 1px solid hsla(0, 0, 100%, 0.1);
+    scroll-snap-type: y mandatory;
+    box-sizing: content-box;
+    outline: none;
+    transition: 50ms linear;
 
-    input {
-      // -webkit-appearance: none;
-      --spacing: 0.5ch;
-      -moz-appearance: textfield;
-      appearance: none;
-      width: auto;
-      padding: 0 {
-        left: var(--spacing);
-      }
-      caret-color: transparent;
-      text: {
+    &:focus-within {
+      border-bottom-color: var(--mid);
+    }
+
+    // input {
+    //   // -webkit-appearance: none;
+    //   --spacing: 0.5ch;
+    //   -moz-appearance: textfield;
+    //   appearance: none;
+    //   // width: auto;
+    //   padding: 0 {
+    //     left: var(--spacing);
+    //     block: 0.25em;
+    //   }
+    //   caret-color: transparent;
+    //   text: {
+    //     align: center;
+    //     // decoration: underline;
+    //   }
+    //   letter-spacing: var(--spacing);
+    //   border-bottom: 2px solid transparent;
+    //   // border: 2px solid transparent {
+    //   //   radius: 2px;
+    //   // }
+
+    //   &::-webkit-inner-spin-button,
+    //   &::-webkit-outer-spin-button {
+    //     appearance: none;
+    //     margin: 0;
+    //   }
+
+    //   &::placeholder {
+    //     font-style: normal;
+    //   }
+
+    //   &::selection {
+    //     color: inherit;
+    //     background-color: transparent;
+    //   }
+
+    //   &:focus-within {
+    //     border-color: var(--mid);
+    //   }
+    // }
+
+    .option {
+      --spacing: 0.25ch;
+      background-color: var(--darkest);
+      height: inherit;
+      scroll-snap: {
         align: center;
-        // decoration: underline;
+        stop: always;
       }
+      // border: 1px solid #333;
+      padding-left: var(--spacing);
       letter-spacing: var(--spacing);
-      border: 2px solid transparent {
-        radius: 2px;
-      }
 
-      &::-webkit-inner-spin-button,
-      &::-webkit-outer-spin-button {
-        appearance: none;
-        margin: 0;
-      }
-
-      &::placeholder {
-        font-style: normal;
+      &:global {
+        &.selected {
+          color: var(--brite);
+        }
       }
 
       &::selection {
-        color: inherit;
         background-color: transparent;
-      }
-
-      &:focus-within {
-        border-color: var(--mid);
+        color: inherit;
       }
     }
   }
 
   span::after {
-    content: "-";
+    content: "=";
+    display: block;
+    transform: rotate(90deg);
+    line-height: 1;
+    opacity: 0.5;
   }
 
   .widget {

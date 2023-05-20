@@ -139,6 +139,12 @@ body {
   }
 }
 
+.hide-scroller {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ::::::::::\ HEADER, FOOTER /:::::::::: */
 
 header,

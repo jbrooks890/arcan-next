@@ -11,12 +11,13 @@ export default function Sandbox() {
   TODAY.setHours(0, 0, 0, 0);
 
   const [date, setDate] = useState(TODAY);
+  // console.log({ date });
 
   return (
     <Page name="Sandbox">
-      <Calendar />
+      <Calendar value={date} handleChange={setDate} />
       <br />
-      <DateField field="test" value={TODAY} handleChange={setDate} />
+      <DateField field="test" value={date} handleChange={setDate} />
     </Page>
   );
 }

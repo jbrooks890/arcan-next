@@ -1,5 +1,5 @@
 import styles from "@/styles/Calendar.module.scss";
-import type { DatePkg } from "./Calendar";
+import type { DatePkg } from "@/hooks/useDate";
 
 type Props = {
   thisDate: DatePkg;
@@ -21,7 +21,7 @@ export default function Day({
         isSelected ? "selected" : "not-selected"
       } flex center ${className ?? "exo"}`}
       data-date={thisDate.date}
-      data-date-string={thisDate.dateString}
+      data-date-string={thisDate.strings.full}
       onClick={() => handleSelect?.()}
     />
   );

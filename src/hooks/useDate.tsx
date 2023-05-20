@@ -46,13 +46,20 @@ export type DatePkg = {
   obj: { year: number; month: number; date: number };
   firstDay: number;
   lastDate: number;
-  // strings: [keyof typeof months, keyof typeof days];
-  strings: { month: keyof typeof months; day: keyof typeof days; full: string };
-  value: string;
-  change: (field: "year" | "month" | "date", value: number) => Date | null;
+  isToday: boolean;
+  strings: {
+    month: (typeof months)[number];
+    day: (typeof days)[number];
+    full: string;
+    firstDay: (typeof days)[number];
+  };
+  // value: string;
+  change: (field: "year" | "month" | "date", value: number) => Date;
 };
 
 export default function useDate() {
+  // ----------------------\ VALUES /----------------------
+  const NOW = new Date();
   // ====================\ MAKE DATE /====================
   const makeDate = (
     dateObj: { year: number; month: number; date: number },
@@ -60,17 +67,23 @@ export default function useDate() {
   ) => {
     const { year, month, date } = dateObj;
     // console.log({ year, month, date });
-    if (strict) {
-      if (
-        Object.values(dateObj).some(value => value < 1) ||
-        month > 12 ||
-        date > 31
-      )
-        return null;
-    }
+    // if (strict) {
+    //   if (
+    //     Object.values(dateObj).some(value => value < 1) ||
+    //     month > 12 ||
+    //     date > 31
+    //   )
+    //     return null;
+    // }
     const result = new Date(year, month, date);
     return result;
   };
+
+  // ====================\ IS EQUAL /====================
+  const isEqual = (a: DatePkg["obj"], b: DatePkg["obj"]) =>
+    Object.keys(a).every(
+      key => a[key as keyof typeof a] === b[key as keyof typeof b]
+    );
 
   // ====================\ UNPACK DATE /====================
   const unpackDate = (
@@ -83,8 +96,6 @@ export default function useDate() {
 
     if (keepHrs) newDate.setHours(0, 0, 0, 0);
 
-    // console.log({ newDate });
-
     // --------------------\ VALUES /--------------------
 
     const year = newDate.getFullYear(),
@@ -92,19 +103,23 @@ export default function useDate() {
       date = newDate.getDate(),
       day = newDate.getDay(),
       obj = { year, month, date },
-      firstDay = days[new Date(year, month, 1).getDay()],
+      firstDay = new Date(year, month, 1).getDay(),
       lastDate = new Date(year, month + 1, 0).getDate(),
-      strings: DatePkg["strings"] = {
+      // isToday = isEqual(obj, unpackDate(NOW).obj),
+      strings: Omit<DatePkg["strings"], "full"> = {
         month: months[month],
         day: days[day],
+        firstDay: days[new Date(year, month, 1).getDay()],
       };
     strings.full = `${strings.month} ${date}, ${year}`;
+    strings.fullest = `${strings.day}, ${strings.full}`;
     const change: DatePkg["change"] = (field, value) =>
       makeDate({ ...obj, [field]: value });
 
     return {
       fullDate: newDate,
       year,
+      // month,
       month: month + 1,
       date,
       day,
@@ -116,8 +131,8 @@ export default function useDate() {
     };
   };
 
-  const NOW = new Date();
   const TODAY = unpackDate(NOW);
+  const isToday = (dateObj: DatePkg["obj"]) => isEqual(dateObj, TODAY.obj);
 
-  return { months, days, unpackDate, makeDate, TODAY };
+  return { months, days, unpackDate, makeDate, isEqual, isToday, TODAY };
 }

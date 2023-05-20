@@ -58,9 +58,6 @@ export default function DateField({
     // yearElement.current?.scrollIntoView();
   }, [value]);
 
-  // console.log({ TODAY });
-  // console.log({ ranges });
-
   const scrollSelect = debounce(
     (e: UIEvent, field: "year" | "month" | "date") => {
       const { scrollHeight, scrollTop } = e.target || e.currentTarget,
@@ -82,20 +79,7 @@ export default function DateField({
   // =================| FIELDS |=================
 
   const FIELDS = fields.map((field, i, arr) => {
-    const { month, date, year } = SOURCE,
-      placeholder = ["MM", "DD", "YYYY"],
-      size = field !== "year" ? 2 : 4,
-      // _value = [month, date, year],
-      _value = [month, date, year].map(int =>
-        int.toString().padStart(size, "0")
-      ),
-      _min = [MIN?.month ?? 1, MIN?.date ?? 1, MIN?.year ?? TODAY.year - 10],
-      _max = [
-        MAX?.month ?? 12,
-        MAX?.date ?? TODAY.lastDate,
-        MAX?.year ?? TODAY.year + 10,
-      ],
-      refs = [monthElement, dateElement, yearElement];
+    const refs = [monthElement, dateElement, yearElement];
 
     // console.log({ field, value: parseInt(_value[i]) });
 

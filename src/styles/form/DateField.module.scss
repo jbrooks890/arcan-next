@@ -98,10 +98,8 @@
   }
 
   span::after {
-    content: "=";
-    display: block;
-    transform: rotate(90deg);
-    line-height: 1;
+    content: "\2571";
+    // content: "\2506";
     opacity: 0.5;
   }
 

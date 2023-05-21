@@ -78,29 +78,29 @@
     user-select: none;
   }
 
-  .padding {
-    cursor: default;
-    opacity: 0.25;
-  }
-
   .day {
     position: relative;
+    margin: 2px;
+    padding: 0.1rem;
+    aspect-ratio: 4/3;
 
     &::before {
       content: attr(data-date);
     }
 
-    &:not(.padding) {
-      cursor: pointer;
-      margin: 2px;
-      padding: 0.1rem;
-      aspect-ratio: 4/3;
-      border: 2px solid transparent {
-        radius: 2px;
+    &:global {
+      &.padding {
+        cursor: default;
+        opacity: 0;
       }
-      transition: 0.1s ease-out;
 
-      &:global {
+      &:not(.padding) {
+        cursor: pointer;
+
+        // border: 2px solid transparent {
+        //   radius: 2px;
+        // }
+        transition: 0.1s ease-out;
         &.today {
           // border-color: var(--mid);
           color: var(--brite);

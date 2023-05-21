@@ -61,35 +61,18 @@ export default function useDate() {
   // ----------------------\ VALUES /----------------------
   const NOW = new Date();
   // ====================\ MAKE DATE /====================
-  const makeDate = (
-    dateObj: { year: number; month: number; date: number },
-    strict = false
-  ) => {
-    const { year, month, date } = dateObj;
-    // console.log({ year, month, date });
-    // if (strict) {
-    //   if (
-    //     Object.values(dateObj).some(value => value < 1) ||
-    //     month > 12 ||
-    //     date > 31
-    //   )
-    //     return null;
-    // }
-    const result = new Date(year, month, date);
-    return result;
-  };
+  const makeDate = (dateObj: { year: number; month: number; date: number }) =>
+    new Date(dateObj.year, dateObj.month, dateObj.date);
 
   // ====================\ IS EQUAL /====================
-  const isEqual = (a: DatePkg["obj"], b: DatePkg["obj"]) =>
-    Object.keys(a).every(
-      key => a[key as keyof typeof a] === b[key as keyof typeof b]
+  const isEqual = (a: DatePkg, b: DatePkg) =>
+    Object.keys(a.obj).every(
+      key =>
+        a.obj[key as keyof typeof a.obj] === b.obj[key as keyof typeof b.obj]
     );
 
   // ====================\ UNPACK DATE /====================
-  const unpackDate = (
-    $date: string | number | Date,
-    keepHrs = false
-  ): DatePkg => {
+  function unpackDate($date: string | number | Date, keepHrs = false): DatePkg {
     const newDate = $date instanceof Date ? $date : new Date($date);
     if (!newDate)
       throw new Error(`${$date} cannot be rendered as a valid date.`);
@@ -129,7 +112,7 @@ export default function useDate() {
       strings,
       change,
     };
-  };
+  }
 
   const TODAY = unpackDate(NOW);
   const isToday = (dateObj: DatePkg["obj"]) => isEqual(dateObj, TODAY.obj);

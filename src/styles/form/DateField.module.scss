@@ -1,5 +1,6 @@
 .wrap {
   position: relative;
+  transition: 0.2s ease-out;
 
   &:global {
     &.exo {

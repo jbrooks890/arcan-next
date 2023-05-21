@@ -52,7 +52,7 @@ export default function DateField({
     [...document.querySelectorAll(`.${styles.option}.selected`)].forEach(
       element => element.scrollIntoView()
     );
-    console.log({ monthElement, dateElement, yearElement });
+    // console.log({ monthElement, dateElement, yearElement });
     // monthElement.current?.scrollIntoView();
     // dateElement.current?.scrollIntoView();
     // yearElement.current?.scrollIntoView();
@@ -63,14 +63,16 @@ export default function DateField({
       const { scrollHeight, scrollTop } = e.target || e.currentTarget,
         children = e.target.children.length,
         childHeight = Math.round(scrollHeight / children),
-        index = Math.round(Math.round(scrollTop) / childHeight),
+        index = Math.round(scrollTop / childHeight),
         queue = ranges[field],
         { value } = queue[index];
 
-      // const target = makeDate({ ...SOURCE.obj, [field]: value });
-      const target = SOURCE.change(field, value);
+      const target = SOURCE.change(
+        field,
+        field === "month" ? value - 1 : value
+      );
 
-      field === "year" && console.log({ target });
+      // field === "year" && console.log({ target });
       handleChange(target);
     },
     250

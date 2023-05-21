@@ -1,42 +1,29 @@
-import useDate from "@/hooks/useDate";
 import styles from "@/styles/Calendar.module.scss";
-import { useReducer, useMemo, useState } from "react";
+import { useReducer, useMemo, useState, useEffect } from "react";
+import useDate, { DatePkg } from "@/hooks/useDate";
 import Day from "./Day";
 
-// ----------------------------------------------------------------------
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-] as const;
-const DAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-] as const;
-// ----------------------------------------------------------------------
-
 type CalendarProps = {
-  value: Date;
+  value: Date | string | number;
   date?: string | number | Date;
   minimize?: boolean;
   min?: string | number | Date;
   max?: string | number | Date;
-  handleChange?: () => void;
+  handleChange: Function;
 };
+
+type State = {
+  selected: DatePkg;
+  view: DatePkg;
+};
+
+type Action =
+  | {
+      type: "select";
+      payload: Date;
+    }
+  | { type: "change"; payload: Date }
+  | { type: "reset" | "return"; payload?: undefined };
 
 export default function Calendar({
   date,
@@ -46,87 +33,72 @@ export default function Calendar({
   max,
   handleChange,
 }: CalendarProps) {
-  const { unpackDate: unpack, makeDate, TODAY } = useDate();
-  // const createDateObj = ($date: string | number | Date): DatePkg => {
-  //   const newDate = $date instanceof Date ? $date : new Date($date);
-  //   if (!newDate)
-  //     throw new Error(`${$date} cannot be rendered as a valid date.`);
-
-  //   newDate.setHours(0, 0, 0, 0);
-
-  //   // console.log({ newDate });
-
-  //   const year = newDate.getFullYear(),
-  //     month = newDate.getMonth(),
-  //     date = newDate.getDate(),
-  //     day = newDate.getDay(),
-  //     firstDay = new Date(year, month, 1).getDay(),
-  //     lastDate = new Date(year, month + 1, 0).getDate(),
-  //     strings = [MONTHS[month], DAYS[day]],
-  //     dateString = `${strings[0]} ${date}, ${year}`;
-
-  //   return {
-  //     fullDate: newDate,
-  //     year,
-  //     month,
-  //     date,
-  //     day,
-  //     firstDay,
-  //     lastDate,
-  //     strings,
-  //     dateString,
-  //   };
-  // };
-
-  const NOW = new Date();
-  const [selected, setSelected] = useState(value);
-  const [targetDate, setTargetDate] = useState(value);
-  const target = useMemo(() => unpack(targetDate), [targetDate]);
+  const {
+      unpackDate: unpack,
+      makeDate,
+      isEqual,
+      TODAY,
+      days: DAYS,
+    } = useDate(),
+    $value = unpack(value instanceof Date ? value : new Date(value));
+  // --------------------------------------
+  const initialState: State = {
+    selected: $value,
+    view: $value,
+  };
+  const reducer = (state: State, action: Action) => {
+    const { type, payload } = action;
+    switch (type) {
+      case "select":
+        const target = unpack(payload);
+        return {
+          selected: target,
+          view: target,
+        };
+      case "change":
+        return {
+          ...state,
+          view: unpack(payload),
+        };
+      case "return":
+        return {
+          ...state,
+          view: state.selected,
+        };
+      case "reset":
+        return initialState;
+      default:
+        return state;
+    }
+  };
+  // ~~~~~~~~~~~~~~| STATE |~~~~~~~~~~~~~~
+  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    dispatch({ type: "reset" });
+  }, [value]);
 
   // -------------\ CREATE MONTH /-------------
   const createMonth = () => {
-    const days = [];
-    let prevLastDate = unpack(
-      makeDate({
-        ...target.obj,
-        month: target.obj.month + 1,
-        date: 0,
-      })
-    ).lastDate;
+    const { selected, view } = state,
+      days = [],
+      start = 1 - view.firstDay,
+      end = start + 42;
 
-    if (target.firstDay > 0) {
-      for (let i = target.firstDay; i > 0; i--) {
-        const thisDate = unpack(target.change("date", prevLastDate--)!),
-          isToday = thisDate.strings.full == TODAY.strings.full;
-
-        // console.log({ thisDate, isToday });
-
-        days.unshift(
-          <Day
-            key={"p" + i}
-            className={styles.padding}
-            thisDate={thisDate}
-            isToday={isToday}
-            isSelected={selected?.getTime() == thisDate.fullDate.getTime()}
-          />
-        );
-      }
-    }
-
-    for (let i = 1; i <= target.lastDate; i++) {
-      const thisDate = unpack(target.change("date", i)),
-        // thisDate = unpack(new Date(target.year, target.month, i)),
-        isToday = thisDate.strings.full == TODAY.strings.full;
+    for (let i = start; i < end; i++) {
+      const thisDate = unpack(view.change("date", i)),
+        isToday = isEqual(thisDate, TODAY),
+        isSelected = isEqual(thisDate, selected),
+        isPadding = i < 1 || i > view.lastDate;
 
       days.push(
         <Day
           key={i}
           thisDate={thisDate}
           isToday={isToday}
-          isSelected={selected?.getTime() == thisDate.fullDate.getTime()}
+          isPadding={isPadding}
+          isSelected={isSelected}
           handleSelect={() => {
-            handleChange(thisDate.fullDate);
-            setSelected(thisDate.fullDate);
+            isPadding ? undefined : handleChange(thisDate.fullDate);
           }}
         />
       );
@@ -136,9 +108,13 @@ export default function Calendar({
   };
 
   // -------------\ SHIFT MONTH /-------------
-  const shiftMonth = (fwd = true) =>
-    setTargetDate(target.change("month", target.obj.month + (fwd ? 1 : -1))!);
-  // setTargetDate(new Date(target.year, target.month + (fwd ? 1 : -1), 1));
+  const shiftMonth = (fwd = true) => {
+    const { month } = state.view.obj;
+    dispatch({
+      type: "change",
+      payload: state.view.change("month", month + (fwd ? 1 : -1)),
+    });
+  };
 
   // ==================================================
   // ::::::::::::::::::::\ RENDER /::::::::::::::::::::
@@ -155,8 +131,8 @@ export default function Calendar({
             shiftMonth(false);
           }}
         />
-        <h2 className={`${styles.month} flex col`} data-year={target.year}>
-          {target.strings.month}
+        <h2 className={`${styles.month} flex col`} data-year={state.view.year}>
+          {state.view.strings.month}
         </h2>
         <button
           className={`${styles.next} flex center jab under`}

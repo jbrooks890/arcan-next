@@ -16,6 +16,7 @@ import {
   ReactNode,
   SetStateAction,
   useEffect,
+  useReducer,
   useState,
 } from "react";
 import Form from "@/components/form/Form";
@@ -90,7 +91,9 @@ export type FieldType = {
 };
 
 export type FormMasterType = {
-  [key: string]: any;
+  data: { [key: string]: any };
+  elements: { [key: string]: any };
+  initialOutput: { [key: string]: any };
 };
 
 export type FieldsDataType = {
@@ -105,15 +108,71 @@ type FormAPIType = Omit<FormType<FormMasterType>, "children"> & {
   handleSubmit: Function;
 };
 
+type State =
+  | {
+      master: FormMasterType;
+      data: FormMasterType["initialOutput"]; // TODO
+      submitted: boolean;
+      errors: undefined | {}; // TODO
+    }
+  | undefined;
+
+type Action =
+  | {
+      type: "init";
+      payload: FormMasterType;
+    }
+  | { type: "update"; payload: {} }
+  | { type: "validate"; payload: any }
+  | { type: "submit"; payload?: undefined };
+
 // =================================================
 // %%%%%%%%%%%%%%%%%%\ COMPONENT /%%%%%%%%%%%%%%%%%%
 // =================================================
 
 export default function useForm() {
+  // [ REDUCER ] --------------------------------------------------------
+  const initialState = {};
+  const reducer = (state: State, action: Action) => {
+    const { type, payload } = action;
+    switch (type) {
+      case "init":
+        return {
+          master: payload,
+          data: payload.initialOutput,
+          errors: undefined,
+          submitted: false,
+        };
+      case "update":
+        return {
+          ...state,
+          data: {
+            ...state!.data,
+            ...payload,
+          },
+        };
+      case "validate":
+        return {
+          ...state,
+          errors: payload,
+        };
+      case "submit":
+        return {
+          ...state,
+          submitted: true,
+        };
+      default:
+        return state;
+    }
+  };
+  // --------------------------------------------------------------------
+  const [state, dispatch] = useReducer(reducer, undefined);
   const [formMaster, setFormMaster] = useState<FormMasterType>();
   const [formData, setFormData] = useState();
   // const [submitted, setSubmitted] = useState(false);
   const INPUTS = useFormInputs();
+
+  console.log({ state });
 
   useEffect(() => console.log({ formData }), [formData]);
   useEffect(() => formMaster && console.log({ formMaster }), [formMaster]);
@@ -408,7 +467,7 @@ export default function useForm() {
   // %%%%%%%%%%%%%%\ VALIDATE FORM /%%%%%%%%%%%%%%
 
   const validateForm = () => {
-    const validateObj = (source: object, ancestors: string[] = []) => {
+    const validate = (source: object, ancestors: string[] = []) => {
       return Object.fromEntries(
         Object.entries(source.data)
           .filter(
@@ -425,7 +484,7 @@ export default function useForm() {
 
             // console.log({ children: !!children });
             let nested;
-            if (children) nested = validateObj(children, [...ancestors, field]);
+            if (children) nested = validate(children, [...ancestors, field]);
             // ancestors.length && console.log({ field, VALUE });
 
             if (required && FAILS.includes(VALUE))
@@ -452,11 +511,12 @@ export default function useForm() {
           .filter(([_, value]) => !!value)
       );
     };
-    const result = validateObj(formMaster!);
+    const result = validate(formMaster!);
     console.log({ result });
     setFormMaster(prev => ({
       ...prev,
       validation: result,
+      errors: result,
     }));
   };
 
@@ -554,8 +614,14 @@ export default function useForm() {
     const newForm: FormMasterType = getFieldData(expand(fields));
 
     !formMaster &&
-      setFormMaster({ ...newForm, validation: undefined, submitted: false });
+      setFormMaster({
+        ...newForm,
+        validation: undefined,
+        errors: undefined,
+        submitted: false,
+      });
     !formData && setFormData(newForm.initialOutput);
+    !state && dispatch({ type: "init", payload: newForm });
 
     const purge = obj => {
       return Object.fromEntries(
@@ -569,9 +635,22 @@ export default function useForm() {
       e: MouseEvent<HTMLButtonElement>
     ): void => {
       e.preventDefault();
-      console.log(`%cSUBMIT:`, "color:lime", { formData });
+      console.log(`%cSUBMIT:`, "color:cyan", { formData });
       // handleSubmit();
-      validateForm();
+      if (validate) {
+        const { validated, errors } = formMaster!;
+
+        if (validated) {
+          if (!Object.keys(validated).length) {
+            setFormMaster(prev => ({ ...prev, submitted: true }));
+          }
+        } else {
+          validateForm();
+        }
+      } else {
+      }
+
+      console.log(`%cSUBMITTED`, "color: lime");
       // setFormMaster(prev => ({ ...prev, submitted: true }));
       // TODO: IF VALIDATE, VALIDATE
     };

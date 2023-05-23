@@ -8,8 +8,8 @@ export type SummaryType = {
   name?: string;
   submitTxt?: string;
   cancelTxt?: string;
-  handleSubmit: MouseEventHandler<HTMLButtonElement>;
-  handleCancel?: MouseEventHandler<HTMLButtonElement>;
+  handleSubmit: Function;
+  handleCancel?: Function;
 } & Passthrough;
 
 export default function Summary({
@@ -40,13 +40,19 @@ export default function Summary({
       <button
         type="submit"
         className={styles.submit}
-        onClick={e => handleSubmit(e)}
+        onClick={e => {
+          e.preventDefault();
+          handleSubmit();
+        }}
       >
         {submitTxt}
       </button>
       <button
         className={styles.cancel}
-        onClick={e => handleCancel?.(e) ?? undefined}
+        onClick={e => {
+          e.preventDefault();
+          handleCancel?.();
+        }}
       >
         {cancelTxt}
       </button>

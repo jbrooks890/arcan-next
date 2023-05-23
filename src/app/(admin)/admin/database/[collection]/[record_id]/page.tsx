@@ -52,8 +52,7 @@ export default function Draft({ params }: Props) {
 
   // useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
 
-  const handleCancel: MouseEventHandler<HTMLButtonElement> = e => {
-    e.preventDefault();
+  const handleCancel = () => {
     updateDraft({ type: "cancel" });
   };
 
@@ -344,7 +343,7 @@ export default function Draft({ params }: Props) {
   };
 
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
-  const handleSubmit: MouseEventHandler<HTMLButtonElement> = async () => {
+  const handleSubmit = async () => {
     // console.clear();
     const success = record ? await sendUpdate() : await sendNew();
     if (success) {

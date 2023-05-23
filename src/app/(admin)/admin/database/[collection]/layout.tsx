@@ -143,7 +143,7 @@ export default function Database_Layout({ params, children }: Props) {
 
             {/* ------- ENTRY DATA ------- */}
             <fieldset className={`${styles.viewport} flex col`}>
-              <legend>Entry Data</legend>
+              <legend>{`Entry ${record_id ? "Data" : "List"}`}</legend>
               {children}
             </fieldset>
           </div>

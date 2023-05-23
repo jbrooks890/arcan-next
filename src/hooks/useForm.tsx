@@ -108,14 +108,12 @@ type FormAPIType = Omit<FormType<FormMasterType>, "children"> & {
   handleSubmit: Function;
 };
 
-type State =
-  | {
-      master: FormMasterType;
-      data: FormMasterType["initialOutput"]; // TODO
-      submitted: boolean;
-      errors: undefined | {}; // TODO
-    }
-  | undefined;
+type State = {
+  master: FormMasterType;
+  data: FormMasterType["initialOutput"]; // TODO
+  submitted: boolean;
+  errors: undefined | {}; // TODO
+} | null;
 
 type Action =
   | {
@@ -124,7 +122,7 @@ type Action =
     }
   | { type: "update"; payload: {} }
   | { type: "validate"; payload: any }
-  | { type: "submit"; payload?: undefined };
+  | { type: "submit" | "reset"; payload?: undefined };
 
 // =================================================
 // %%%%%%%%%%%%%%%%%%\ COMPONENT /%%%%%%%%%%%%%%%%%%
@@ -132,7 +130,6 @@ type Action =
 
 export default function useForm() {
   // [ REDUCER ] --------------------------------------------------------
-  const initialState = {};
   const reducer = (state: State, action: Action) => {
     const { type, payload } = action;
     switch (type) {
@@ -161,28 +158,41 @@ export default function useForm() {
           ...state,
           submitted: true,
         };
+      case "reset":
+        if (state) {
+          return {
+            master: state?.master,
+            data: state?.master.initialOutput,
+            errors: undefined,
+            submitted: false,
+          };
+        } else {
+          console.warn("RESET IGNORED: Nothing to reset!");
+        }
       default:
         return state;
     }
   };
   // --------------------------------------------------------------------
-  const [state, dispatch] = useReducer(reducer, undefined);
+  const [state, dispatch] = useReducer(reducer, null);
   const [formMaster, setFormMaster] = useState<FormMasterType>();
   const [formData, setFormData] = useState();
   // const [submitted, setSubmitted] = useState(false);
   const INPUTS = useFormInputs();
 
-  console.log({ state });
-
-  useEffect(() => console.log({ formData }), [formData]);
-  useEffect(() => formMaster && console.log({ formMaster }), [formMaster]);
+  useEffect(() => {
+    if (state) {
+      const { master, data } = state;
+      console.log({ master, data });
+    }
+  }, [state]);
 
   // <><><><><><><><>\ (GET) VALUE /<><><><><><><><>
 
-  const getValue = (field: string, source = formData) => {
+  const getValue = (field: string, source = state?.data) => {
     const chain = field.includes(".") ? field.split(".") : undefined;
     return (
-      chain?.reduce((parent, child) => parent[child], source) ?? source![field]
+      chain?.reduce((parent, child) => parent![child], source) ?? source![field]
     );
   };
 
@@ -252,12 +262,12 @@ export default function useForm() {
     const CHAIN = PATH.join("-");
     const parent = ancestors.reduce(
       (_parent, child) => _parent?.[child],
-      formData
+      state?.data
     );
     const value = parent?.[field] ?? defaultValue;
 
     const updateNestedValue = (
-      source = formData,
+      source = state?.data,
       value: any,
       target = field
     ) => {
@@ -286,11 +296,12 @@ export default function useForm() {
           };
     };
 
-    const updateValue = (
-      value: any,
-      updater = options?.updater ?? setFormData
-    ) => {
-      updater($STATE => updateNestedValue($STATE, value));
+    const updateValue = (value: any, updater = options?.updater) => {
+      // updater(STATE => updateNestedValue(STATE, value));
+      dispatch({
+        type: "update",
+        payload: updateNestedValue(state?.data, value),
+      });
     };
 
     // ~~~~~~~~~~~\ ELEMENT /~~~~~~~~~~~
@@ -315,13 +326,13 @@ export default function useForm() {
       field: CHAIN,
       required,
       criteria: criteriaList?.length ? criteriaList : "",
-      validated: !!formMaster?.validation,
+      validated: !!state?.master?.validation,
       inline: entry.options?.inline,
     };
 
     const error = ancestors.reduce(
       (parent, child) => parent?.[child],
-      formMaster?.validation
+      state?.master?.validation
     )?.[field];
 
     if (error) wrapperProps.error = error;
@@ -341,7 +352,7 @@ export default function useForm() {
         const { type, props: elementProps } = Element;
         // console.log({ Element, elementProps });
 
-        const handleChange = entry => updateValue(entry);
+        const handleChange = (entry: unknown) => updateValue(entry);
         const $props = {
           ...props,
           ...elementProps,
@@ -461,7 +472,7 @@ export default function useForm() {
   // %%%%%%%%%%%%%%\ VALIDATE FIELD /%%%%%%%%%%%%%%
 
   const validateField = (field: string, ancestors: string[] = []) => {
-    const parent = ancestors.reduce((obj, path) => obj[path], formMaster);
+    const parent = ancestors.reduce((obj, path) => obj[path], state?.master);
   };
 
   // %%%%%%%%%%%%%%\ VALIDATE FORM /%%%%%%%%%%%%%%
@@ -479,7 +490,7 @@ export default function useForm() {
             const FAILS = ["", undefined, null, NaN];
             const VALUE = ancestors.reduce(
               (parent, child) => parent[child],
-              formData
+              state?.data
             )[field];
 
             // console.log({ children: !!children });
@@ -495,11 +506,11 @@ export default function useForm() {
               if (Array.isArray(validation))
                 for (const { validator, error } of validation) {
                   // console.log({ VALUE, isValid: validator(VALUE) });
-                  if (!validator(VALUE, formData))
+                  if (!validator(VALUE, state?.data))
                     return [field, error ?? `Invalid ${capitalize(name)}`];
                 }
               else {
-                if (!validation(VALUE, formData))
+                if (!validation(VALUE, state?.data))
                   return [field, `Invalid ${capitalize(name)}`];
               }
             }
@@ -511,13 +522,13 @@ export default function useForm() {
           .filter(([_, value]) => !!value)
       );
     };
-    const result = validate(formMaster!);
+    const result = validate(state?.master!);
     console.log({ result });
-    setFormMaster(prev => ({
-      ...prev,
-      validation: result,
-      errors: result,
-    }));
+    // setFormMaster(prev => ({
+    //   ...prev,
+    //   validation: result,
+    // }));
+    dispatch({ type: "validate", payload: result });
   };
 
   // %%%%%%%%%%%%%%\ GET FIELD DATA /%%%%%%%%%%%%%%
@@ -586,7 +597,7 @@ export default function useForm() {
 
   // const defaultPostMsg = () => `## Thanks for your feedback!`;
 
-  const isSubmitted = () => formMaster?.submitted;
+  const isSubmitted = () => state?.master?.submitted;
 
   // <><><><><><><><>\ FORM /<><><><><><><><>
 
@@ -613,36 +624,37 @@ export default function useForm() {
   }) => {
     const newForm: FormMasterType = getFieldData(expand(fields));
 
-    !formMaster &&
-      setFormMaster({
-        ...newForm,
-        validation: undefined,
-        errors: undefined,
-        submitted: false,
-      });
-    !formData && setFormData(newForm.initialOutput);
+    // !formMaster &&
+    //   setFormMaster({
+    //     ...newForm,
+    //     validation: undefined,
+    //     errors: undefined,
+    //     submitted: false,
+    //   });
+    // !state?.data && setFormData(newForm.initialOutput);
     !state && dispatch({ type: "init", payload: newForm });
 
     const purge = obj => {
       return Object.fromEntries(
         Object.entries(obj).filter(([field, data]) =>
-          typeof data === "object" ? purge(data) : !formMaster?.[field].aux
+          typeof data === "object" ? purge(data) : !state?.master?.[field].aux
         )
       );
     };
 
-    const submitForm: FormEventHandler<HTMLFormElement> = (
-      e: MouseEvent<HTMLButtonElement>
-    ): void => {
-      e.preventDefault();
-      console.log(`%cSUBMIT:`, "color:cyan", { formData });
+    const submitForm = (): void => {
+      // console.log(`%cSUBMIT:`, "color:cyan", { state?.data });
+      console.log(`%cSUBMIT:`, "color:cyan", { data: state?.data });
       // handleSubmit();
       if (validate) {
-        const { validated, errors } = formMaster!;
+        // const { validated, errors } = state?.master!;
+        const { errors } = state;
 
-        if (validated) {
-          if (!Object.keys(validated).length) {
-            setFormMaster(prev => ({ ...prev, submitted: true }));
+        if (errors) {
+          if (!Object.keys(errors).length) {
+            // setFormMaster(prev => ({ ...prev, submitted: true }));
+            dispatch({ type: "submit" });
+            handleSubmit();
           }
         } else {
           validateForm();
@@ -655,12 +667,7 @@ export default function useForm() {
       // TODO: IF VALIDATE, VALIDATE
     };
 
-    const resetForm: FormEventHandler<HTMLFormElement> = e => {
-      e.preventDefault();
-      setFormMaster(formMaster?.initialOutput);
-    };
-
-    const summarize = (data = formData) => {
+    const summarize = (data = state?.data!) => {
       const pruned = Object.fromEntries(
         Object.entries(data).filter(
           ([field]) => !useSummary!.omit.includes(field)
@@ -672,9 +679,9 @@ export default function useForm() {
       return pruned;
     };
 
-    return formMaster?.submitted ? (
+    return state?.submitted ? (
       <Markdown className={`post-submit-msg`} options={{ forceBlock: true }}>
-        {postMessage?.(formData!) ?? "Submitted"}
+        {postMessage?.(state?.data!) ?? "Submitted"}
       </Markdown>
     ) : (
       <Form
@@ -686,10 +693,13 @@ export default function useForm() {
         spellCheck={spellCheck}
         handleSubmit={submitForm}
         handleCancel={handleCancel}
-        handleReset={resetForm}
+        handleReset={() => {
+          dispatch({ type: "reset" });
+        }}
         submitTxt={submitTxt}
         resetTxt={resetTxt}
-        summary={useSummary && formData ? summarize() : undefined}
+        // summary={useSummary && state?.data ? summarize() : undefined}
+        summary={useSummary && state?.data ? summarize() : undefined}
         subForm={subForm}
       >
         {Object.values(newForm.elements)}
@@ -703,7 +713,7 @@ export default function useForm() {
 
   return {
     form,
-    state: () => formData,
+    state: () => state?.data,
     isSubmitted,
     getValue,
     render: renderField,

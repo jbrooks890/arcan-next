@@ -34,12 +34,13 @@ export default function Cascade({
 
           // ---------- RENDER ENTRY ----------
           const renderEntry = () => {
-            const type = typeof value;
-            return value === null || value === undefined ? (
-              <span className="fade">no entry</span>
-            ) : (
-              String(value)
-            );
+            if (value === null || value === undefined)
+              return <span className="fade">no entry</span>;
+
+            // const type = typeof value;
+            // console.log({ value, type });
+
+            return String(value);
           };
 
           return (

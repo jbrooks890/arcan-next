@@ -23,8 +23,8 @@ export type FormType<Data> = {
   subForm?: boolean;
   postMessage?: (v: Data) => string;
   handleReset?: () => void;
-  handleCancel?: MouseEventHandler<HTMLButtonElement>;
-  handleSubmit: MouseEventHandler<HTMLButtonElement>;
+  handleCancel?: () => any;
+  handleSubmit: () => any;
 } & Passthrough;
 
 export default function Form<T>({
@@ -82,11 +82,20 @@ export default function Form<T>({
         <>
           <button
             type="submit"
-            onClick={(e: MouseEvent<HTMLButtonElement>) => handleSubmit(e)}
+            onClick={e => {
+              e.preventDefault();
+              handleSubmit();
+            }}
           >
             {submitTxt ?? "Submit"}
           </button>
-          <button type="reset" onClick={handleReset}>
+          <button
+            type="reset"
+            onClick={e => {
+              e.preventDefault();
+              handleReset?.();
+            }}
+          >
             {resetTxt ?? "Reset"}
           </button>
         </>

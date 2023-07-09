@@ -3,13 +3,13 @@ import { useDBDraft } from "../contexts/DBDraftContext";
 import Accordion from "./Accordion";
 
 type Props = {
-  dataObj: object;
+  source: object;
   omit?: string[];
   ancestors?: string[];
 } & Passthrough;
 
 export default function Cascade({
-  dataObj,
+  source,
   omit,
   ancestors = [],
   id,
@@ -31,6 +31,7 @@ export default function Cascade({
           const isArray = Array.isArray(value);
           const isSimple =
             isArray && value.every(entry => typeof entry !== "object");
+          isArray && console.log({ key, value });
 
           // ---------- RENDER ENTRY ----------
           const renderEntry = () => {
@@ -49,7 +50,8 @@ export default function Cascade({
                 <Accordion
                   field={key}
                   list={buildList(value, [...ancestors, key])}
-                  mode={Object.keys(value).length < 6}
+                  sum={isSimple ? value.join(", ") : undefined}
+                  mode={!isSimple || Object.keys(value).length < 6}
                 />
               ) : (
                 <>
@@ -68,7 +70,7 @@ export default function Cascade({
 
   return (
     <div id={id} className={className}>
-      {buildList(dataObj, ancestors)}
+      {buildList(source, ancestors)}
     </div>
   );
 }

@@ -32,11 +32,7 @@ export default function Summary({
     >
       <legend>{legend}</legend>
       <h3>{name}</h3>
-      <Cascade
-        dataObj={data}
-        // collectionName={collection}
-        className={`${styles.wrapper} flex col`}
-      />
+      <Cascade source={data} className={`${styles.wrapper} flex col`} />
       <button
         type="submit"
         className={styles.submit}

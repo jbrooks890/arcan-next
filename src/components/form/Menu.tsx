@@ -9,6 +9,7 @@ type PropsType = {
   field?: string;
   value?: any;
   searchable?: boolean;
+  sort?: boolean;
   handleChange: Function;
 } & Passthrough;
 
@@ -21,6 +22,7 @@ export default function Menu({
   field = "selectMenu",
   value,
   searchable = true,
+  sort = true,
   handleChange,
   ...props
 }: PropsType) {
@@ -46,7 +48,7 @@ export default function Menu({
           />
 
           <label htmlFor={option} tabIndex={0}>
-            {display ? display[option] : option}
+            {display?.[option] ?? option}
           </label>
         </Fragment>
       ))}

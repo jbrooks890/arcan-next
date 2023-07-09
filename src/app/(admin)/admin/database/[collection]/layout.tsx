@@ -134,7 +134,7 @@ export default function Database_Layout({ params, children }: Props) {
                 collection === "User" ? undefined : references[collection]
               }
               handleChange={entry_id => {
-                updateDraft({ type: "switch", payload: entry_id }); //TODO
+                // updateDraft({ type: "switch", payload: entry_id }); //TODO
                 router.push(`${HOME_URL + entry_id}`);
               }}
               value={record_id}

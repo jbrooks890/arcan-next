@@ -36,11 +36,14 @@ type DraftAPIAction =
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 export default function DBDraftProvider({ children }: { children: ReactNode }) {
-  const { arcanData } = useDBMaster();
-  const { models } = arcanData;
+  const {
+    arcanData: { models, references },
+    omittedFields,
+  } = useDBMaster();
+  // const { models, references } = arcanData;
 
   const initialState = {
-    collectionName: Object.keys(arcanData?.models)[0], // SELECTION
+    collectionName: Object.keys(models)[0], // SELECTION
     record: undefined, // ENTRY SELECTION
     active: false,
   };
@@ -101,6 +104,10 @@ export default function DBDraftProvider({ children }: { children: ReactNode }) {
   //   console.log({ draft });
   // }, [draft]);
 
+  useEffect(() => {
+    console.log({ selection: draft.collectionName });
+  }, [draft.collectionName]);
+
   // :::::::::::::\ FETCH RECORD /:::::::::::::
 
   const fetchRecord = async entry_id => {
@@ -115,9 +122,13 @@ export default function DBDraftProvider({ children }: { children: ReactNode }) {
 
   // :::::::::::::\ GET PATH DATA /:::::::::::::
 
-  const getPathData = (ancestors: string[], selection = collectionName) => {
+  const getPathData = (
+    ancestors: string[],
+    selection = draft.collectionName
+  ) => {
     // Navigate to the appropriate schema path
     const model = models[selection];
+    // console.log({ ancestors, model });
 
     // SET=
     const set = ancestors.reduce((paths, pathName) => {
@@ -142,39 +153,48 @@ export default function DBDraftProvider({ children }: { children: ReactNode }) {
 
   // :::::::::::::\ REPLACE IDs /:::::::::::::
 
-  const replaceObjIDs = (data: object, pathChain = []) => {
+  const replaceObjIDs = (
+    data: object,
+    pathChain = [],
+    selection = draft.collectionName
+  ) => {
     return Object.fromEntries(
-      Object.entries(data).map(entry => {
-        const [field, value] = entry;
-        const ancestry = [...pathChain, field];
-        const pathData = getPathData(ancestry);
-        const { instance } = pathData;
-        // console.log({ field, pathData });
-        // instance && console.log({ field, instance });
+      Object.entries(data)
+        .filter(([field]) => !omittedFields.includes(field))
+        .map(entry => {
+          const [field, value] = entry;
 
-        let result = entry;
+          const ancestry = [...pathChain, field],
+            { options, instance } = getPathData(ancestry, selection);
 
-        if (instance && instance === "ObjectID") {
-          const { ref, refPath } = pathData.options;
-          console.log({ field, value, pathData });
-          result = [field, `${value} (${references[ref]?.[value] ?? "Test"})`];
-        }
+          let result = entry;
 
-        return typeof value === "object"
-          ? [field, replaceObjIDs(value, pathChain)]
-          : result;
-      })
+          if (instance === "ObjectID") {
+            const { ref, refPath } = options,
+              model = models[selection],
+              reference = ref ?? model[refPath];
+            result = [field, references[reference]?.[value]];
+          }
+
+          return typeof value === "object"
+            ? [field, replaceObjIDs(value, [...pathChain, field], selection)]
+            : result;
+        })
     );
   };
 
   // :::::::::::::\ SUMMARIZE /:::::::::::::
+
+  const summarize = (data: object) => {};
 
   // ============================================
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
 
   return (
-    <DBDraft.Provider value={{ draft, updateDraft: dispatch, fetchRecord }}>
+    <DBDraft.Provider
+      value={{ draft, updateDraft: dispatch, fetchRecord, replaceObjIDs }}
+    >
       {children}
     </DBDraft.Provider>
   );

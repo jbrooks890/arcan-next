@@ -1,7 +1,7 @@
 /* ::::::::\ MENU /:::::::: */
 
 .menu {
-  overflow-y: scroll;
+  overflow-y: auto;
   border: var(--input);
   border-radius: var(--outside);
   transition: 0.2s ease-out;

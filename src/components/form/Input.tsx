@@ -15,9 +15,31 @@ type Props = {
   Passthrough;
 
 export default forwardRef<HTMLInputElement, Props>(function Input(
-  { type, field, placeholder, handleChange, value, wrapper, id, className },
+  {
+    type,
+    field,
+    placeholder,
+    handleChange,
+    value,
+    wrapper,
+    id,
+    className,
+    step,
+  },
   ref
 ) {
+  const convert = (value: string) => {
+    switch (type) {
+      case "number":
+        const parse = step ? parseFloat : parseInt;
+        return parse(value);
+      // case "float":
+      //   return parseFloat(value);
+      default:
+        return value;
+    }
+  };
+
   const CONTENT = (
     <div
       className={`${styles.wrap} ${
@@ -32,7 +54,8 @@ export default forwardRef<HTMLInputElement, Props>(function Input(
         type={type}
         placeholder={placeholder}
         value={value ?? ""}
-        onChange={handleChange}
+        step={step}
+        onChange={e => handleChange(convert(e.currentTarget.value))}
       />
     </div>
   );

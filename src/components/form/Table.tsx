@@ -34,7 +34,7 @@ export default function Table({
   // });
 
   const style: CSSProperties = {
-    gridTemplateColumns: `20ch repeat(${headers.length - 1},20%)`,
+    gridTemplateColumns: `20ch repeat(${headers.length - 1}, min-content)`,
   };
 
   return (

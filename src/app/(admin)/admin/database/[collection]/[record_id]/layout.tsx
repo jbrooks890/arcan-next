@@ -18,7 +18,7 @@ export default function Draft_Layout({ params, children }: Props) {
   const { arcanData, omittedFields } = useDBMaster();
   const { collections, references } = arcanData;
   // -----------------------------------------------------------------------
-  const { draft, updateDraft } = useDBDraft();
+  const { draft, updateDraft, replaceObjIDs } = useDBDraft();
   const record = collections[collection].find(
     record => record._id === record_id
   );
@@ -63,7 +63,8 @@ export default function Draft_Layout({ params, children }: Props) {
           children
         ) : (
           <Cascade
-            dataObj={prune(record, omittedFields, true)}
+            // source={prune(record, omittedFields, true)}
+            source={replaceObjIDs(record)}
             className={`${styles.fields} flex col`}
           />
         )}

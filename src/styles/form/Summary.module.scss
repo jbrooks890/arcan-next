@@ -100,12 +100,17 @@
   .submit {
     cursor: pointer;
     align-self: center;
-    padding: 1em;
+    margin-top: 0.5em;
+    padding: 0.5em;
     text-transform: uppercase;
-    font-family: var(--keyFont2);
-    font-weight: bold;
-    border: 2px solid transparent;
-    border-radius: var(--inside);
+    font: {
+      family: var(--keyFont2);
+      weight: bold;
+    }
+    // border: 2px solid transparent;
+    border: none {
+      radius: var(--inside);
+    }
     transition: 0.1s ease-out;
   }
 
@@ -128,7 +133,9 @@
 @media (hover: hover) {
   .summary {
     .submit:hover {
-      border-color: var(--green);
+      // border-color: var(--green);
+      background-color: var(--mid);
+      color: var(--dark);
     }
 
     .cancel:hover {

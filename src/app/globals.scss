@@ -52,7 +52,7 @@
   /* ========== BORDERS ========== */
   --inside: 5px;
   --outside: 10px;
-  --input: 2px solid var(--mid);
+  --input: 2px solid currentColor;
   /* ========== SHAPES ========== */
   /* STAR CLIP SOURCE: https://www.cssportal.com/css-clip-path-generator/ */
   --star: polygon(
@@ -116,22 +116,18 @@ body {
 /* ::::::::::\ SCROLLBAR /:::::::::: */
 
 ::-webkit-scrollbar {
-  --size: 5px;
+  --size: 0.75rem;
   width: var(--size);
   height: var(--size);
 
-  &-track {
-    background: transparent;
-    // width: 5px;
-    // margin: {
-    //   block: 0.5em;
-    // }
-  }
-
   &-thumb {
     cursor: grab;
-    background: var(--mid);
-    border-radius: 100px;
+    background: var(--mid) {
+      clip: content-box;
+    }
+    border: 3px solid transparent {
+      radius: 100px;
+    }
   }
 
   &-corner {
@@ -338,6 +334,12 @@ label {
   }
 }
 
+fieldset {
+  appearance: none;
+  margin: 0;
+  min-inline-size: auto;
+}
+
 /* ::::::::::\ FLEX /:::::::::: */
 .flex {
   display: flex;
@@ -374,14 +376,35 @@ label {
   &.justify {
     justify-content: space-between;
   }
+
+  .grow {
+    flex-grow: 1;
+  }
+
+  .rigid {
+    flex-shrink: 0;
+  }
 }
 
 /* ::::::::::\ GRID /:::::::::: */
 .grid {
   display: grid;
+
+  &.center {
+    place-content: center;
+  }
 }
 
 /* ::::::::::\ OTHER /:::::::::: */
+
+.square {
+  aspect-ratio: 1/1;
+}
+
+.circle {
+  @extend .square;
+  border-radius: 50%;
+}
 
 .fade {
   /* font-style: italic; */

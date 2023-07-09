@@ -23,7 +23,7 @@ type Props = {
 export default function Draft({ params }: Props) {
   const { arcanData, omittedFields } = useDBMaster();
   const { models, references, collections } = arcanData;
-  const { draft, updateDraft } = useDBDraft();
+  const { draft, updateDraft, replaceObjIDs } = useDBDraft();
   // -----------------------------------------------------------------------
   const { collection, record_id } = params;
   const isNew = record_id === "new";
@@ -362,7 +362,7 @@ export default function Draft({ params }: Props) {
     submitTxt: record ? "Update" : "Submit",
     fields: createFields(SCHEMA.paths),
     validate: true,
-    useSummary: { omit: omittedFields },
+    useSummary: { omit: omittedFields, summarizer: replaceObjIDs },
     handleSubmit,
     handleCancel,
     className: styles.record,

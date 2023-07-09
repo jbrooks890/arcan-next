@@ -175,17 +175,17 @@ export default function useForm() {
   };
   // --------------------------------------------------------------------
   const [state, dispatch] = useReducer(reducer, null);
-  const [formMaster, setFormMaster] = useState<FormMasterType>();
-  const [formData, setFormData] = useState();
+  // const [formMaster, setFormMaster] = useState<FormMasterType>();
+  // const [formData, setFormData] = useState();
   // const [submitted, setSubmitted] = useState(false);
   const INPUTS = useFormInputs();
 
-  useEffect(() => {
-    if (state) {
-      const { master, data } = state;
-      console.log({ master, data });
-    }
-  }, [state]);
+  // useEffect(() => {
+  //   if (state) {
+  //     const { master, data } = state;
+  //     console.log({ master, data });
+  //   }
+  // }, [state]);
 
   // <><><><><><><><>\ (GET) VALUE /<><><><><><><><>
 
@@ -387,12 +387,10 @@ export default function useForm() {
         return (
           <Input
             type={SIMPLE_TYPES[type]}
-            handleChange={(e: ChangeEvent<HTMLInputElement>) =>
-              updateValue(e.target.value)
-            }
+            handleChange={value => updateValue(value)}
             min={entry.options?.min}
             max={entry.options?.max}
-            step={entry.options?.step ?? 0.1}
+            step={entry.options?.step ?? type === "float" ? 0.1 : undefined}
             // wrapper={wrapperProps}
             {...props}
           />
@@ -619,7 +617,9 @@ export default function useForm() {
     postMessage,
   }: FormAPIType & {
     useSummary?: {
-      omit: string[];
+      source?: object;
+      omit?: string[];
+      summarizer?: Function;
     };
   }) => {
     const newForm: FormMasterType = getFieldData(expand(fields));
@@ -668,13 +668,12 @@ export default function useForm() {
     };
 
     const summarize = (data = state?.data!) => {
+      const { omit, summarizer } = useSummary!,
+        source = summarizer?.(data) ?? data;
+      console.log({ source });
       const pruned = Object.fromEntries(
-        Object.entries(data).filter(
-          ([field]) => !useSummary!.omit.includes(field)
-        )
+        Object.entries(source).filter(([field]) => !omit?.includes(field))
       );
-
-      // console.log({ data, pruned });
 
       return pruned;
     };
@@ -699,7 +698,9 @@ export default function useForm() {
         submitTxt={submitTxt}
         resetTxt={resetTxt}
         // summary={useSummary && state?.data ? summarize() : undefined}
-        summary={useSummary && state?.data ? summarize() : undefined}
+        summary={
+          useSummary && state?.data ? summarize(useSummary.source) : undefined
+        }
         subForm={subForm}
       >
         {Object.values(newForm.elements)}

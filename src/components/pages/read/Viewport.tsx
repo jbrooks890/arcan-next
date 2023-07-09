@@ -14,7 +14,9 @@ export default function Viewport({ content }: { content: string }) {
       ) : (
         "No content"
       )}
-      <button onClick={() => {}}>Top</button>
+      <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+        Top
+      </button>
     </div>
   );
 }

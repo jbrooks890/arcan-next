@@ -1,9 +1,9 @@
 import styles from "@/styles/form/Accordion.module.scss";
 import { ReactNode, useRef, useState } from "react";
 
-type Props = { field: string; list: ReactNode; mode?: boolean };
+type Props = { field: string; list: ReactNode; sum?: string; mode?: boolean };
 
-export default function Accordion({ field, list, mode = false }: Props) {
+export default function Accordion({ field, list, sum, mode = false }: Props) {
   const [open, setOpen] = useState(mode);
   const listEm = useRef();
 
@@ -17,6 +17,7 @@ export default function Accordion({ field, list, mode = false }: Props) {
         <div className={`${styles.arrow} flex center`} />
         {field}
       </strong>
+      {sum && <span>{sum}</span>}
       {list}
     </div>
   );

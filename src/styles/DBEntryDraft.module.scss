@@ -2,7 +2,7 @@
   position: relative;
   // flex-grow: 1;
   width: calc(var(--chunk) / 2);
-  overflow: hidden scroll;
+  overflow: hidden auto;
 
   .form-wrapper {
     position: relative;

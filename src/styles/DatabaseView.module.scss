@@ -189,14 +189,14 @@
 
       .body {
         padding-block: 1em;
-        overflow-y: scroll;
+        overflow-y: auto;
         flex-grow: 1;
 
         /* ========== ENTRY FIELDS ========== */
 
         .fields {
           padding-inline: 1em;
-          overflow-y: scroll;
+          overflow-y: auto;
 
           ul {
             margin: 0;

@@ -163,22 +163,36 @@ export default function DBDraftProvider({ children }: { children: ReactNode }) {
         .filter(([field]) => !omittedFields.includes(field))
         .map(entry => {
           const [field, value] = entry;
-
           const ancestry = [...pathChain, field],
             { options, instance } = getPathData(ancestry, selection);
+          const isArray = Array.isArray(value);
 
           let result = entry;
 
           if (instance === "ObjectID") {
+            isArray && console.log(`${field} = array`);
+
             const { ref, refPath } = options,
               model = models[selection],
               reference = ref ?? model[refPath];
             result = [field, references[reference]?.[value]];
           }
 
-          return typeof value === "object"
-            ? [field, replaceObjIDs(value, [...pathChain, field], selection)]
-            : result;
+          if (typeof value === "object") {
+            const child = replaceObjIDs(
+              value,
+              [...pathChain, field],
+              selection
+            );
+
+            result = [field, isArray ? Object.values(child) : child];
+          }
+
+          return result;
+
+          // return typeof value === "object"
+          //   ? [field, replaceObjIDs(value, [...pathChain, field], selection)]
+          //   : result;
         })
     );
   };

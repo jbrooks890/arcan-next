@@ -1,3 +1,4 @@
+import styles from "@/styles/form/Cascade.module.scss";
 import { useDBMaster } from "../contexts/DBContext";
 import { useDBDraft } from "../contexts/DBDraftContext";
 import Accordion from "./Accordion";
@@ -31,7 +32,7 @@ export default function Cascade({
           const isArray = Array.isArray(value);
           const isSimple =
             isArray && value.every(entry => typeof entry !== "object");
-          isArray && console.log({ key, value });
+          // isArray && console.log({ key, value });
 
           // ---------- RENDER ENTRY ----------
           const renderEntry = () => {
@@ -45,17 +46,17 @@ export default function Cascade({
           };
 
           return (
-            <li key={i} className={!isObject ? "flex" : "block"}>
+            <li key={i} className={!isObject ? "flex baseline" : "block"}>
               {isObject ? (
                 <Accordion
                   field={key}
                   list={buildList(value, [...ancestors, key])}
                   sum={isSimple ? value.join(", ") : undefined}
-                  mode={!isSimple || Object.keys(value).length < 6}
+                  mode={!isSimple && Object.keys(value).length < 6}
                 />
               ) : (
                 <>
-                  <strong className={isObject ? "flex middle" : ""}>
+                  <strong className={isObject ? "flex inline middle" : ""}>
                     {key}
                   </strong>
                   <span>{renderEntry()}</span>
@@ -69,7 +70,7 @@ export default function Cascade({
   };
 
   return (
-    <div id={id} className={className}>
+    <div id={id} className={`${styles.cascade} ${className ?? ""}`}>
       {buildList(source, ancestors)}
     </div>
   );

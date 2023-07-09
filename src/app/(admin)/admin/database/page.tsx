@@ -129,20 +129,19 @@ export default function Database() {
                 <>
                   {/* ------- ENTRY HEADER ------- */}
                   <div className={`${styles["entry-header"]} flex`}>
-                    <div className={styles["entry-title"]}>
-                      <h3
-                        className={styles["entry-name"]}
-                        data-entry-id={draft.record?._id ?? undefined}
-                      >
-                        {references[draft.collectionName][draft.record?._id] ??
-                          `New ${draft.collectionName}`}
-                      </h3>
-                      {draft.record?._id && (
-                        <h5 className={styles["entry-id"]}>
-                          {draft.record?._id}
-                        </h5>
-                      )}
-                    </div>
+                    {/* <div className={styles["entry-title"]}></div> */}
+                    <h3
+                      className={styles["entry-name"]}
+                      data-entry-id={draft.record?._id ?? undefined}
+                    >
+                      {references[draft.collectionName][draft.record?._id] ??
+                        `New ${draft.collectionName}`}
+                    </h3>
+                    {draft.record?._id && (
+                      <h5 className={styles["entry-id"]}>
+                        {draft.record?._id}
+                      </h5>
+                    )}
                     {!draft.active && (
                       <div className={styles["button-cache"]}>
                         <button

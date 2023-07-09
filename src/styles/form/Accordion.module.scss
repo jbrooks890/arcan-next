@@ -13,15 +13,13 @@
       transition: 0.1s ease-out;
 
       &::before {
-        --size: 0.5em;
-        --border: var(--input);
         content: "";
         display: block;
-        width: var(--size);
+        width: 0.4em;
         aspect-ratio: 1/1;
         border: {
-          top: var(--border);
-          right: var(--border);
+          top: var(--input);
+          right: var(--input);
           top-right-radius: 2px;
         }
       }

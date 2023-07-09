@@ -13,7 +13,7 @@ export default function Accordion({ field, list, sum, mode = false }: Props) {
 
   return (
     <div className={`${styles.accordion} ${open ? "open" : "closed"}`}>
-      <strong className="flex middle" onClick={toggle}>
+      <strong className="flex inline middle" onClick={toggle}>
         <div className={`${styles.arrow} flex center`} />
         {field}
       </strong>

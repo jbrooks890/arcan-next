@@ -26,18 +26,17 @@ export default function Draft_Layout({ params, children }: Props) {
 
   return draft.active || record ? (
     <>
-      <div className={`${styles["entry-header"]} flex`}>
-        <div className={styles["entry-title"]}>
-          <h3
-            className={styles["entry-name"]}
-            data-entry-id={record_id ?? undefined}
-          >
-            {references[collection][record_id] ?? `New ${collection}`}
-          </h3>
-          {record_id && <h5 className={styles["entry-id"]}>{record_id}</h5>}
-        </div>
+      <div className={`${styles["entry-header"]} grid`}>
+        {/* <div className={styles["entry-title"]}></div> */}
+        <h3
+          className={styles["entry-name"]}
+          data-entry-id={record_id ?? undefined}
+        >
+          {references[collection][record_id] ?? `New ${collection}`}
+        </h3>
+        {record_id && <h5 className={styles["entry-id"]}>{record_id}</h5>}
         {!draft.active && (
-          <div className={styles["button-cache"]}>
+          <div className={`${styles["button-cache"]} flex align-end`}>
             <button
               className={styles.edit}
               onClick={() => {

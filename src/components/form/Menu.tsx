@@ -27,6 +27,15 @@ export default function Menu({
   ...props
 }: PropsType) {
   const [filter, setFilter] = useState();
+  if (sort) {
+    display
+      ? options.sort((prev, curr) => {
+          return display[prev] > display[curr] ? 1 : -1;
+        })
+      : options.sort();
+  }
+
+  console.log({ display });
 
   return (
     <fieldset

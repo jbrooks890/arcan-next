@@ -1,0 +1,16 @@
+.cascade {
+  strong {
+    margin-right: 0.5em;
+    color: var(--mint);
+    font: {
+      // size: small;
+      weight: 400;
+      variant: small-caps;
+    }
+    // text-transform: uppercase;
+
+    &::after {
+      content: ":";
+    }
+  }
+}

@@ -112,6 +112,7 @@
       .entry-header {
         padding-bottom: 0.5rem;
         border-bottom: 1px solid var(--green);
+        grid-template-columns: min-content 1fr;
 
         &:global {
           &.flex {
@@ -120,33 +121,55 @@
           }
         }
 
-        .entry-title {
-          .flex & {
-            flex-grow: 1;
+        .entry-name {
+          font-size: larger;
+          margin: 0;
+          grid-column: 1/-1;
+        }
+
+        .entry-id {
+          margin: 0;
+          font: {
+            weight: normal;
+            size: 0.9rem;
           }
+          white-space: nowrap;
 
-          & > * {
-            margin: 0;
-          }
-
-          .entry-name {
-            font-size: larger;
-          }
-
-          .entry-id {
-            font: {
-              weight: normal;
-              size: 0.9rem;
-            }
-
-            &::before {
-              content: "id: ";
-              color: var(--mint);
-              font-size: small;
-              text-transform: uppercase;
-            }
+          &::before {
+            content: "id: ";
+            color: var(--mint);
+            font-size: small;
+            text-transform: uppercase;
           }
         }
+
+        // .entry-title {
+        //   .flex & {
+        //     flex-grow: 1;
+        //   }
+
+        //   & > * {
+        //     margin: 0;
+        //   }
+
+        //   .entry-name {
+        //     font-size: larger;
+        //   }
+
+        //   .entry-id {
+        //     font: {
+        //       weight: normal;
+        //       size: 0.9rem;
+        //     }
+
+        //     &::before {
+        //       content: "id: ";
+        //       color: var(--mint);
+        //       font-size: small;
+        //       text-transform: uppercase;
+        //     }
+        //   }
+        // }
 
         .button-cache {
           & > :not(:last-child) {
@@ -205,18 +228,18 @@
             li {
               max-width: 480px;
 
-              strong {
-                margin-right: 0.5em;
-                color: var(--mint);
-                font: {
-                  weight: 400;
-                  variant: small-caps;
-                }
+              // strong {
+              //   margin-right: 0.5em;
+              //   color: var(--mint);
+              //   font: {
+              //     weight: 400;
+              //     variant: small-caps;
+              //   }
 
-                &::after {
-                  content: ":";
-                }
-              }
+              //   &::after {
+              //     content: ":";
+              //   }
+              // }
             }
           }
         }
